@@ -1,4 +1,4 @@
-﻿using Curs.Models;
+using Curs.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
@@ -25,5 +25,7 @@ namespace Curs.Data
 		public DbSet<User> Users { get; set; }
 
 		public DbSet<Curs.Models.Pet> Pet { get; set; } = default!;
+
+		public DbSet<Curs.Models.Post> Post { get; set; } = default!;
 	}
 }
