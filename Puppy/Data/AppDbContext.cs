@@ -19,7 +19,13 @@ namespace Curs.Data
 			modelBuilder.Entity<Pet>()
 				.HasOne(e => e.User)
 				.WithMany(c => c.Pets);
+			modelBuilder.Entity<Post>()
+				.HasOne(e => e.User)
+				.WithMany(c => c.Posts);
 
+			modelBuilder.Entity<Commentary>()
+				.HasOne(e => e.Post)
+				.WithMany(c => c.Commentaries);
 		}
 
 		public DbSet<User> Users { get; set; }
@@ -27,5 +33,7 @@ namespace Curs.Data
 		public DbSet<Curs.Models.Pet> Pet { get; set; } = default!;
 
 		public DbSet<Curs.Models.Post> Post { get; set; } = default!;
+
+		public DbSet<Curs.Models.Commentary> Commentary { get; set; } = default!;
 	}
 }

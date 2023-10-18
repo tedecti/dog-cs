@@ -18,4 +18,7 @@ public class Post
 
     [DataType(DataType.DateTime)]
     public DateTime UploadDate { get; set; }
+
+    public User User { get; set; }
+    public ICollection<Commentary> Commentaries { get; set; } = new List<Commentary>();
 }
