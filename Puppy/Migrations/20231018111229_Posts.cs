@@ -13,12 +13,6 @@ namespace Puppy.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<int>(
-                name: "UserId",
-                table: "Users",
-                type: "integer",
-                nullable: true);
-
             migrationBuilder.CreateTable(
                 name: "Post",
                 columns: table => new
@@ -36,8 +30,8 @@ namespace Puppy.Migrations
                 {
                     table.PrimaryKey("PK_Post", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Post_Users_UserId",
-                        column: x => x.UserId,
+                        name: "FK_Post_Users_Id",
+                        column: x => x.Id,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -72,11 +66,6 @@ namespace Puppy.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Users_UserId",
-                table: "Users",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Commentary_PostId",
                 table: "Commentary",
                 column: "PostId");
@@ -90,35 +79,17 @@ namespace Puppy.Migrations
                 name: "IX_Post_UserId",
                 table: "Post",
                 column: "UserId");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_Users_Users_UserId",
-                table: "Users",
-                column: "UserId",
-                principalTable: "Users",
-                principalColumn: "Id");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Users_Users_UserId",
-                table: "Users");
 
             migrationBuilder.DropTable(
                 name: "Commentary");
 
             migrationBuilder.DropTable(
                 name: "Post");
-
-            migrationBuilder.DropIndex(
-                name: "IX_Users_UserId",
-                table: "Users");
-
-            migrationBuilder.DropColumn(
-                name: "UserId",
-                table: "Users");
         }
     }
 }
