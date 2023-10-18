@@ -95,7 +95,7 @@ namespace Puppy.Controllers
           var newPost = new Post()
           {
               Description = post.Description,
-              Author = post.Author,
+              UserId = post.UserId,
               Img = post.Img,
               UploadDate = post.UploadDate
           };

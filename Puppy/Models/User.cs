@@ -9,6 +9,8 @@
 		public string Password { get; set; }
 		
 		public ICollection<Pet> Pets { get; set; } = new List<Pet>();
+		
+		public List<User> Friends { get; set; } 
 
 		public ICollection<Post> Posts { get; set; } = new List<Post>();
 	}
