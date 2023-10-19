@@ -8,7 +8,7 @@ namespace Curs.Data
 	public class AppDbContext : DbContext
 	{
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-			=> optionsBuilder.UseNpgsql("Host=127.0.0.1;Database=postgres;Username=root;Password=123");
+			=> optionsBuilder.UseNpgsql("Host=127.0.0.1;Database=kurs;Username=root;Password=123");
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
