@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Curs.Data;
 using Curs.Models;
+using Microsoft.AspNetCore.Authorization;
 using Puppy.Models.Dto;
+using Microsoft.AspNetCore.Identity;
 
 namespace Puppy.Controllers
 {
@@ -85,18 +89,26 @@ namespace Puppy.Controllers
         // POST: api/Pets
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<Pet>> PostPet(AddPetRequestDto pet)
         {
-          if (_context.Pet == null)
+            if (_context.Pet == null)
           {
               return Problem("Entity set 'AppDbContext.Pet'  is null.");
           }
+
+            var userId = HttpContext.User.Identity.Name;
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized();
+            }
 
             var newPet = new Pet()
             {
                 Name = pet.Name,
                 PassportNumber = pet.PassportNumber,
-                UserId = pet.UserId,
+                UserId = Convert.ToInt32(userId)
             };
 
             _context.Pet.Add(newPet);

@@ -6,6 +6,5 @@ namespace Puppy.Models.Dto
 	{
 		public string Name { get; set; }
 		public string PassportNumber { get; set; }
-		public int UserId { get; set; }
 	}
 }
