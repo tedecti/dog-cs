@@ -61,23 +61,15 @@ namespace Puppy.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("FriendshipDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("FollowerId")
+                        .HasColumnType("integer");
 
                     b.Property<int>("UserId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("User_Id1")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("User_Id2")
-                        .HasColumnType("integer");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("FollowerId");
 
                     b.HasIndex("UserId");
 
@@ -195,11 +187,19 @@ namespace Puppy.Migrations
 
             modelBuilder.Entity("Curs.Models.Friend", b =>
                 {
+                    b.HasOne("Curs.Models.User", "Follower")
+                        .WithMany("Followers")
+                        .HasForeignKey("FollowerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Curs.Models.User", "User")
                         .WithMany("Friends")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Follower");
 
                     b.Navigation("User");
                 });
@@ -233,6 +233,8 @@ namespace Puppy.Migrations
 
             modelBuilder.Entity("Curs.Models.User", b =>
                 {
+                    b.Navigation("Followers");
+
                     b.Navigation("Friends");
 
                     b.Navigation("Pets");

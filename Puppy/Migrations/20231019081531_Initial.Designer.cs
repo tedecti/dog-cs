@@ -13,8 +13,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Puppy.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20231018111229_Posts")]
-    partial class Posts
+    [Migration("20231019081531_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -54,6 +54,29 @@ namespace Puppy.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Commentary");
+                });
+
+            modelBuilder.Entity("Curs.Models.Friend", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("FollowerId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FollowerId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Friend");
                 });
 
             modelBuilder.Entity("Curs.Models.Pet", b =>
@@ -141,12 +164,7 @@ namespace Puppy.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int?>("UserId")
-                        .HasColumnType("integer");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Users");
                 });
@@ -166,6 +184,25 @@ namespace Puppy.Migrations
                         .IsRequired();
 
                     b.Navigation("Post");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Curs.Models.Friend", b =>
+                {
+                    b.HasOne("Curs.Models.User", "Follower")
+                        .WithMany("Followers")
+                        .HasForeignKey("FollowerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Curs.Models.User", "User")
+                        .WithMany("Friends")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Follower");
 
                     b.Navigation("User");
                 });
@@ -192,13 +229,6 @@ namespace Puppy.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Curs.Models.User", b =>
-                {
-                    b.HasOne("Curs.Models.User", null)
-                        .WithMany("Friends")
-                        .HasForeignKey("UserId");
-                });
-
             modelBuilder.Entity("Curs.Models.Post", b =>
                 {
                     b.Navigation("Commentaries");
@@ -206,6 +236,8 @@ namespace Puppy.Migrations
 
             modelBuilder.Entity("Curs.Models.User", b =>
                 {
+                    b.Navigation("Followers");
+
                     b.Navigation("Friends");
 
                     b.Navigation("Pets");

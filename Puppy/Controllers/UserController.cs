@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Curs.Data;
 using Curs.Models;
+using Puppy.Models.Dto;
 
 namespace Puppy.Controllers
 {
@@ -23,23 +24,47 @@ namespace Puppy.Controllers
 
         // GET: api/User
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<UserResponseDto>>> GetUsers()
         {
-          if (_context.Users == null)
-          {
-              return NotFound();
-          }
-            return await _context.Users.ToListAsync();
+            if (_context.Users == null)
+            {
+                return NotFound();
+            }
+
+            var users = await _context.Users.Include(x => x.Followers).ToListAsync();
+            return users.Select(x => new UserResponseDto()
+                {
+                    Id = x.Id,
+                    Email = x.Email,
+                    FirstName = x.FirstName,
+                    LastName = x.LastName,
+                    Followers = x.Followers.Select(x=>new FollowerResponseDto()
+                    {
+                        Id = x.Id,
+                        FollowerId = x.FollowerId,
+                        UserId = x.UserId
+                    }).ToList(),
+                    Friends = x.Friends.Select(x=>new FollowerResponseDto()
+                    {
+                        Id = x.Id,
+                        FollowerId = x.FollowerId,
+                        UserId = x.UserId
+                    }).ToList(),
+                    Pets = x.Pets,
+                    Posts = x.Posts
+                }
+            ).ToList();
         }
 
         // GET: api/User/5
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> GetUser(int id)
         {
-          if (_context.Users == null)
-          {
-              return NotFound();
-          }
+            if (_context.Users == null)
+            {
+                return NotFound();
+            }
+
             var user = await _context.Users.FindAsync(id);
 
             if (user == null)

@@ -30,6 +30,9 @@ namespace Curs.Data
 			modelBuilder.Entity<Friend>()
 				.HasOne(e => e.User)
 				.WithMany(c => c.Friends);
+			modelBuilder.Entity<Friend>()
+				.HasOne(e => e.Follower)
+				.WithMany(c => c.Followers);
 		}
 
 		public DbSet<User> Users { get; set; }

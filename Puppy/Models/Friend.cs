@@ -4,14 +4,9 @@ public class Friend
 {
     public int Id { get; set; }
     
-    public int User_Id1{ get; set; }
-    
-    
-    public int User_Id2{ get; set; }
+    public int UserId{ get; set; }
+    public int FollowerId{ get; set; }
     
     public User User{ get; set; }
-    
-    public string Status{ get; set; }
-    
-    public DateTime FriendshipDate { get; set; }
+    public User Follower{ get; set; }
 }
