@@ -9,7 +9,7 @@ public class UserResponseDto
     public string LastName { get; set; }
     public string Email { get; set; }
 		
-    public ICollection<Pet> Pets { get; set; } = new List<Pet>();
+    public ICollection<UserPetDto> Pets { get; set; } = new List<UserPetDto>();
 
     public ICollection<FollowerResponseDto> Friends { get; set; } = new List<FollowerResponseDto>();
     public ICollection<FollowerResponseDto> Followers { get; set; } = new List<FollowerResponseDto>();

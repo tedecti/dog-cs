@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -16,10 +17,12 @@ namespace Puppy.Controllers
     public class UserController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IMapper _mapper;
 
-        public UserController(AppDbContext context)
+        public UserController(AppDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         // GET: api/User
@@ -32,47 +35,34 @@ namespace Puppy.Controllers
             }
 
             var users = await _context.Users.Include(x => x.Followers).ToListAsync();
-            return users.Select(x => new UserResponseDto()
-                {
-                    Id = x.Id,
-                    Email = x.Email,
-                    FirstName = x.FirstName,
-                    LastName = x.LastName,
-                    Followers = x.Followers.Select(x=>new FollowerResponseDto()
-                    {
-                        Id = x.Id,
-                        FollowerId = x.FollowerId,
-                        UserId = x.UserId
-                    }).ToList(),
-                    Friends = x.Friends.Select(x=>new FollowerResponseDto()
-                    {
-                        Id = x.Id,
-                        FollowerId = x.FollowerId,
-                        UserId = x.UserId
-                    }).ToList(),
-                    Pets = x.Pets,
-                    Posts = x.Posts
-                }
-            ).ToList();
+
+            if (users == null || !users.Any())
+            {
+                return NoContent();
+            }
+            var userResponses = _mapper.Map<IEnumerable<UserResponseDto>>(users);
+
+            return Ok(userResponses);
+
         }
 
         // GET: api/User/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(int id)
+        public async Task<ActionResult<UserResponseDto>> GetUser(int id)
         {
             if (_context.Users == null)
             {
                 return NotFound();
             }
 
-            var user = await _context.Users.FindAsync(id);
+            var user = await _context.Users.Include(x => x.Pets).FirstAsync(x => x.Id == id);
 
             if (user == null)
             {
                 return NotFound();
             }
 
-            return user;
+            return _mapper.Map<UserResponseDto>(user);
         }
 
         // PUT: api/User/5

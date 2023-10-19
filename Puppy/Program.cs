@@ -48,6 +48,8 @@ namespace Puppy
                 options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
                 options.JsonSerializerOptions.WriteIndented = true;
             });;
+            
+            builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies()); 
 
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
