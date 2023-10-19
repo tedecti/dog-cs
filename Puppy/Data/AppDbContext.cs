@@ -26,6 +26,10 @@ namespace Curs.Data
 			modelBuilder.Entity<Commentary>()
 				.HasOne(e => e.Post)
 				.WithMany(c => c.Commentaries);
+			
+			modelBuilder.Entity<Friend>()
+				.HasOne(e => e.User)
+				.WithMany(c => c.Friends);
 		}
 
 		public DbSet<User> Users { get; set; }
@@ -35,5 +39,7 @@ namespace Curs.Data
 		public DbSet<Curs.Models.Post> Post { get; set; } = default!;
 
 		public DbSet<Curs.Models.Commentary> Commentary { get; set; } = default!;
+
+		public DbSet<Curs.Models.Friend> Friend { get; set; } = default!;
 	}
 }

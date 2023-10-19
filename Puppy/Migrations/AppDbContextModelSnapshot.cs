@@ -53,6 +53,37 @@ namespace Puppy.Migrations
                     b.ToTable("Commentary");
                 });
 
+            modelBuilder.Entity("Curs.Models.Friend", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("FriendshipDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("User_Id1")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("User_Id2")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Friend");
+                });
+
             modelBuilder.Entity("Curs.Models.Pet", b =>
                 {
                     b.Property<int>("Id")
@@ -138,12 +169,7 @@ namespace Puppy.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int?>("UserId")
-                        .HasColumnType("integer");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Users");
                 });
@@ -163,6 +189,17 @@ namespace Puppy.Migrations
                         .IsRequired();
 
                     b.Navigation("Post");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Curs.Models.Friend", b =>
+                {
+                    b.HasOne("Curs.Models.User", "User")
+                        .WithMany("Friends")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });
@@ -187,13 +224,6 @@ namespace Puppy.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Curs.Models.User", b =>
-                {
-                    b.HasOne("Curs.Models.User", null)
-                        .WithMany("Friends")
-                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("Curs.Models.Post", b =>
