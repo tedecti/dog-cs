@@ -26,10 +26,11 @@ namespace Puppy.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Post>>> GetPost()
         {
-          if (_context.Post == null)
-          {
-              return NotFound();
-          }
+            if (_context.Post == null)
+            {
+                return NotFound();
+            }
+
             return await _context.Post.ToListAsync();
         }
 
@@ -37,10 +38,11 @@ namespace Puppy.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Post>> GetPost(int id)
         {
-          if (_context.Post == null)
-          {
-              return NotFound();
-          }
+            if (_context.Post == null)
+            {
+                return NotFound();
+            }
+
             var post = await _context.Post.FindAsync(id);
 
             if (post == null)
@@ -82,23 +84,37 @@ namespace Puppy.Controllers
             return NoContent();
         }
 
+        [HttpPost("/like/{id}")]
+        public async Task<IActionResult> LikePost(int id)
+        {
+            
+            if (!PostExists(id))
+            {
+                return NotFound();
+            }
+            
+            
+
+            return NoContent();
+        }
+
         // POST: api/Post
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Post>> PostPost(UploadPostRequestDto post)
         {
-          if (_context.Post == null)
-          {
-              return Problem("Entity set 'AppDbContext.Post'  is null.");
-          }
+            if (_context.Post == null)
+            {
+                return Problem("Entity set 'AppDbContext.Post'  is null.");
+            }
 
-          var newPost = new Post()
-          {
-              Description = post.Description,
-              UserId = post.UserId,
-              Img = post.Img,
-              UploadDate = post.UploadDate
-          };
+            var newPost = new Post()
+            {
+                Description = post.Description,
+                UserId = post.UserId,
+                Img = post.Img,
+                UploadDate = post.UploadDate
+            };
             _context.Post.Add(newPost);
             await _context.SaveChangesAsync();
 
@@ -113,6 +129,7 @@ namespace Puppy.Controllers
             {
                 return NotFound();
             }
+
             var post = await _context.Post.FindAsync(id);
             if (post == null)
             {

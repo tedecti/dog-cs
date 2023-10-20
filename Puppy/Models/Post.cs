@@ -10,8 +10,6 @@ public class Post
 
     public List<string> Img { get; set; }
 
-    public int Likes { get; set; }
-
     public int Comments { get; set; }
 
     [DataType(DataType.DateTime)]
@@ -19,4 +17,5 @@ public class Post
 
     public User User { get; set; }
     public ICollection<Commentary> Commentaries { get; set; } = new List<Commentary>();
+    public ICollection<Like> Likes { get; set; } = new List<Like>();
 }

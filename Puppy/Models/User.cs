@@ -15,5 +15,6 @@ namespace Curs.Models
 		public ICollection<Friend> Friends { get; set; } = new List<Friend>();
 		public ICollection<Friend> Followers { get; set; } = new List<Friend>();
 		public ICollection<Post> Posts { get; set; } = new List<Post>();
+		public ICollection<Like> Likes { get; set; } = new List<Like>();
 	}
 }

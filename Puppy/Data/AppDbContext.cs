@@ -33,11 +33,18 @@ namespace Curs.Data
 			modelBuilder.Entity<Friend>()
 				.HasOne(e => e.Follower)
 				.WithMany(c => c.Followers);
+			modelBuilder.Entity<Like>()
+				.HasOne(l => l.User)
+				.WithMany(u => u.Likes);
+			modelBuilder.Entity<Like>()
+				.HasOne(l => l.Post)
+				.WithMany(p => p.Likes);
 		}
 
 		public DbSet<User> Users { get; set; }
 
 		public DbSet<Curs.Models.Pet> Pet { get; set; } = default!;
+		public DbSet<Like> Like { get; set; } = default!;
 
 		public DbSet<Curs.Models.Post> Post { get; set; } = default!;
 
