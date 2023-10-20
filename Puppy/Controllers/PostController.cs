@@ -110,6 +110,7 @@ namespace Puppy.Controllers
 
             var newPost = new Post()
             {
+                Title = post.Title,
                 Description = post.Description,
                 UserId = post.UserId,
                 Img = post.Img,
