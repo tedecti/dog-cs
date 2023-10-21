@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Curs.Data;
 using Curs.Models;
+using Microsoft.AspNetCore.Authorization;
 using Puppy.Models.Dto;
 
 namespace Puppy.Controllers
@@ -56,6 +57,7 @@ namespace Puppy.Controllers
         // PUT: api/Post/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> PutPost(int id, Post post)
         {
             if (id != post.Id)
@@ -83,26 +85,20 @@ namespace Puppy.Controllers
 
             return NoContent();
         }
-
-        [HttpPost("/like/{id}")]
-        public async Task<IActionResult> LikePost(int id)
-        {
-            
-            if (!PostExists(id))
-            {
-                return NotFound();
-            }
-            
-            
-
-            return NoContent();
-        }
+        
 
         // POST: api/Post
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Post>> PostPost(UploadPostRequestDto post)
         {
+            var userId = HttpContext.User.Identity.Name;
+            int userIdInt = Convert.ToInt32(userId);
+            if (userIdInt == null)
+            {
+                return Unauthorized();
+            }
+            
             if (_context.Post == null)
             {
                 return Problem("Entity set 'AppDbContext.Post'  is null.");
@@ -112,7 +108,7 @@ namespace Puppy.Controllers
             {
                 Title = post.Title,
                 Description = post.Description,
-                UserId = post.UserId,
+                UserId = userIdInt,
                 Img = post.Img,
                 UploadDate = post.UploadDate
             };

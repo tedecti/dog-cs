@@ -28,6 +28,7 @@ namespace Puppy.Controllers
 
         // GET: api/Pets
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<Pet>>> GetPet()
         {
           if (_context.Pet == null)
@@ -39,6 +40,7 @@ namespace Puppy.Controllers
 
         // GET: api/Pets/5
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<Pet>> GetPet(int id)
         {
           if (_context.Pet == null)
@@ -58,6 +60,7 @@ namespace Puppy.Controllers
         // PUT: api/Pets/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> PutPet(int id, Pet pet)
         {
             if (id != pet.Id)
@@ -119,6 +122,7 @@ namespace Puppy.Controllers
 
         // DELETE: api/Pets/5
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> DeletePet(int id)
         {
             if (_context.Pet == null)

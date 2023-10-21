@@ -35,36 +35,45 @@ namespace Puppy.Controllers
             return await _context.Like.ToListAsync();
         }
         
-        // POST: api/Like
+        // POST: api/Like/1
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
+        [HttpPost("{PostId}")]
         [Authorize]
-        public async Task<ActionResult<Like>> PostLike(AddLikeRequestDto like)
+        public async Task<ActionResult<Like>> PostLike(int PostId)
         {
-          if (_context.Like == null)
-          {
-              return Problem("Entity set 'AppDbContext.Like'  is null.");
-          }
-          var existingLike = await _context.Like.FirstOrDefaultAsync(l => l.UserId == like.UserId && l.PostId == like.PostId);
-          if (existingLike != null)
-          {
-              return BadRequest("Like is already exist.");
-          }
+            var userId = HttpContext.User.Identity.Name;
+            int userIdInt = Convert.ToInt32(userId);
+            if (userIdInt == null)
+            {
+                return Unauthorized();
+            }
 
-          if (like.PostId == null)
-          {
-              return NotFound();
-          }
-          var newLike = new Like()
-          {
-              UserId = like.UserId,
-              PostId = like.PostId,
-             
-          };
+            if (_context.Like == null)
+            {
+                return Problem("Entity set 'AppDbContext.Like' is null.");
+            }
+            
+            var existingLike = await _context.Like.FirstOrDefaultAsync(l => l.UserId.ToString() == userId && l.PostId == PostId);
+            if (existingLike != null)
+            {
+                return BadRequest("Like is already exist.");
+            }
+
+            if (PostId == null)
+            {
+                return NotFound();
+            }
+            
+            var newLike = new Like()
+            {
+                UserId = userIdInt,
+                PostId = PostId,
+            };
+
             _context.Like.Add(newLike);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetLike", like);
+            return StatusCode(201);
         }
 
         // DELETE: api/Like/5
@@ -72,14 +81,15 @@ namespace Puppy.Controllers
         [Authorize]
         public async Task<IActionResult> DeleteLike(int PostId)
         {
-            var like = await _context.Like.FirstOrDefaultAsync(l => l.PostId == PostId);
+            var UserId = HttpContext.User.Identity.Name;
+            var like = await _context.Like.FirstOrDefaultAsync(l => l.PostId == PostId && l.UserId.ToString() == UserId);
             if (_context.Like == null)
             {
-                return BadRequest(like);
+                return NotFound();
             }
             if (like == null)
             {
-                return BadRequest(like);
+                return NotFound();
             }
 
             _context.Like.Remove(like);
