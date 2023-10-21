@@ -27,7 +27,7 @@ public class FriendsController : ControllerBase
         }
 
         var userId = HttpContext.User.Identity.Name;
-
+        
         if (string.IsNullOrEmpty(userId))
         {
             return Unauthorized();
