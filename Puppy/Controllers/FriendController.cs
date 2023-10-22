@@ -2,6 +2,8 @@
 using Curs.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Puppy.Models.Dto;
 
 namespace Puppy.Controllers;
 
@@ -16,7 +18,7 @@ public class FriendsController : ControllerBase
     {
         _context = context;
     }
-
+    
     [Authorize]
     [HttpPost("{id}")]
     public async Task<ActionResult<string>> AddFriend(int id)
@@ -27,10 +29,15 @@ public class FriendsController : ControllerBase
         }
 
         var userId = HttpContext.User.Identity.Name;
-        
+        var existingFriend = await _context.Friend.FirstOrDefaultAsync(f => f.UserId.ToString() == userId && f.FollowerId == id);
         if (string.IsNullOrEmpty(userId))
         {
             return Unauthorized();
+        }
+
+        if (existingFriend != null)
+        {
+            return BadRequest("You already followed");
         }
 
         var newFriend = new Friend()
@@ -43,5 +50,25 @@ public class FriendsController : ControllerBase
         await _context.SaveChangesAsync();
 
         return StatusCode(201);
+    }
+
+    [HttpGet("{UserId}")]
+    public async Task<ActionResult<IEnumerable<Friend>>> GetLike(int UserId)
+    {
+        UserId = Convert.ToInt32(User.Identity.Name);
+        var followers = await _context.Friend
+            .ToListAsync();
+
+        if (_context.Friend == null)
+        {
+            return Problem("Entity set 'AppDbContext.Friend' is null.");
+        }
+        var followersDto = followers.Select(follower => new GetFollowersDto()
+        {
+            UserId = follower.UserId,
+            FollowerId = follower.FollowerId,
+        });
+        
+        return Ok(followersDto);
     }
 }
