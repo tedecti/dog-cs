@@ -87,6 +87,7 @@ namespace Puppy.Repository
             User user = new User()
             {
                 Email = registerRequestDTO.Email,
+                Avatar = "",
                 FirstName = registerRequestDTO.FirstName,
                 Username = registerRequestDTO.Username,
                 LastName = registerRequestDTO.LastName,

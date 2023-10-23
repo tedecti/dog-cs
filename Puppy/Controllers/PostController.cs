@@ -93,36 +93,32 @@ namespace Puppy.Controllers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         [Authorize]
-        public async Task<ActionResult<Post>> PostPost([FromForm] UploadPostRequestDto post)
+        public async Task<ActionResult<Post>> PostPost(UploadPostRequestDto post)
         {
             var userId = HttpContext.User.Identity.Name;
-            if (string.IsNullOrEmpty(userId))
+            int userIdInt = Convert.ToInt32(userId);
+            if (userIdInt == null)
             {
                 return Unauthorized();
             }
-            var httpRequest = HttpContext.Request;
-            var imagePaths = new List<string>();
-            var fileHttp = httpRequest.Form.Files["image"];
-            string fName = fileHttp.FileName;
-            string path = Path.Combine(_environment.ContentRootPath, "Images", fileHttp.FileName);
-            using (var stream = new FileStream(path, FileMode.Create))
-                {
-                    await fileHttp.CopyToAsync(stream);
-                }
-            imagePaths.Add(path);
-            var newPost = new Post
+            
+            if (_context.Post == null)
+            {
+                return Problem("Entity set 'AppDbContext.Post'  is null.");
+            }
+
+            var newPost = new Post()
             {
                 Title = post.Title,
                 Description = post.Description,
-                UserId = Convert.ToInt32(userId),
-                UploadDate = DateTime.Now,
-                Img = imagePaths
+                UserId = userIdInt,
+                Img = post.Img,
+                UploadDate = DateTime.UtcNow
             };
-
             _context.Post.Add(newPost);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetPost", new { id = newPost.Id }, newPost);
+            return CreatedAtAction("GetPost", post);
         }
 
         // DELETE: api/Post/5
