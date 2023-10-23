@@ -107,14 +107,14 @@ namespace Puppy.Controllers
         [Authorize]
         [HttpPost]
         [Route("{id}/upload")]
-        public async Task<IActionResult> UploadAvatar(int id )
+        public async Task<IActionResult> UploadAvatar(int id)
         {
             var httpRequest = HttpContext.Request;
             
             var file = httpRequest.Form.Files["image"];
             
             string fName = file.FileName;
-            string path = Path.Combine(_environment.ContentRootPath, "Images", file.FileName);
+            string path = Path.Combine(_environment.ContentRootPath, "Images", fName);
             using (var stream = new FileStream(path, FileMode.Create))
             {
                 await file.CopyToAsync(stream);

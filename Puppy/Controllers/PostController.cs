@@ -17,10 +17,12 @@ namespace Puppy.Controllers
     public class PostController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IWebHostEnvironment _environment;
 
-        public PostController(AppDbContext context)
+        public PostController(AppDbContext context, IWebHostEnvironment environment)
         {
             _context = context;
+            _environment = environment;
         }
 
         // GET: api/Post
@@ -90,36 +92,42 @@ namespace Puppy.Controllers
         // POST: api/Post
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Post>> PostPost(UploadPostRequestDto post)
+        [Authorize]
+        public async Task<ActionResult<Post>> PostPost([FromForm] UploadPostRequestDto post)
         {
             var userId = HttpContext.User.Identity.Name;
-            int userIdInt = Convert.ToInt32(userId);
-            if (userIdInt == null)
+            if (string.IsNullOrEmpty(userId))
             {
                 return Unauthorized();
             }
-            
-            if (_context.Post == null)
-            {
-                return Problem("Entity set 'AppDbContext.Post'  is null.");
-            }
-
-            var newPost = new Post()
+            var httpRequest = HttpContext.Request;
+            var imagePaths = new List<string>();
+            var fileHttp = httpRequest.Form.Files["image"];
+            string fName = fileHttp.FileName;
+            string path = Path.Combine(_environment.ContentRootPath, "Images", fileHttp.FileName);
+            using (var stream = new FileStream(path, FileMode.Create))
+                {
+                    await fileHttp.CopyToAsync(stream);
+                }
+            imagePaths.Add(path);
+            var newPost = new Post
             {
                 Title = post.Title,
                 Description = post.Description,
-                UserId = userIdInt,
-                Img = post.Img,
-                UploadDate = DateTime.Now
+                UserId = Convert.ToInt32(userId),
+                UploadDate = DateTime.Now,
+                Img = imagePaths
             };
+
             _context.Post.Add(newPost);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetPost", post);
+            return CreatedAtAction("GetPost", new { id = newPost.Id }, newPost);
         }
 
         // DELETE: api/Post/5
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> DeletePost(int id)
         {
             if (_context.Post == null)
