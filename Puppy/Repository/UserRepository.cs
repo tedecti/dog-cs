@@ -6,29 +6,27 @@ using Puppy.Repository.IRepository;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using System.Security.Claims;
+using AutoMapper;
 
 namespace Puppy.Repository
 {
     public class UserRepository : IUserRepository
     {
         private readonly AppDbContext _context;
+        private readonly IMapper _mapper;
         private string secretKey;
 
-        public UserRepository(AppDbContext context, IConfiguration configuration)
+        public UserRepository(AppDbContext context, IConfiguration configuration, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
             secretKey = configuration.GetValue<string>("ApiSettings:Secret");
         }
 
-        public bool IsUniqueUser(string email)
+        public bool IsUniqueUser(string email, string username)
         {
-            var user = _context.Users.FirstOrDefault(x => x.Email == email);
-            if (user == null)
-            {
-                return true;
-            }
-
-            return false;
+            var user = _context.Users.FirstOrDefault(x => x.Email == email || x.Username== username);
+            return user == null;
         }
 
         public async Task<LoginResponseDto> Login(LoginRequestDto loginRequestDTO)
@@ -66,7 +64,7 @@ namespace Puppy.Repository
 
             LoginResponseDto loginResponseDTO = new LoginResponseDto()
             {
-                User = user,
+                User = _mapper.Map<UserResponseDto>(user),
                 Token = tokenHandler.WriteToken(token)
             };
             return loginResponseDTO;
@@ -80,6 +78,7 @@ namespace Puppy.Repository
             {
                 Email = registerRequestDTO.Email,
                 FirstName = registerRequestDTO.FirstName,
+                Username = registerRequestDTO.Username,
                 LastName = registerRequestDTO.LastName,
                 Password = password,
             };

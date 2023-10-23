@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -20,22 +21,27 @@ namespace Puppy.Controllers
     public class PetsController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IMapper _mapper;
 
-        public PetsController(AppDbContext context)
+        public PetsController(AppDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         // GET: api/Pets
         [HttpGet]
         [Authorize]
-        public async Task<ActionResult<IEnumerable<Pet>>> GetPet()
+        public async Task<ActionResult<IEnumerable<GetPetDto>>> GetPet()
         {
-          if (_context.Pet == null)
-          {
-              return NotFound();
-          }
-            return await _context.Pet.ToListAsync();
+            if (_context.Pet == null)
+            {
+                return NotFound();
+            }
+
+            var pets = await _context.Pet.Include(p => p.User).ToListAsync();
+            var dtos = _mapper.Map<IEnumerable<GetPetDto>>(pets);
+            return Ok(dtos);
         }
 
         // GET: api/Pets/5
@@ -43,11 +49,12 @@ namespace Puppy.Controllers
         [Authorize]
         public async Task<ActionResult<Pet>> GetPet(int id)
         {
-          if (_context.Pet == null)
-          {
-              return NotFound();
-          }
-            var pet = await _context.Pet.FindAsync(id);
+            if (_context.Pet == null)
+            {
+                return NotFound();
+            }
+
+            var pet = await _context.Pet.Include(p => p.User).FirstOrDefaultAsync(p => p.Id == id);
 
             if (pet == null)
             {
@@ -96,9 +103,9 @@ namespace Puppy.Controllers
         public async Task<ActionResult<Pet>> PostPet(AddPetRequestDto pet)
         {
             if (_context.Pet == null)
-          {
-              return Problem("Entity set 'AppDbContext.Pet'  is null.");
-          }
+            {
+                return Problem("Entity set 'AppDbContext.Pet'  is null.");
+            }
 
             var userId = HttpContext.User.Identity.Name;
 
@@ -129,6 +136,7 @@ namespace Puppy.Controllers
             {
                 return NotFound();
             }
+
             var pet = await _context.Pet.FindAsync(id);
             if (pet == null)
             {
