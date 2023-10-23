@@ -18,6 +18,35 @@ public class FriendsController : ControllerBase
     {
         _context = context;
     }
+
+    [Authorize]
+    [HttpDelete("{id}")]
+    public async Task<ActionResult<string>> RemoveFriend(int id)
+    {
+        if (_context.Users == null)
+        {
+            return Problem("Entity set 'AppDbContext.Users'  is null.");
+        }
+
+        var userId = HttpContext.User.Identity.Name;
+        
+        if (string.IsNullOrEmpty(userId))
+        {
+            return Unauthorized();
+        }
+
+        var existingFriend = await _context.Friend.FirstOrDefaultAsync(
+            f => f.FollowerId.ToString() == userId && f.UserId == id);
+
+        if (existingFriend == null)
+        {
+            return BadRequest("You are not followed");
+        }
+
+        _context.Friend.Remove(existingFriend);
+        await _context.SaveChangesAsync();
+        return NoContent();
+    }
     
     [Authorize]
     [HttpPost("{id}")]
@@ -29,15 +58,22 @@ public class FriendsController : ControllerBase
         }
 
         var userId = HttpContext.User.Identity.Name;
-        var existingFriend = await _context.Friend.FirstOrDefaultAsync(f => f.UserId.ToString() == userId && f.FollowerId == id);
+        
         if (string.IsNullOrEmpty(userId))
         {
             return Unauthorized();
         }
 
+        var existingFriend = await _context.Friend.FirstOrDefaultAsync(
+            f => f.FollowerId.ToString() == userId && f.UserId == id);
         if (existingFriend != null)
         {
             return BadRequest("You already followed");
+        }
+
+        if (userId==id.ToString())
+        {
+            return BadRequest("You can't follow yourself");
         }
 
         var newFriend = new Friend()

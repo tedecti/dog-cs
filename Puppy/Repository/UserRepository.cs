@@ -31,19 +31,29 @@ namespace Puppy.Repository
 
         public async Task<LoginResponseDto> Login(LoginRequestDto loginRequestDTO)
         {
+            
             var user = _context.Users.FirstOrDefault(u =>
                 u.Email == loginRequestDTO.Email );
 
-            bool isVerified = BCrypt.Net.BCrypt.Verify(loginRequestDTO.Password, user.Password);
-            
-            if (user == null || !isVerified)
+            if (user == null)
             {
                 return new LoginResponseDto()
                 {
                     User = null,
                     Token = ""
                 };
-                ;
+            }
+
+            
+            bool isVerified = BCrypt.Net.BCrypt.Verify(loginRequestDTO.Password, user.Password);
+            
+            if (!isVerified)
+            {
+                return new LoginResponseDto()
+                {
+                    User = null,
+                    Token = ""
+                };
             }
 
             var tokenHandler = new JwtSecurityTokenHandler();

@@ -24,14 +24,13 @@ namespace Puppy.Controllers
         }
         
         // GET: api/Commentary/5
-        [HttpGet]
-        [Route("{PostId}")]
-        public async Task<ActionResult<Commentary>> GetCommentary(int PostId)
+        [HttpGet("{postId}")]
+        public async Task<ActionResult<Commentary>> GetCommentary(int postId)
         {
             try
             {
                 var comments = await _context.Commentary 
-                    .Where(comment => comment.PostId == PostId)
+                    .Where(comment => comment.PostId == postId)
                     .ToListAsync();
 
                 if (comments == null || comments.Count == 0)
@@ -88,9 +87,10 @@ namespace Puppy.Controllers
 
         // POST: api/Commentary/1
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost("{PostId}")]
+        [HttpPost()]
+        [Route("{postId}")]
         [Authorize]
-        public async Task<ActionResult<Commentary>> PostCommentary(AddCommentaryRequestDto commentary, int PostId)
+        public async Task<ActionResult<Commentary>> PostCommentary(int postId, AddCommentaryRequestDto commentary)
         {
           if (_context.Commentary == null)
           {
@@ -99,7 +99,7 @@ namespace Puppy.Controllers
           var userId = HttpContext.User.Identity.Name;
           var newCommentary = new Commentary()
           {
-              PostId = PostId,
+              PostId = postId,
               UserId = Convert.ToInt32(userId),
               Text = commentary.Text
           };

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Curs.Data;
 using Curs.Models;
+using Microsoft.AspNetCore.Authorization;
 using Puppy.Models.Dto;
 
 namespace Puppy.Controllers
@@ -18,11 +19,13 @@ namespace Puppy.Controllers
     {
         private readonly AppDbContext _context;
         private readonly IMapper _mapper;
+        private readonly IWebHostEnvironment _environment;
 
-        public UserController(AppDbContext context, IMapper mapper)
+        public UserController(AppDbContext context, IMapper mapper, IWebHostEnvironment environment)
         {
             _context = context;
             _mapper = mapper;
+            _environment = environment;
         }
 
         // GET: api/User
@@ -100,5 +103,25 @@ namespace Puppy.Controllers
         {
             return (_context.Users?.Any(e => e.Id == id)).GetValueOrDefault();
         }
+
+        [Authorize]
+        [HttpPost]
+        [Route("{id}/upload")]
+        public async Task<IActionResult> UploadAvatar(int id )
+        {
+            var httpRequest = HttpContext.Request;
+            
+            var file = httpRequest.Form.Files["image"];
+            
+            string fName = file.FileName;
+            string path = Path.Combine(_environment.ContentRootPath, "Images", file.FileName);
+            using (var stream = new FileStream(path, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+            
+            return Ok();
+        }
+        
     }
 }

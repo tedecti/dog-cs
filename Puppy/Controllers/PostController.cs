@@ -110,7 +110,7 @@ namespace Puppy.Controllers
                 Description = post.Description,
                 UserId = userIdInt,
                 Img = post.Img,
-                UploadDate = post.UploadDate
+                UploadDate = DateTime.Now
             };
             _context.Post.Add(newPost);
             await _context.SaveChangesAsync();

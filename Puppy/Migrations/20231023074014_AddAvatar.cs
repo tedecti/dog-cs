@@ -5,14 +5,14 @@
 namespace Puppy.Migrations
 {
     /// <inheritdoc />
-    public partial class Likes : Migration
+    public partial class AddAvatar : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<string>(
-                name: "Title",
-                table: "Post",
+                name: "Avatar",
+                table: "Users",
                 type: "text",
                 nullable: false,
                 defaultValue: "");
@@ -22,8 +22,8 @@ namespace Puppy.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "Title",
-                table: "Post");
+                name: "Avatar",
+                table: "Users");
         }
     }
 }
