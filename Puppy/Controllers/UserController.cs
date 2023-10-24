@@ -1,14 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using AutoMapper;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Curs.Data;
 using Curs.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Puppy.Models.Dto;
 
 namespace Puppy.Controllers
@@ -43,10 +38,10 @@ namespace Puppy.Controllers
             {
                 return NoContent();
             }
+
             var userResponses = _mapper.Map<IEnumerable<UserResponseDto>>(users);
 
             return Ok(userResponses);
-
         }
 
         // GET: api/User/5
@@ -105,23 +100,31 @@ namespace Puppy.Controllers
         }
 
         [Authorize]
-        [HttpPost]
-        [Route("{id}/upload")]
-        public async Task<IActionResult> UploadAvatar(int id)
+        [HttpPost("upload")]
+        public async Task<IActionResult> UploadAvatar()
         {
             var httpRequest = HttpContext.Request;
-            
+
             var file = httpRequest.Form.Files["image"];
-            
-            string fName = file.FileName;
+
+            var userId = HttpContext.User.Identity.Name;
+
+            Guid myuuid = Guid.NewGuid();
+            string fName = myuuid.ToString() + "." + file.ContentType.Split("/")[1].ToString();
+
+
             string path = Path.Combine(_environment.ContentRootPath, "Images", fName);
             using (var stream = new FileStream(path, FileMode.Create))
             {
                 await file.CopyToAsync(stream);
             }
-            
+
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Id.ToString() == userId);
+            user.Avatar = fName;
+
+            await _context.SaveChangesAsync();
+
             return Ok();
         }
-        
     }
 }

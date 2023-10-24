@@ -1,13 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Curs.Data;
 using Curs.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Puppy.Models.Dto;
 
 namespace Puppy.Controllers
@@ -87,13 +82,13 @@ namespace Puppy.Controllers
 
             return NoContent();
         }
-        
+
 
         // POST: api/Post
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         [Authorize]
-        public async Task<ActionResult<Post>> PostPost(UploadPostRequestDto post)
+        public async Task<ActionResult<Post>> PostPost([FromForm] UploadPostRequestDto post)
         {
             var userId = HttpContext.User.Identity.Name;
             int userIdInt = Convert.ToInt32(userId);
@@ -101,18 +96,19 @@ namespace Puppy.Controllers
             {
                 return Unauthorized();
             }
-            
+
             if (_context.Post == null)
             {
                 return Problem("Entity set 'AppDbContext.Post'  is null.");
             }
+
 
             var newPost = new Post()
             {
                 Title = post.Title,
                 Description = post.Description,
                 UserId = userIdInt,
-                Img = post.Img,
+                Img = new string[] { "asd", "asddddd" },
                 UploadDate = DateTime.UtcNow
             };
             _context.Post.Add(newPost);
