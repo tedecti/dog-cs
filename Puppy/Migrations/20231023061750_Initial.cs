@@ -86,7 +86,7 @@ namespace Puppy.Migrations
                     UserId = table.Column<int>(type: "integer", nullable: false),
                     Title = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: false),
-                    Img = table.Column<List<string>>(type: "text[]", nullable: false),
+                    Imgs = table.Column<List<string>>(type: "text[]", nullable: false),
                     Comments = table.Column<int>(type: "integer", nullable: false),
                     UploadDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },

@@ -106,7 +106,7 @@ namespace Puppy.Controllers
             }
 
             List<string> imgs = new List<string>();
-            foreach (var file in post.Img)
+            foreach (var file in post.Imgs)
             {
                 imgs.Add(await _fileRepo.SaveFile(file));
             }
@@ -117,7 +117,7 @@ namespace Puppy.Controllers
                 Title = post.Title,
                 Description = post.Description,
                 UserId = userIdInt,
-                Img = imgs.ToArray(),
+                Imgs = imgs.ToArray(),
                 UploadDate = DateTime.UtcNow
             };
             _context.Post.Add(newPost);
