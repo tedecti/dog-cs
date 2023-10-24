@@ -2,6 +2,6 @@
 {
     public interface IFileRepository
     {
-        Task<string> SaveFile(IFormFile img);
+        Task<string> SaveFile(IFormFile file);
     }
 }

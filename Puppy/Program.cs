@@ -22,6 +22,7 @@ namespace Puppy
             builder.Services.AddDbContext<AppDbContext>();
 
             builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<IFileRepository, FileRepository>();
 
             var key = builder.Configuration.GetValue<string>("ApiSettings:Secret");
 

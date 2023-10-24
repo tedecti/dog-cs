@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Puppy.Models.Dto;
+using Puppy.Repository.IRepository;
 
 namespace Puppy.Controllers
 {
@@ -15,12 +16,14 @@ namespace Puppy.Controllers
         private readonly AppDbContext _context;
         private readonly IMapper _mapper;
         private readonly IWebHostEnvironment _environment;
+        private readonly IFileRepository _fileRepo;
 
-        public UserController(AppDbContext context, IMapper mapper, IWebHostEnvironment environment)
+        public UserController(AppDbContext context, IMapper mapper, IWebHostEnvironment environment, IFileRepository fileRepo)
         {
             _context = context;
             _mapper = mapper;
             _environment = environment;
+            _fileRepo = fileRepo;
         }
 
         // GET: api/User
@@ -109,15 +112,7 @@ namespace Puppy.Controllers
 
             var userId = HttpContext.User.Identity.Name;
 
-            Guid myuuid = Guid.NewGuid();
-            string fName = myuuid.ToString() + "." + file.ContentType.Split("/")[1].ToString();
-
-
-            string path = Path.Combine(_environment.ContentRootPath, "Images", fName);
-            using (var stream = new FileStream(path, FileMode.Create))
-            {
-                await file.CopyToAsync(stream);
-            }
+            string fName = await _fileRepo.SaveFile(file);
 
             var user = await _context.Users.FirstOrDefaultAsync(x => x.Id.ToString() == userId);
             user.Avatar = fName;

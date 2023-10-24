@@ -8,16 +8,31 @@ namespace Puppy.Repository
     {
         private readonly AppDbContext _context;
         private readonly IMapper _mapper;
+        private readonly IWebHostEnvironment _environment;
 
-        public FileRepository(AppDbContext context, IConfiguration configuration, IMapper mapper)
+
+        public FileRepository(AppDbContext context, IConfiguration configuration, IMapper mapper,
+            IWebHostEnvironment environment)
         {
             _context = context;
             _mapper = mapper;
+            _environment = environment;
         }
 
-        public Task<string> SaveFile(IFormFile img)
+        public async Task<string> SaveFile(IFormFile file)
         {
-            throw new NotImplementedException();
+            Guid myuuid = Guid.NewGuid();
+            string fName = myuuid.ToString() + "." + file.ContentType.Split("/")[1].ToString();
+
+
+            string path = Path.Combine(_environment.ContentRootPath, "Images", fName);
+            using (var stream = new FileStream(path, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            return fName;
+
         }
     }
 }

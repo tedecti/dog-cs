@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Puppy.Models.Dto;
+using Puppy.Repository.IRepository;
 
 namespace Puppy.Controllers
 {
@@ -13,11 +14,13 @@ namespace Puppy.Controllers
     {
         private readonly AppDbContext _context;
         private readonly IWebHostEnvironment _environment;
+        private readonly IFileRepository _fileRepo;
 
-        public PostController(AppDbContext context, IWebHostEnvironment environment)
+        public PostController(AppDbContext context, IWebHostEnvironment environment, IFileRepository fileRepo)
         {
             _context = context;
             _environment = environment;
+            _fileRepo = fileRepo;
         }
 
         // GET: api/Post
@@ -102,19 +105,25 @@ namespace Puppy.Controllers
                 return Problem("Entity set 'AppDbContext.Post'  is null.");
             }
 
+            List<string> imgs = new List<string>();
+            foreach (var file in post.Img)
+            {
+                imgs.Add(await _fileRepo.SaveFile(file));
+            }
+            
 
             var newPost = new Post()
             {
                 Title = post.Title,
                 Description = post.Description,
                 UserId = userIdInt,
-                Img = new string[] { "asd", "asddddd" },
+                Img = imgs.ToArray(),
                 UploadDate = DateTime.UtcNow
             };
             _context.Post.Add(newPost);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetPost", post);
+            return StatusCode(201);
         }
 
         // DELETE: api/Post/5
