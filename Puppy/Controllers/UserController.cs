@@ -66,6 +66,25 @@ namespace Puppy.Controllers
             return _mapper.Map<UserResponseDto>(user);
         }
 
+        [HttpGet("me")]
+        [Authorize]
+        public async Task<ActionResult<UserResponseDto>> GetMe()
+        {
+            if (_context.Users == null)
+            {
+                return NotFound();
+            }
+            var userId = HttpContext.User.Identity.Name;
+            var user = await _context.Users.Include(x => x.Pets).FirstAsync(x => x.Id == Convert.ToInt32(userId));
+            if (user == null)
+            {
+                return NotFound();
+            }
+            
+            return _mapper.Map<UserResponseDto>(user);
+        }
+        
+
         // PUT: api/User/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
