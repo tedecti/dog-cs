@@ -28,21 +28,21 @@ namespace Puppy.Controllers
 
         // GET: api/User
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserResponseDto>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<ShortUserDto>>> GetUsers()
         {
             if (_context.Users == null)
             {
                 return NotFound();
             }
 
-            var users = await _context.Users.Include(x => x.Followers).ToListAsync();
+            var users = await _context.Users.ToListAsync();
 
             if (users == null || !users.Any())
             {
                 return NoContent();
             }
 
-            var userResponses = _mapper.Map<IEnumerable<UserResponseDto>>(users);
+            var userResponses = _mapper.Map<IEnumerable<ShortUserDto>>(users);
 
             return Ok(userResponses);
         }
@@ -56,7 +56,7 @@ namespace Puppy.Controllers
                 return NotFound();
             }
 
-            var user = await _context.Users.Include(x => x.Pets).FirstAsync(x => x.Id == id);
+            var user = await _context.Users.Include(x => x.Pets).Include(x=>x.Posts).FirstAsync(x => x.Id == id);
 
             if (user == null)
             {
@@ -75,7 +75,7 @@ namespace Puppy.Controllers
                 return NotFound();
             }
             var userId = HttpContext.User.Identity.Name;
-            var user = await _context.Users.Include(x => x.Pets).FirstAsync(x => x.Id == Convert.ToInt32(userId));
+            var user = await _context.Users.Include(x => x.Pets).Include(x=>x.Posts).Include(x=>x.Friends).Include(x=>x.Followers).FirstAsync(x => x.Id == Convert.ToInt32(userId));
             if (user == null)
             {
                 return NotFound();
