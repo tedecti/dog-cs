@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Puppy.Models.Dto;
 
 namespace Curs.Models;
 
@@ -8,7 +9,7 @@ public class Post
     public int UserId { get; set; }
     public string Title { get; set; }
     public string Description { get; set; }
-
+    
     public string[] Imgs { get; set; }
 
     public int Comments { get; set; }

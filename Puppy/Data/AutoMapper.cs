@@ -13,5 +13,6 @@ public class AutoMapper : Profile
         CreateMap<Friend, FollowerResponseDto>();
         CreateMap<Pet, UserPetDto>();
         CreateMap<Pet, GetPetDto>();
+        CreateMap<Post, GetPostDto>();
     }
 }

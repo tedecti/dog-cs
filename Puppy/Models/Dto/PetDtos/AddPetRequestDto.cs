@@ -11,5 +11,6 @@ namespace Puppy.Models.Dto
 		[Microsoft.Build.Framework.Required]
 		[StringLength(100)]
 		public string PassportNumber { get; set; }
+		public List<IFormFile> Imgs { get; set; }
 	}
 }

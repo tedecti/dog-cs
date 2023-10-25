@@ -13,6 +13,7 @@ using Curs.Models;
 using Microsoft.AspNetCore.Authorization;
 using Puppy.Models.Dto;
 using Microsoft.AspNetCore.Identity;
+using Puppy.Repository.IRepository;
 
 namespace Puppy.Controllers
 {
@@ -22,11 +23,13 @@ namespace Puppy.Controllers
     {
         private readonly AppDbContext _context;
         private readonly IMapper _mapper;
+        private readonly IFileRepository _fileRepo;
 
-        public PetsController(AppDbContext context, IMapper mapper)
+        public PetsController(AppDbContext context, IMapper mapper, IFileRepository fileRepo)
         {
             _context = context;
             _mapper = mapper;
+            _fileRepo = fileRepo;
         }
 
         // GET: api/Pets
@@ -100,7 +103,7 @@ namespace Puppy.Controllers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         [Authorize]
-        public async Task<ActionResult<Pet>> PostPet(AddPetRequestDto pet)
+        public async Task<ActionResult<Pet>> PostPet([FromForm] AddPetRequestDto pet)
         {
             if (_context.Pet == null)
             {
@@ -113,18 +116,24 @@ namespace Puppy.Controllers
             {
                 return Unauthorized();
             }
-
+            List<string> imgs = new List<string>();
+            foreach (var file in pet.Imgs)
+            {
+                imgs.Add(await _fileRepo.SaveFile(file));
+            }
+            
             var newPet = new Pet()
             {
                 Name = pet.Name,
                 PassportNumber = pet.PassportNumber,
-                UserId = Convert.ToInt32(userId)
+                UserId = Convert.ToInt32(userId),
+                Imgs = imgs.ToArray()
             };
 
             _context.Pet.Add(newPet);
             await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetPet", pet);
+            
+            return StatusCode(201);
         }
 
         // DELETE: api/Pets/5

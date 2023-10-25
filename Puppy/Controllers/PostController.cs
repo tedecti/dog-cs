@@ -1,3 +1,4 @@
+using AutoMapper;
 using Curs.Data;
 using Curs.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -15,24 +16,29 @@ namespace Puppy.Controllers
         private readonly AppDbContext _context;
         private readonly IWebHostEnvironment _environment;
         private readonly IFileRepository _fileRepo;
+        private readonly IMapper _mapper;
 
-        public PostController(AppDbContext context, IWebHostEnvironment environment, IFileRepository fileRepo)
+        public PostController(AppDbContext context, IWebHostEnvironment environment, IFileRepository fileRepo, IMapper mapper)
         {
             _context = context;
             _environment = environment;
             _fileRepo = fileRepo;
+            _mapper = mapper;
         }
 
         // GET: api/Post
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Post>>> GetPost()
+        public async Task<ActionResult<IEnumerable<GetPostDto>>> GetPost()
         {
             if (_context.Post == null)
             {
                 return NotFound();
             }
+            
+            var posts = await _context.Post.Include(p => p.User).ToListAsync();
+            var dtos = _mapper.Map<IEnumerable<GetPostDto>>(posts);
 
-            return await _context.Post.ToListAsync();
+            return Ok(dtos);
         }
 
         // GET: api/Post/5
