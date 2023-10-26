@@ -43,21 +43,23 @@ namespace Puppy.Controllers
 
         // GET: api/Post/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Post>> GetPost(int id)
+        public async Task<ActionResult<GetPostDto>> GetPost(int id)
         {
             if (_context.Post == null)
             {
                 return NotFound();
             }
-
-            var post = await _context.Post.FindAsync(id);
+            var post = await _context.Post.Include(p => p.User).FirstAsync(p=> p.Id == id);
 
             if (post == null)
             {
                 return NotFound();
             }
 
-            return post;
+            
+            var dtos = _mapper.Map<GetPostDto>(post);
+            
+            return Ok(dtos);
         }
 
         // PUT: api/Post/5
