@@ -14,5 +14,6 @@ public class AutoMapper : Profile
         CreateMap<Pet, UserPetDto>();
         CreateMap<Pet, GetPetDto>();
         CreateMap<Post, GetPostDto>();
+        CreateMap<Commentary, GetCommentsDto>();
     }
 }

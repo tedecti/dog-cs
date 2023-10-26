@@ -3,6 +3,6 @@
 public class GetCommentsDto
 {
     public int PostId { get; set; }
-    public int UserId { get; set; }
+    public ShortUserDto User { get; set; }
     public string Text { get; set; }
 }

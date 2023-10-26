@@ -24,7 +24,7 @@ namespace Puppy.Controllers
             _context = context;
         }
 
-        // GET: api/Like
+        // GET: api/Like/1
         [HttpGet("{postId}")]
         [Authorize]
         public async Task<ActionResult<bool>> GetLike(string postId)

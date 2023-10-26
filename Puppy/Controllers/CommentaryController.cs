@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -17,35 +18,43 @@ namespace Puppy.Controllers
     public class CommentaryController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IMapper _mapper;
 
-        public CommentaryController(AppDbContext context)
+        public CommentaryController(AppDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
         
         // GET: api/Commentary/5
         [HttpGet("{postId}")]
-        public async Task<ActionResult<Commentary>> GetCommentary(int postId)
+        public async Task<ActionResult<PostCommentaries>> GetCommentary(int postId)
         {
             try
             {
                 var comments = await _context.Commentary 
+                    .Include(x=>x.User)
                     .Where(comment => comment.PostId == postId)
                     .ToListAsync();
 
-                if (comments == null || comments.Count == 0)
+                if (comments == null )
                 {
                     return NotFound();
                 }
 
-                var commentDtos = comments.Select(comment => new GetCommentsDto
-                {
-                    PostId = comment.PostId,
-                    UserId = comment.UserId,
-                    Text = comment.Text
-                });
+                var commentDtos = _mapper.Map<IEnumerable<GetCommentsDto>>(comments);
 
-                return Ok(commentDtos);
+                int count = _context.Commentary
+                    .Include(x => x.User)
+                    .Where(comment => comment.PostId == postId).Count();
+                
+                var response = new PostCommentaries()
+                {
+                    comments = commentDtos,
+                    total = count,
+                };
+                
+                return Ok(response);
             }
             catch (Exception ex)
             {
@@ -87,9 +96,9 @@ namespace Puppy.Controllers
 
         // POST: api/Commentary/1
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost()]
-        [Route("{postId}")]
         [Authorize]
+        [Route("{postId}")]
+        [HttpPost]
         public async Task<ActionResult<Commentary>> PostCommentary(int postId, AddCommentaryRequestDto commentary)
         {
           if (_context.Commentary == null)
@@ -101,12 +110,13 @@ namespace Puppy.Controllers
           {
               PostId = postId,
               UserId = Convert.ToInt32(userId),
-              Text = commentary.Text
+              Text = commentary.Text,
+              UploadDate = DateTime.UtcNow
           };
             _context.Commentary.Add(newCommentary);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetCommentary", commentary);
+            return StatusCode(201);
         }
 
         // DELETE: api/Commentary/5

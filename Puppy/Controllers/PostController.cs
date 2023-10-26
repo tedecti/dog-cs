@@ -49,7 +49,7 @@ namespace Puppy.Controllers
             {
                 return NotFound();
             }
-            var post = await _context.Post.Include(p => p.User).FirstAsync(p=> p.Id == id);
+            var post = await _context.Post.Include(p => p.User).FirstOrDefaultAsync(p=> p.Id == id);
 
             if (post == null)
             {
