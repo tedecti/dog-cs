@@ -89,7 +89,7 @@ namespace Puppy.Controllers
         }
 
         // DELETE: api/Like/5
-        [HttpDelete("{PostId}/Unlike")]
+        [HttpDelete("{PostId}")]
         [Authorize]
         public async Task<IActionResult> DeleteLike(int PostId)
         {
