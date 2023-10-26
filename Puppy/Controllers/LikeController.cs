@@ -25,14 +25,26 @@ namespace Puppy.Controllers
         }
 
         // GET: api/Like
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Like>>> GetLike()
+        [HttpGet("{postId}")]
+        [Authorize]
+        public async Task<ActionResult<bool>> GetLike(string postId)
         {
           if (_context.Like == null)
           {
               return NotFound();
           }
-            return await _context.Like.ToListAsync();
+          
+          var userId = HttpContext.User.Identity.Name;
+
+          if (string.IsNullOrEmpty(userId))
+          {
+              return Unauthorized();
+          }
+
+          var like = await _context.Like.Where(x => x.PostId.ToString() == postId && x.UserId.ToString() == userId)
+              .FirstOrDefaultAsync();
+          if (like == null) return false;
+          return true;
         }
         
         // POST: api/Like/1
