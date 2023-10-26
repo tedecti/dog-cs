@@ -6,5 +6,6 @@ public class GetPostDto
     public string Title { get; set; }
     public string Description { get; set; }
     public string[] Imgs { get; set; }
+    public DateTime UploadDate { get; set; }
     public ShortUserDto User { get; set; }
 }
