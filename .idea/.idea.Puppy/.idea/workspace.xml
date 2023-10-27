@@ -10,20 +10,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f91cea89-5e51-4566-bfa7-568d45438e72" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Puppy/Models/Dto/PostDtos/CommentaryDtos/PostCommentaries.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Puppy/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Puppy/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Puppy/.idea/dataSources.local.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Puppy/.idea/dataSources.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Puppy/.idea/dataSources.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Puppy/.idea/discord.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Puppy/.idea/efCoreCommonOptions.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Puppy/.idea/efCoreDialogsState.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Puppy/.idea/encodings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Puppy/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Puppy/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Puppy/Controllers/CommentaryController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Puppy/Controllers/CommentaryController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Puppy/Controllers/LikeController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Puppy/Controllers/LikeController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Puppy/Controllers/PostController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Puppy/Controllers/PostController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Puppy/.idea/dataSources/b972d498-f43f-4f06-ac42-e1c551c19194.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Puppy/.idea/dataSources/b972d498-f43f-4f06-ac42-e1c551c19194.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Puppy/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Puppy/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Puppy/Data/AppDbContext.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Puppy/Data/AppDbContext.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Puppy/Data/AutoMapper.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Puppy/Data/AutoMapper.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Puppy/Models/Dto/PostDtos/CommentaryDtos/GetCommentsDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Puppy/Models/Dto/PostDtos/CommentaryDtos/GetCommentsDto.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Puppy/Models/Dto/PostDtos/UploadPostRequestDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Puppy/Models/Dto/PostDtos/UploadPostRequestDto.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,35 +36,38 @@
   &quot;associatedIndex&quot;: 6
 }</component>
   <component name="ProjectId" id="2WzE1JOBThb7KWKiOqQPubkDOF4" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;RiderIisExpressOptionsPageId&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "git-widget-placeholder": "main",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "RiderIisExpressOptionsPageId",
+    "vue.rearranger.settings.migration": "true"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;DatabaseDriversLRU&quot;: [
-      &quot;postgresql&quot;
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "postgresql"
     ],
-    &quot;rider.external.source.directories&quot;: [
-      &quot;C:\\Users\\agasp\\AppData\\Roaming\\JetBrains\\Rider2023.2\\resharper-host\\DecompilerCache&quot;,
-      &quot;C:\\Users\\agasp\\AppData\\Roaming\\JetBrains\\Rider2023.2\\resharper-host\\SourcesCache&quot;,
-      &quot;C:\\Users\\agasp\\AppData\\Local\\Symbols\\src&quot;
+    "rider.external.source.directories": [
+      "/home/agaspher/.config/JetBrains/Rider2023.2/resharper-host/DecompilerCache",
+      "/home/agaspher/.config/JetBrains/Rider2023.2/resharper-host/SourcesCache",
+      "/home/agaspher/.local/share/Symbols/src"
     ]
   }
-}</component>
+}]]></component>
   <component name="RunManager" selected=".NET Launch Settings Profile.Puppy: http">
     <configuration name="Puppy: IIS Express" type="LaunchSettings" factoryName=".NET Launch Settings Profile">
       <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/Puppy/Puppy.csproj" />
@@ -137,6 +132,7 @@
       <workItem from="1698246390000" duration="647000" />
       <workItem from="1698292935564" duration="2540000" />
       <workItem from="1698316927265" duration="3192000" />
+      <workItem from="1698386844846" duration="2878000" />
     </task>
     <servers />
   </component>
