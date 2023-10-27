@@ -10,20 +10,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f91cea89-5e51-4566-bfa7-568d45438e72" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Puppy/Models/Dto/PostDtos/CommentaryDtos/PostCommentaries.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Puppy/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Puppy/.idea/dataSources.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Puppy/.idea/dataSources.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Puppy/.idea/discord.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Puppy/.idea/efCoreCommonOptions.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Puppy/.idea/efCoreDialogsState.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Puppy/.idea/encodings.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Puppy/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Puppy/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Puppy/Controllers/CommentaryController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Puppy/Controllers/CommentaryController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Puppy/Controllers/LikeController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Puppy/Controllers/LikeController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Puppy/Controllers/PostController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Puppy/Controllers/PostController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Puppy/Data/AppDbContext.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Puppy/Data/AppDbContext.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Puppy/Data/AutoMapper.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Puppy/Data/AutoMapper.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Puppy/Models/Dto/PostDtos/CommentaryDtos/GetCommentsDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Puppy/Models/Dto/PostDtos/CommentaryDtos/GetCommentsDto.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Puppy/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Puppy/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -136,7 +123,8 @@
       <workItem from="1698230612052" duration="4656000" />
       <workItem from="1698246390000" duration="647000" />
       <workItem from="1698292935564" duration="2540000" />
-      <workItem from="1698316927265" duration="3192000" />
+      <workItem from="1698316927265" duration="4493000" />
+      <workItem from="1698420918199" duration="410000" />
     </task>
     <servers />
   </component>
