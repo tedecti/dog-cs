@@ -35,7 +35,7 @@ namespace Puppy.Controllers
                 return NotFound();
             }
             
-            var posts = await _context.Post.Include(p => p.User).ToListAsync();
+            var posts = await _context.Post.Include(p => p.User).OrderByDescending(x=>x.UploadDate).ToListAsync();
             var dtos = _mapper.Map<IEnumerable<GetPostDto>>(posts);
 
             return Ok(dtos);

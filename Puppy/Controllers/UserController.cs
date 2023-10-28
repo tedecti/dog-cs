@@ -131,6 +131,7 @@ namespace Puppy.Controllers
 
             var userId = HttpContext.User.Identity.Name;
 
+            Console.WriteLine("a");
             string fName = await _fileRepo.SaveFile(file);
 
             var user = await _context.Users.FirstOrDefaultAsync(x => x.Id.ToString() == userId);

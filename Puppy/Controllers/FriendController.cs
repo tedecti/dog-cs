@@ -11,7 +11,6 @@ namespace Puppy.Controllers;
 [ApiController]
 public class FriendsController : ControllerBase
 {
-    
     private readonly AppDbContext _context;
 
     public FriendsController(AppDbContext context)
@@ -29,7 +28,7 @@ public class FriendsController : ControllerBase
         }
 
         var userId = HttpContext.User.Identity.Name;
-        
+
         if (string.IsNullOrEmpty(userId))
         {
             return Unauthorized();
@@ -47,7 +46,7 @@ public class FriendsController : ControllerBase
         await _context.SaveChangesAsync();
         return NoContent();
     }
-    
+
     [Authorize]
     [HttpPost("{id}")]
     public async Task<ActionResult<string>> AddFriend(int id)
@@ -58,7 +57,7 @@ public class FriendsController : ControllerBase
         }
 
         var userId = HttpContext.User.Identity.Name;
-        
+
         if (string.IsNullOrEmpty(userId))
         {
             return Unauthorized();
@@ -71,7 +70,7 @@ public class FriendsController : ControllerBase
             return BadRequest("You already followed");
         }
 
-        if (userId==id.ToString())
+        if (userId == id.ToString())
         {
             return BadRequest("You can't follow yourself");
         }
@@ -91,20 +90,40 @@ public class FriendsController : ControllerBase
     [HttpGet("{UserId}")]
     public async Task<ActionResult<IEnumerable<Friend>>> GetLike(int UserId)
     {
-        UserId = Convert.ToInt32(User.Identity.Name);
-        var followers = await _context.Friend
-            .ToListAsync();
-
         if (_context.Friend == null)
         {
             return Problem("Entity set 'AppDbContext.Friend' is null.");
         }
+
+        var followers = await _context.Friend
+            .ToListAsync();
+
+
         var followersDto = followers.Select(follower => new GetFollowersDto()
         {
             UserId = follower.UserId,
             FollowerId = follower.FollowerId,
         });
-        
+
         return Ok(followersDto);
+    }
+
+    [Authorize]
+    [HttpGet("{UserId}/check")]
+    public async Task<ActionResult<bool>> IsFriend(int UserId)
+    {
+        int currentUserId = Convert.ToInt32(User.Identity.Name);
+
+        if (_context.Friend == null)
+        {
+            return Problem("Entity set 'AppDbContext.Friend' is null.");
+        }
+
+        var follower = await _context.Friend.Where(x => x.FollowerId == currentUserId && x.UserId == UserId)
+            .FirstOrDefaultAsync();
+
+        if (follower == null) return false;
+
+        return true;
     }
 }
