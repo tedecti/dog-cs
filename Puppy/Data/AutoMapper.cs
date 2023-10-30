@@ -8,8 +8,8 @@ public class AutoMapper : Profile
 {
     public AutoMapper()
     {
-        CreateMap<User, UserResponseDto>()
-            .ForMember(dest => dest.Pets, opt => opt.MapFrom(src => src.Pets));
+        CreateMap<User, UserResponseDto>();
+            // .ForMember(dest => dest.Pets, opt => opt.MapFrom(src => src.Pets));
             // .ForMember(dest=>dest.FriendsCount, opt=>opt.MapFrom(x=>x.Friends.Count));
         CreateMap<User, ShortUserDto>();
         CreateMap<Friend, GetFollowersDto>();
