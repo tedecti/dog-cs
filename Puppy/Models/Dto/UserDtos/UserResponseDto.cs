@@ -9,10 +9,12 @@ public class UserResponseDto
     public string Username { get; set; }
     public string FirstName { get; set; }
     public string LastName { get; set; }
+    public int FriendsCount { get; set; }
+    public int FollowersCount { get; set; }
 		
     public ICollection<UserPetDto> Pets { get; set; } = new List<UserPetDto>();
 
-    public ICollection<FollowerResponseDto> Friends { get; set; } = new List<FollowerResponseDto>();
-    public ICollection<FollowerResponseDto> Followers { get; set; } = new List<FollowerResponseDto>();
+    public ICollection<GetFollowersDto> Friends { get; set; } = new List<GetFollowersDto>();
+    public ICollection<GetFollowersDto> Followers { get; set; } = new List<GetFollowersDto>();
     public ICollection<Post> Posts { get; set; } = new List<Post>();
 }

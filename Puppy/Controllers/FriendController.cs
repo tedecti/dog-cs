@@ -1,4 +1,5 @@
-﻿using Curs.Data;
+﻿using AutoMapper;
+using Curs.Data;
 using Curs.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,10 +13,12 @@ namespace Puppy.Controllers;
 public class FriendsController : ControllerBase
 {
     private readonly AppDbContext _context;
+    private readonly IMapper _mapper;
 
-    public FriendsController(AppDbContext context)
+    public FriendsController(AppDbContext context, IMapper mapper)
     {
         _context = context;
+        _mapper = mapper;
     }
 
     [Authorize]
@@ -87,25 +90,34 @@ public class FriendsController : ControllerBase
         return StatusCode(201);
     }
 
+    
     [HttpGet("{UserId}")]
-    public async Task<ActionResult<IEnumerable<Friend>>> GetLike(int UserId)
+    public async Task<ActionResult<IEnumerable<Friend>>> GetFriends(int UserId)
     {
         if (_context.Friend == null)
         {
             return Problem("Entity set 'AppDbContext.Friend' is null.");
         }
 
-        var followers = await _context.Friend
+        var friends = await _context.Friend.Where(x => x.FollowerId == UserId).Include(x=>x.User)
             .ToListAsync();
 
-
-        var followersDto = followers.Select(follower => new GetFollowersDto()
+        return Ok(_mapper.Map<IEnumerable<GetFollowersDto>>(friends));
+    }
+    
+    [HttpGet("/api/followers/{UserId}")]
+    public async Task<ActionResult<IEnumerable<Friend>>> GetFollowers(int UserId)
+    {
+        if (_context.Friend == null)
         {
-            UserId = follower.UserId,
-            FollowerId = follower.FollowerId,
-        });
+            return Problem("Entity set 'AppDbContext.Friend' is null.");
+        }
 
-        return Ok(followersDto);
+        var followers = await _context.Friend.Where(x => x.FollowerId == UserId).Include(x=>x.User).Include(x=>x.Follower)
+            .ToListAsync();
+        
+
+        return Ok(_mapper.Map<IEnumerable<GetFollowersDto>>(followers));
     }
 
     [Authorize]

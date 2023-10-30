@@ -26,10 +26,10 @@ namespace Curs.Data
                 .WithMany(c => c.Commentaries);
 
             modelBuilder.Entity<Friend>()
-                .HasOne(e => e.User)
+                .HasOne(e => e.Follower)
                 .WithMany(c => c.Friends);
             modelBuilder.Entity<Friend>()
-                .HasOne(e => e.Follower)
+                .HasOne(e => e.User)
                 .WithMany(c => c.Followers);
             modelBuilder.Entity<Like>()
                 .HasOne(l => l.User)

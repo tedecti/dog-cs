@@ -17,13 +17,15 @@ namespace Puppy.Controllers
         private readonly IMapper _mapper;
         private readonly IWebHostEnvironment _environment;
         private readonly IFileRepository _fileRepo;
+        private readonly IUserRepository _userRepo;
 
-        public UserController(AppDbContext context, IMapper mapper, IWebHostEnvironment environment, IFileRepository fileRepo)
+        public UserController(AppDbContext context, IMapper mapper, IWebHostEnvironment environment, IFileRepository fileRepo, IUserRepository userRepo)
         {
             _context = context;
             _mapper = mapper;
             _environment = environment;
             _fileRepo = fileRepo;
+            _userRepo = userRepo;
         }
 
         // GET: api/User
@@ -55,9 +57,9 @@ namespace Puppy.Controllers
             {
                 return NotFound();
             }
-
-            var user = await _context.Users.Include(x => x.Pets).Include(x=>x.Posts).FirstAsync(x => x.Id == id);
-
+            
+            var user = await _userRepo.GetUser(id);
+            
             if (user == null)
             {
                 return NotFound();
@@ -74,8 +76,10 @@ namespace Puppy.Controllers
             {
                 return NotFound();
             }
-            var userId = HttpContext.User.Identity.Name;
-            var user = await _context.Users.Include(x => x.Pets).Include(x=>x.Posts).Include(x=>x.Friends).Include(x=>x.Followers).FirstAsync(x => x.Id == Convert.ToInt32(userId));
+            var userId = Convert.ToInt32(HttpContext.User.Identity.Name);
+            
+            var user = await _userRepo.GetUser(userId);
+            
             if (user == null)
             {
                 return NotFound();

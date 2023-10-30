@@ -7,6 +7,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using System.Security.Claims;
 using AutoMapper;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
 
 namespace Puppy.Repository
 {
@@ -96,6 +98,16 @@ namespace Puppy.Repository
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
             user.Password = "";
+            return user;
+        }
+
+        public async Task<User> GetUser(int userId)
+        {
+            var user = await _context.Users.Include(x => x.Pets)
+                .Include(x=>x.Posts)
+                .Include(x=>x.Followers).ThenInclude(x=>x.Follower)
+                .Include(x=>x.Friends).ThenInclude(x=>x.User)
+                .FirstAsync(x => x.Id == Convert.ToInt32(userId));
             return user;
         }
     }

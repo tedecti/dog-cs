@@ -2,6 +2,6 @@
 
 public class GetFollowersDto
 {
-    public int UserId { get; set; }
-    public int FollowerId { get; set; }
+    public ShortUserDto User { get; set; }
+    public ShortUserDto Follower { get; set; }
 }

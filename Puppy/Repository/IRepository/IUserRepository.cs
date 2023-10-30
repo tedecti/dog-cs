@@ -8,5 +8,6 @@ namespace Puppy.Repository.IRepository
 		bool IsUniqueUser(string email, string username);
 		Task<LoginResponseDto> Login(LoginRequestDto loginRequestDTO);
 		Task<User> Register(RegistrationRequestDto registerRequestDTO);
+		Task<User> GetUser(int userId);
 	}
 }
