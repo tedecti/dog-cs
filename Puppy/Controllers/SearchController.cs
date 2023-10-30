@@ -20,8 +20,7 @@ public class SearchController : ControllerBase
     public IActionResult Search([FromQuery] string query)
     {
         var postResult = _context.Post.Where(p =>
-            p.Title.ToLower().Contains(query.ToLower())
-            || p.Description.ToLower().Contains(query.ToLower()))
+            p.Title.ToLower().Contains(query.ToLower()))
             .Select(p => new GetPostDto
             {
                 Id = p.Id,
