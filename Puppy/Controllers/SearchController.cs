@@ -1,6 +1,8 @@
 
+using AutoMapper;
 using Curs.Data;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Puppy.Models.Dto;
 
 namespace Puppy.Controllers;
@@ -10,42 +12,32 @@ namespace Puppy.Controllers;
 public class SearchController : ControllerBase
 {
     private readonly AppDbContext _context;
+    private readonly IMapper _mapper;
     
-    public SearchController(AppDbContext context)
+    public SearchController(AppDbContext context, IMapper mapper)
     {
         _context = context;
+        _mapper = mapper;
     }
 
     [HttpGet]
-    public IActionResult Search([FromQuery] string query)
+    async public Task<IActionResult> Search([FromQuery] string query)
     {
-        var postResult = _context.Post.Where(p =>
+        var postResult = await _context.Post.Include(x=>x.User).Where(p =>
             p.Title.ToLower().Contains(query.ToLower()))
-            .Select(p => new GetPostDto
-            {
-                Id = p.Id,
-                Title = p.Title,
-                Description = p.Description,
-                Imgs = p.Imgs,
-                UploadDate = p.UploadDate
-            })
-            .ToList();
+            .ToListAsync();
 
-        var userResult = _context.Users.Where(u => u.Username.ToLower().Contains(query.ToLower()))
-            .Select(u=>new ShortUserDto
-            {
-                Id = u.Id,
-                Avatar = u.Avatar,
-                Username = u.Username,
-                FirstName = u.FirstName,
-                LastName = u.LastName
-            })
-            .ToList();
+        var postDtos = _mapper.Map<IEnumerable<GetPostDto>>(postResult);
 
+        var userResult = await _context.Users.Where(u => u.Username.ToLower().Contains(query.ToLower()))
+            .ToListAsync();
+
+        var resultDtos = _mapper.Map<IEnumerable<ShortUserDto>>(userResult);
+        
         var result = new
         {
-            Posts = postResult,
-            Users = userResult
+            Posts = postDtos,
+            Users = resultDtos
         };
 
         return Ok(result);
