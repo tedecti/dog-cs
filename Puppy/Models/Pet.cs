@@ -8,5 +8,7 @@
 		public int UserId { get; set; }
 		public string[] Imgs { get; set; }
 		public User User { get; set; }
+		
+		public Document? Document { get; set; }
 	}
 }

@@ -37,6 +37,11 @@ namespace Curs.Data
             modelBuilder.Entity<Like>()
                 .HasOne(l => l.Post)
                 .WithMany(p => p.Likes);
+            modelBuilder.Entity<Document>()
+                .HasOne(d => d.Pet)
+                .WithOne(p => p.Document)
+                .HasForeignKey<Document>(d => d.PetId);
+            
         }
 
         public DbSet<User> Users { get; set; }
@@ -49,5 +54,6 @@ namespace Curs.Data
         public DbSet<Curs.Models.Commentary> Commentary { get; set; } = default!;
 
         public DbSet<Curs.Models.Friend> Friend { get; set; } = default!;
+        public DbSet<Document> Document { get; set; } = default!;
     }
 }

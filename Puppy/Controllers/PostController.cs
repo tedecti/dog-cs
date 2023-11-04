@@ -119,7 +119,6 @@ namespace Puppy.Controllers
                 imgs.Add(await _fileRepo.SaveFile(file));
             }
             
-
             var newPost = new Post()
             {
                 Title = post.Title,

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Curs.Models;
+using Curs.Models.Dto.DocumentDto;
 using Puppy.Models.Dto;
 
 namespace Curs.Data;
@@ -18,5 +19,6 @@ public class AutoMapper : Profile
         CreateMap<Pet, GetPetDto>();
         CreateMap<Post, GetPostDto>();
         CreateMap<Commentary, GetCommentsDto>();
+        CreateMap<Document, GetDocumentDto>();
     }
 }

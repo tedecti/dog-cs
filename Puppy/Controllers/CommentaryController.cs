@@ -96,9 +96,9 @@ namespace Puppy.Controllers
 
         // POST: api/Commentary/1
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [Authorize]
         [Route("{postId}")]
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<Commentary>> PostCommentary(int postId, AddCommentaryRequestDto commentary)
         {
           if (_context.Commentary == null)
