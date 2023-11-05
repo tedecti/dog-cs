@@ -30,9 +30,9 @@ namespace Puppy.Controllers
             _fileRepo = fileRepo;
         }
 
-        // GET: api/Document/1
+        // GET: api/Document/Pet/1
         [HttpGet]
-        [Route("{petId}")]
+        [Route("Pet/{petId}")]
         [Authorize]
         public async Task<ActionResult<GetDocumentDto>> GetDocument(int petId)
         {
@@ -41,6 +41,21 @@ namespace Puppy.Controllers
                 return NotFound();
             }
             var document = await _context.Document.Where(x => x.PetId == petId).FirstOrDefaultAsync();
+            var documentDto = _mapper.Map<GetDocumentDto>(document);
+            return Ok(documentDto);
+        }
+        
+        // GET: api/Document/1
+        [HttpGet]
+        [Route("{id}")]
+        [Authorize]
+        public async Task<ActionResult<GetDocumentDto>> GetDocumentById(int id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            var document = await _context.Document.Where(x => x.Id == id).FirstOrDefaultAsync();
             var documentDto = _mapper.Map<GetDocumentDto>(document);
             return Ok(documentDto);
         }
