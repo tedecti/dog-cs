@@ -66,7 +66,13 @@ namespace Puppy.Controllers
         [Authorize]
         public async Task<ActionResult<Document>> PostDocument(int petId, [FromForm]UploadDocumentDto document)
         {
+            var userId = Convert.ToInt32(HttpContext.User.Identity.Name);
             var pet = await _context.Pet.FindAsync(petId);
+
+            if (pet.UserId != userId)
+            {
+                return NotFound();
+            }
             if (pet == null)
             {
                 return NotFound();
