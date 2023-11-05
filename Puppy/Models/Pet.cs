@@ -9,6 +9,6 @@
 		public string[] Imgs { get; set; }
 		public User User { get; set; }
 		
-		public Document? Document { get; set; }
+		public ICollection<Document> Documents { get; set; } = new List<Document>();
 	}
 }

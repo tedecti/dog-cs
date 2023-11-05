@@ -39,9 +39,7 @@ namespace Curs.Data
                 .WithMany(p => p.Likes);
             modelBuilder.Entity<Document>()
                 .HasOne(d => d.Pet)
-                .WithOne(p => p.Document)
-                .HasForeignKey<Document>(d => d.PetId);
-            
+                .WithMany(p => p.Documents);
         }
 
         public DbSet<User> Users { get; set; }

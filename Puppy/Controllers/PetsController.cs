@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Curs.Data;
 using Curs.Models;
+using Curs.Models.Dto.DocumentDto;
 using Microsoft.AspNetCore.Authorization;
 using Puppy.Models.Dto;
 using Microsoft.AspNetCore.Identity;
@@ -42,9 +43,16 @@ namespace Puppy.Controllers
                 return NotFound();
             }
 
-            var pets = await _context.Pet.Include(p => p.User).Include(p=>p.Document).ToListAsync();
-            var dtos = _mapper.Map<IEnumerable<GetPetDto>>(pets);
-            return Ok(dtos);
+            var pets = await _context.Pet.Include(p => p.User).Include(p=>p.Documents).ToListAsync();
+            var documents = await _context.Document.ToListAsync();
+            var petDtos = _mapper.Map<GetPetDto>(pets);
+            var documentDtos = _mapper.Map<IEnumerable<GetDocumentDto>>(documents);
+            var response = new
+            {
+                Pet = petDtos,
+                Documents = documentDtos
+            };
+            return Ok(response);
         }
 
         // GET: api/Pets/5
@@ -57,14 +65,21 @@ namespace Puppy.Controllers
                 return NotFound();
             }
 
-            var pet = await _context.Pet.Include(p => p.User).Include(p=>p.Document).FirstOrDefaultAsync();
+            var pet = await _context.Pet.Include(p => p.User).Include(p=>p.Documents).FirstOrDefaultAsync();
+            var documents = await _context.Document.ToListAsync();
             if (pet == null)
             {
                 return NotFound();
             }
-            var dtos = _mapper.Map<GetPetDto>(pet);
-            return Ok(dtos);
 
+            var petDtos = _mapper.Map<GetPetDto>(pet);
+            var documentDtos = _mapper.Map<IEnumerable<GetDocumentDto>>(documents);
+            var response = new
+            {
+                Pet = petDtos,
+                Documents = documentDtos
+            };
+            return Ok(response);
         }
 
         // PUT: api/Pets/5
