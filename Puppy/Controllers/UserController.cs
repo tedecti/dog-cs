@@ -92,14 +92,17 @@ namespace Puppy.Controllers
         // PUT: api/User/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(int id, User user)
+        [Authorize]
+        public async Task<IActionResult> PutUser(int id, UpdateUserDto user)
         {
-            if (id != user.Id)
+            
+            var existingUser = await _context.Users.FindAsync(id);
+            if (existingUser == null)
             {
-                return BadRequest();
+                return NotFound();
             }
-
-            _context.Entry(user).State = EntityState.Modified;
+            existingUser.FirstName = user.FirstName;
+            existingUser.LastName = user.LastName;
 
             try
             {
