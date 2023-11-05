@@ -91,11 +91,11 @@ namespace Puppy.Controllers
 
         // PUT: api/User/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
+        [HttpPut("edit")]
         [Authorize]
-        public async Task<IActionResult> PutUser(int id, UpdateUserDto user)
+        public async Task<IActionResult> PutUser(UpdateUserDto user)
         {
-            
+            var id = Convert.ToInt32(User.Identity.Name);
             var existingUser = await _context.Users.FindAsync(id);
             if (existingUser == null)
             {
