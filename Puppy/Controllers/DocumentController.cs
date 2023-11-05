@@ -55,7 +55,8 @@ namespace Puppy.Controllers
             {
                 return NotFound();
             }
-            var document = await _context.Document.Where(x => x.Id == id).FirstOrDefaultAsync();
+            
+            var document = await _context.Document.Where(x => x.Id == id).Include(x => x.Pet).FirstOrDefaultAsync();
             var documentDto = _mapper.Map<GetDocumentDto>(document);
             return Ok(documentDto);
         }
