@@ -66,6 +66,11 @@ namespace Puppy.Controllers
         [Authorize]
         public async Task<ActionResult<Document>> PostDocument(int petId, [FromForm]UploadDocumentDto document)
         {
+            var pet = await _context.Pet.FindAsync(petId);
+            if (pet == null)
+            {
+                return NotFound();
+            }
             if (petId == null)
             {
                 return NotFound();
@@ -83,6 +88,7 @@ namespace Puppy.Controllers
                 PetId = petId,
                 Imgs = imgs.ToArray(),
             };
+
             _context.Document.Add(newDocument);
             await _context.SaveChangesAsync();
             return StatusCode(201);
