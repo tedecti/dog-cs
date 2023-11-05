@@ -42,7 +42,7 @@ namespace Puppy.Controllers
                 return NotFound();
             }
 
-            var pets = await _context.Pet.Include(p => p.User).ToListAsync();
+            var pets = await _context.Pet.Include(p => p.User).Include(p=>p.Document).ToListAsync();
             var dtos = _mapper.Map<IEnumerable<GetPetDto>>(pets);
             return Ok(dtos);
         }
@@ -57,14 +57,14 @@ namespace Puppy.Controllers
                 return NotFound();
             }
 
-            var pet = await _context.Pet.Include(p => p.User).FirstOrDefaultAsync(p => p.Id == id);
-
+            var pet = await _context.Pet.Include(p => p.User).Include(p=>p.Document).FirstOrDefaultAsync();
             if (pet == null)
             {
                 return NotFound();
             }
+            var dtos = _mapper.Map<GetPetDto>(pet);
+            return Ok(dtos);
 
-            return pet;
         }
 
         // PUT: api/Pets/5

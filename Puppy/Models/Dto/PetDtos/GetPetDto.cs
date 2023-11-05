@@ -1,3 +1,5 @@
+using Curs.Models.Dto.DocumentDto;
+
 namespace Puppy.Models.Dto;
 
 public class GetPetDto
@@ -7,4 +9,5 @@ public class GetPetDto
     public string PassportNumber { get; set; }
     public string[] Imgs { get; set; }
     public ShortUserDto User { get; set; }   
+    public GetDocumentDto Document { get; set; }
 }
