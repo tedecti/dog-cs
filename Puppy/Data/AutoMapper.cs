@@ -21,5 +21,6 @@ public class AutoMapper : Profile
         CreateMap<Post, GetPostDto>();
         CreateMap<Commentary, GetCommentsDto>();
         CreateMap<Document, GetDocumentDto>();
+        CreateMap<Document, ShortDocumentDto>();
     }
 }

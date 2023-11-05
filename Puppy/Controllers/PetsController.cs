@@ -73,7 +73,7 @@ namespace Puppy.Controllers
             }
 
             var petDtos = _mapper.Map<GetPetDto>(pet);
-            var documentDtos = _mapper.Map<IEnumerable<GetDocumentDto>>(documents);
+            var documentDtos = _mapper.Map<IEnumerable<ShortDocumentDto>>(documents);
             var response = new
             {
                 Pet = petDtos,
