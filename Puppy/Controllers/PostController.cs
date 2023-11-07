@@ -107,7 +107,6 @@ namespace Puppy.Controllers
             {
                 return Unauthorized();
             }
-
             if (_context.Post == null)
             {
                 return Problem("Entity set 'AppDbContext.Post'  is null.");

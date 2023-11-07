@@ -75,6 +75,9 @@ namespace Puppy.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<DateTime>("UploadDate")
+                        .HasColumnType("timestamp with time zone");
+
                     b.HasKey("Id");
 
                     b.HasIndex("PetId");
@@ -253,7 +256,7 @@ namespace Puppy.Migrations
             modelBuilder.Entity("Curs.Models.Document", b =>
                 {
                     b.HasOne("Curs.Models.Pet", "Pet")
-                        .WithMany()
+                        .WithMany("Documents")
                         .HasForeignKey("PetId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -319,6 +322,11 @@ namespace Puppy.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Curs.Models.Pet", b =>
+                {
+                    b.Navigation("Documents");
                 });
 
             modelBuilder.Entity("Curs.Models.Post", b =>

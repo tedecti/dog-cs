@@ -45,7 +45,7 @@ namespace Puppy.Controllers
             var documentDto = _mapper.Map<IEnumerable<ShortDocumentDto>>(documents);
             return Ok(documentDto);
         }
-        
+
         // GET: api/Document/1
         [HttpGet]
         [Route("{id}")]
@@ -56,9 +56,25 @@ namespace Puppy.Controllers
             {
                 return NotFound();
             }
+
+            var userId = Convert.ToInt32(HttpContext.User.Identity.Name);
             
             var document = await _context.Document.Where(x => x.Id == id).Include(x => x.Pet).FirstOrDefaultAsync();
             
+            if (document == null)
+            {
+                return NotFound();
+            }
+            if (id != document.Id)
+            {
+                return NotFound();
+            }
+
+            if (document.Pet.UserId != userId)
+            {
+                return Forbid();
+            }
+
             var documentDto = _mapper.Map<GetDocumentDto>(document);
             return Ok(documentDto);
         }
@@ -67,28 +83,25 @@ namespace Puppy.Controllers
         [HttpPost]
         [Route("{petId}")]
         [Authorize]
-        public async Task<ActionResult<Document>> PostDocument(int petId, [FromForm]UploadDocumentDto document)
+        public async Task<ActionResult<Document>> PostDocument(int petId, [FromForm] UploadDocumentDto document)
         {
             var userId = Convert.ToInt32(HttpContext.User.Identity.Name);
             var pet = await _context.Pet.FindAsync(petId);
 
-            if (pet.UserId != userId)
-            {
-                return NotFound();
-            }
             if (pet == null)
             {
                 return NotFound();
             }
-            if (petId == null)
+            if (userId != Convert.ToInt32(pet.UserId))
             {
-                return NotFound();
+                return Forbid();
             }
             List<string> imgs = new List<string>();
             foreach (var file in document.Imgs)
             {
                 imgs.Add(await _fileRepo.SaveFile(file));
             }
+            
 
             var newDocument = new Document()
             {
@@ -96,11 +109,13 @@ namespace Puppy.Controllers
                 Description = document.Description,
                 PetId = petId,
                 Imgs = imgs.ToArray(),
+                UploadDate = DateTime.UtcNow
             };
 
             _context.Document.Add(newDocument);
             await _context.SaveChangesAsync();
-            return StatusCode(201);
+
+            return Ok();
         }
 
         // PUT: api/Document/5

@@ -43,8 +43,25 @@ namespace Puppy.Controllers
                 return NotFound();
             }
 
+            var userId = Convert.ToInt32(HttpContext.User.Identity.Name);
+        
             var pet = await _context.Pet.Include(x => x.Documents).Where(x => x.Id == id).FirstOrDefaultAsync();
 
+            if (pet == null)
+            {
+                return NotFound();
+            }
+
+            if (id != pet.Id)
+            {
+                return NotFound();
+            }
+
+            if (userId != pet.UserId)
+            {
+                return Forbid();
+            }
+            
             var responseDto = _mapper.Map<GetPetDto>(pet);
             return Ok(responseDto);
         }
