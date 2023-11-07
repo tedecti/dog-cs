@@ -8,5 +8,5 @@ public class GetPetDto
     public string Name { get; set; }
     public string PassportNumber { get; set; }
     public string[] Imgs { get; set; }
-    public ShortUserDto User { get; set; }   
+    public ICollection<ShortDocumentDto> Documents { get; set; } = new List<ShortDocumentDto>();
 }

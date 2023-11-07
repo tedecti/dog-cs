@@ -33,28 +33,6 @@ namespace Puppy.Controllers
             _fileRepo = fileRepo;
         }
 
-        // GET: api/Pets
-        [HttpGet]
-        [Authorize]
-        public async Task<ActionResult<IEnumerable<GetPetDto>>> GetPet()
-        {
-            if (_context.Pet == null)
-            {
-                return NotFound();
-            }
-
-            var pets = await _context.Pet.Include(p => p.User).Include(p=>p.Documents).ToListAsync();
-            var documents = await _context.Document.ToListAsync();
-            var petDtos = _mapper.Map<GetPetDto>(pets);
-            var documentDtos = _mapper.Map<IEnumerable<GetDocumentDto>>(documents);
-            var response = new
-            {
-                Pet = petDtos,
-                Documents = documentDtos
-            };
-            return Ok(response);
-        }
-
         // GET: api/Pets/5
         [HttpGet("{id}")]
         [Authorize]
@@ -65,21 +43,10 @@ namespace Puppy.Controllers
                 return NotFound();
             }
 
-            var pet = await _context.Pet.Include(p => p.User).Include(p=>p.Documents).FirstOrDefaultAsync();
-            var documents = await _context.Document.ToListAsync();
-            if (pet == null)
-            {
-                return NotFound();
-            }
+            var pet = await _context.Pet.Include(x => x.Documents).Where(x => x.Id == id).FirstOrDefaultAsync();
 
-            var petDtos = _mapper.Map<GetPetDto>(pet);
-            var documentDtos = _mapper.Map<IEnumerable<ShortDocumentDto>>(documents);
-            var response = new
-            {
-                Pet = petDtos,
-                Documents = documentDtos
-            };
-            return Ok(response);
+            var responseDto = _mapper.Map<GetPetDto>(pet);
+            return Ok(responseDto);
         }
 
         // PUT: api/Pets/5

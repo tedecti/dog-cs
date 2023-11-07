@@ -88,6 +88,21 @@ namespace Puppy.Controllers
             return _mapper.Map<UserResponseDto>(user);
         }
         
+        [HttpGet("{userId}/Pets")]
+        [Authorize]
+        public async Task<ActionResult<Pet>> GetPets(int userId)
+        {
+            if (_context.Pet == null)
+            {
+                return NotFound();
+            }
+
+            var pets = await _context.Pet.Include(x => x.Documents).Where(x => x.UserId == userId).ToListAsync();
+
+            var responseDto = _mapper.Map<IEnumerable<GetPetDto>>(pets);
+            return Ok(responseDto);
+        }
+        
 
         // PUT: api/User/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
