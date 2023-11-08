@@ -27,10 +27,9 @@ namespace Puppy.Repository
 
         public bool IsUniqueUser(string email, string username)
         {
-            var user = _context.Users.FirstOrDefault(x => x.Email == email || x.Username== username);
+            var user = _context.Users.FirstOrDefault(x => x.Email == email || x.Username == username);
             return user == null;
         }
-
         public async Task<LoginResponseDto> Login(LoginRequestDto loginRequestDTO)
         {
             

@@ -39,13 +39,6 @@ namespace Puppy.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegistrationRequestDto model)
         {
-            bool isUserUnique = _userRepo.IsUniqueUser(model.Email, model.Username);
-
-            if (!isUserUnique)
-            {
-                return BadRequest(new { message = "User already exists" });
-            }
-
             var user = await _userRepo.Register(model);
             if (user == null)
             {
@@ -53,6 +46,13 @@ namespace Puppy.Controllers
             }
 
             return StatusCode(201);
+        }
+
+        [HttpPost("unique")]
+        public async Task<bool> CheckUnique([FromBody]CheckUniqueDto uniqueDto)
+        {
+            var isUnique = _userRepo.IsUniqueUser(uniqueDto.Email, uniqueDto.Username);
+            return isUnique;
         }
     }
 }
