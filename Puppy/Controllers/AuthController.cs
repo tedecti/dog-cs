@@ -30,7 +30,6 @@ namespace Puppy.Controllers
                 return BadRequest(new { message = "Email or password incorrect" });
             }
 
-            
 
             return StatusCode(200, response);
         }
@@ -39,19 +38,27 @@ namespace Puppy.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegistrationRequestDto model)
         {
+            var isUnique = _userRepo.IsUnique(model.Email, model.Username);
+            if (!isUnique)
+            {
+                return BadRequest("Username or email is not unique");
+            }
+
             var user = await _userRepo.Register(model);
+
             if (user == null)
             {
                 return BadRequest(new { message = "Error while register" });
             }
 
+
             return StatusCode(201);
         }
 
         [HttpPost("unique")]
-        public async Task<bool> CheckUnique([FromBody]CheckUniqueDto uniqueDto)
+        public bool CheckUnique([FromBody] CheckUniqueDto uniqueDto)
         {
-            var isUnique = _userRepo.IsUniqueUser(uniqueDto.Email, uniqueDto.Username);
+            var isUnique = _userRepo.IsUniqueEmail(uniqueDto.Email);
             return isUnique;
         }
     }

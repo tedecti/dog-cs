@@ -25,9 +25,16 @@ namespace Puppy.Repository
             secretKey = configuration.GetValue<string>("ApiSettings:Secret");
         }
 
-        public bool IsUniqueUser(string email, string username)
+        public bool IsUniqueEmail(string email)
+        {
+            var userEmail = _context.Users.FirstOrDefault(x => x.Email == email);
+            return userEmail == null;
+        }
+
+        public bool IsUnique(string email, string username)
         {
             var user = _context.Users.FirstOrDefault(x => x.Email == email || x.Username == username);
+            
             return user == null;
         }
         public async Task<LoginResponseDto> Login(LoginRequestDto loginRequestDTO)
