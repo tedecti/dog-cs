@@ -17,6 +17,7 @@
  - Email
  - Password
  - Username
+
 For this endpoint used AuthController and UserRepository with username and email unique check.
 Return 201 Code
 
