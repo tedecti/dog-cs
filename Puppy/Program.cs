@@ -48,9 +48,10 @@ namespace Puppy
             {
                 options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
                 options.JsonSerializerOptions.WriteIndented = true;
-            });;
-            
-            builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies()); 
+            });
+            ;
+
+            builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -86,12 +87,9 @@ namespace Puppy
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI(c=>c.SwaggerEndpoint("/swagger/v1/swagger.json", "Lotus.API.Integration v1"));
-                
-            }
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Lotus.API.Integration v1"));
+
 
             app.UseHttpsRedirection();
 
