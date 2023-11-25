@@ -36,10 +36,10 @@ namespace Puppy.Repository
 
             return fileName;
         }
+        
 
         public async Task<Stream> GetFile(string fileName)
         {
-            // Retrieve the file from Azure Blob Storage
             return await DownloadFileFromStorage(fileName);
         }
 
