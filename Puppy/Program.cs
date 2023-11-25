@@ -90,6 +90,7 @@ namespace Puppy
             {
                 app.UseSwagger();
                 app.UseSwaggerUI(c=>c.SwaggerEndpoint("/swagger/v1/swagger.json", "Lotus.API.Integration v1"));
+                
             }
 
             app.UseHttpsRedirection();
