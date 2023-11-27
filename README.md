@@ -6,7 +6,7 @@
 > 
 > **1Gb** free disk space
 > 
-> **PostgreSQL** or **Docker**
+> **PostgreSQL** 
 
  There is a social network for people with their pets, made by Anton Kaplin (@tedecti) and Artyom Karmykov (@AgaspherGames) on C# + ASP.NET Core and Entity Framework Core with PostgreSQL database
 
