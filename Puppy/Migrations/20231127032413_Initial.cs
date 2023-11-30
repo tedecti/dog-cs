@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -19,6 +18,7 @@ namespace Puppy.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Avatar = table.Column<string>(type: "text", nullable: false),
                     Username = table.Column<string>(type: "text", nullable: false),
                     FirstName = table.Column<string>(type: "text", nullable: false),
                     LastName = table.Column<string>(type: "text", nullable: false),
@@ -64,7 +64,8 @@ namespace Puppy.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: false),
                     PassportNumber = table.Column<string>(type: "text", nullable: false),
-                    UserId = table.Column<int>(type: "integer", nullable: false)
+                    UserId = table.Column<int>(type: "integer", nullable: false),
+                    Imgs = table.Column<string[]>(type: "text[]", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -86,7 +87,7 @@ namespace Puppy.Migrations
                     UserId = table.Column<int>(type: "integer", nullable: false),
                     Title = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: false),
-                    Imgs = table.Column<List<string>>(type: "text[]", nullable: false),
+                    Imgs = table.Column<string[]>(type: "text[]", nullable: false),
                     Comments = table.Column<int>(type: "integer", nullable: false),
                     UploadDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
@@ -97,6 +98,29 @@ namespace Puppy.Migrations
                         name: "FK_Post_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Document",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Title = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: false),
+                    PetId = table.Column<int>(type: "integer", nullable: false),
+                    UploadDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Imgs = table.Column<string[]>(type: "text[]", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Document", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Document_Pet_PetId",
+                        column: x => x.PetId,
+                        principalTable: "Pet",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -166,6 +190,11 @@ namespace Puppy.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Document_PetId",
+                table: "Document",
+                column: "PetId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Friend_FollowerId",
                 table: "Friend",
                 column: "FollowerId");
@@ -201,6 +230,9 @@ namespace Puppy.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Commentary");
+
+            migrationBuilder.DropTable(
+                name: "Document");
 
             migrationBuilder.DropTable(
                 name: "Friend");

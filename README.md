@@ -1,4 +1,13 @@
 # Puppy Paw
+> [!IMPORTANT]
+> **__Requirements__ for this WEB API**:
+> 
+> **.NET Core v7.0.14**
+> 
+> **1Gb** free disk space
+> 
+> **PostgreSQL** 
+
  There is a social network for people with their pets, made by Anton Kaplin (@tedecti) and Artyom Karmykov (@AgaspherGames) on C# + ASP.NET Core and Entity Framework Core with PostgreSQL database
 
  Original frontend was made in React Native. 
