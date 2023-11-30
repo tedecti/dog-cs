@@ -38,14 +38,14 @@ namespace Puppy.Controllers
         [Authorize]
         public async Task<ActionResult<Pet>> GetPet(int id)
         {
-            if (_context.Pet == null)
+            if (_context.Pets == null)
             {
                 return NotFound();
             }
 
             var userId = Convert.ToInt32(HttpContext.User.Identity.Name);
         
-            var pet = await _context.Pet.Include(x => x.Documents).Where(x => x.Id == id).FirstOrDefaultAsync();
+            var pet = await _context.Pets.Include(x => x.Documents).Where(x => x.Id == id).FirstOrDefaultAsync();
 
             if (pet == null)
             {
@@ -104,7 +104,7 @@ namespace Puppy.Controllers
         [Authorize]
         public async Task<ActionResult<Pet>> PostPet([FromForm] AddPetRequestDto pet)
         {
-            if (_context.Pet == null)
+            if (_context.Pets == null)
             {
                 return Problem("Entity set 'AppDbContext.Pet'  is null.");
             }
@@ -129,7 +129,7 @@ namespace Puppy.Controllers
                 Imgs = imgs.ToArray()
             };
 
-            _context.Pet.Add(newPet);
+            _context.Pets.Add(newPet);
             await _context.SaveChangesAsync();
             
             return StatusCode(201);
@@ -140,18 +140,18 @@ namespace Puppy.Controllers
         [Authorize]
         public async Task<IActionResult> DeletePet(int id)
         {
-            if (_context.Pet == null)
+            if (_context.Pets == null)
             {
                 return NotFound();
             }
 
-            var pet = await _context.Pet.FindAsync(id);
+            var pet = await _context.Pets.FindAsync(id);
             if (pet == null)
             {
                 return NotFound();
             }
 
-            _context.Pet.Remove(pet);
+            _context.Pets.Remove(pet);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -159,7 +159,7 @@ namespace Puppy.Controllers
 
         private bool PetExists(int id)
         {
-            return (_context.Pet?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Pets?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

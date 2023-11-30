@@ -44,14 +44,14 @@ namespace Curs.Data
 
         public DbSet<User> Users { get; set; }
 
-        public DbSet<Curs.Models.Pet> Pet { get; set; } = default!;
-        public DbSet<Like> Like { get; set; } = default!;
+        public DbSet<Curs.Models.Pet> Pets { get; set; } = default!;
+        public DbSet<Like> Likes { get; set; } = default!;
 
-        public DbSet<Curs.Models.Post> Post { get; set; } = default!;
+        public DbSet<Curs.Models.Post> Posts { get; set; } = default!;
 
-        public DbSet<Curs.Models.Commentary> Commentary { get; set; } = default!;
+        public DbSet<Curs.Models.Commentary> Commentaries { get; set; } = default!;
 
-        public DbSet<Curs.Models.Friend> Friend { get; set; } = default!;
-        public DbSet<Document> Document { get; set; } = default!;
+        public DbSet<Curs.Models.Friend> Friends { get; set; } = default!;
+        public DbSet<Document> Documents { get; set; } = default!;
     }
 }

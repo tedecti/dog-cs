@@ -92,12 +92,12 @@ namespace Puppy.Controllers
         [Authorize]
         public async Task<ActionResult<Pet>> GetPets(int userId)
         {
-            if (_context.Pet == null)
+            if (_context.Pets == null)
             {
                 return NotFound();
             }
 
-            var pets = await _context.Pet.Include(x => x.Documents).Where(x => x.UserId == userId).ToListAsync();
+            var pets = await _context.Pets.Include(x => x.Documents).Where(x => x.UserId == userId).ToListAsync();
 
             var responseDto = _mapper.Map<IEnumerable<GetPetDto>>(pets);
             return Ok(responseDto);

@@ -37,7 +37,7 @@ public class FriendsController : ControllerBase
             return Unauthorized();
         }
 
-        var existingFriend = await _context.Friend.FirstOrDefaultAsync(
+        var existingFriend = await _context.Friends.FirstOrDefaultAsync(
             f => f.FollowerId.ToString() == userId && f.UserId == id);
 
         if (existingFriend == null)
@@ -45,7 +45,7 @@ public class FriendsController : ControllerBase
             return BadRequest("You are not followed");
         }
 
-        _context.Friend.Remove(existingFriend);
+        _context.Friends.Remove(existingFriend);
         await _context.SaveChangesAsync();
         return NoContent();
     }
@@ -66,7 +66,7 @@ public class FriendsController : ControllerBase
             return Unauthorized();
         }
 
-        var existingFriend = await _context.Friend.FirstOrDefaultAsync(
+        var existingFriend = await _context.Friends.FirstOrDefaultAsync(
             f => f.FollowerId.ToString() == userId && f.UserId == id);
         if (existingFriend != null)
         {
@@ -84,7 +84,7 @@ public class FriendsController : ControllerBase
             FollowerId = Convert.ToInt32(userId)
         };
 
-        _context.Friend.Add(newFriend);
+        _context.Friends.Add(newFriend);
         await _context.SaveChangesAsync();
 
         return StatusCode(201);
@@ -94,12 +94,12 @@ public class FriendsController : ControllerBase
     [HttpGet("{UserId}")]
     public async Task<ActionResult<IEnumerable<Friend>>> GetFriends(int UserId)
     {
-        if (_context.Friend == null)
+        if (_context.Friends == null)
         {
             return Problem("Entity set 'AppDbContext.Friend' is null.");
         }
 
-        var friends = await _context.Friend.Where(x => x.FollowerId == UserId).Include(x=>x.User)
+        var friends = await _context.Friends.Where(x => x.FollowerId == UserId).Include(x=>x.User)
             .ToListAsync();
 
         return Ok(_mapper.Map<IEnumerable<GetFollowersDto>>(friends));
@@ -108,12 +108,12 @@ public class FriendsController : ControllerBase
     [HttpGet("/api/followers/{UserId}")]
     public async Task<ActionResult<IEnumerable<Friend>>> GetFollowers(int UserId)
     {
-        if (_context.Friend == null)
+        if (_context.Friends == null)
         {
             return Problem("Entity set 'AppDbContext.Friend' is null.");
         }
 
-        var followers = await _context.Friend.Where(x => x.FollowerId == UserId).Include(x=>x.User).Include(x=>x.Follower)
+        var followers = await _context.Friends.Where(x => x.FollowerId == UserId).Include(x=>x.User).Include(x=>x.Follower)
             .ToListAsync();
         
 
@@ -126,12 +126,12 @@ public class FriendsController : ControllerBase
     {
         int currentUserId = Convert.ToInt32(User.Identity.Name);
 
-        if (_context.Friend == null)
+        if (_context.Friends == null)
         {
             return Problem("Entity set 'AppDbContext.Friend' is null.");
         }
 
-        var follower = await _context.Friend.Where(x => x.FollowerId == currentUserId && x.UserId == UserId)
+        var follower = await _context.Friends.Where(x => x.FollowerId == currentUserId && x.UserId == UserId)
             .FirstOrDefaultAsync();
 
         if (follower == null) return false;

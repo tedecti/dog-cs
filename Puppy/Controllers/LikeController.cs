@@ -29,7 +29,7 @@ namespace Puppy.Controllers
         [Authorize]
         public async Task<ActionResult<bool>> GetLike(string postId)
         {
-          if (_context.Like == null)
+          if (_context.Likes == null)
           {
               return NotFound();
           }
@@ -41,7 +41,7 @@ namespace Puppy.Controllers
               return Unauthorized();
           }
 
-          var like = await _context.Like.Where(x => x.PostId.ToString() == postId && x.UserId.ToString() == userId)
+          var like = await _context.Likes.Where(x => x.PostId.ToString() == postId && x.UserId.ToString() == userId)
               .FirstOrDefaultAsync();
           if (like == null) return false;
           return true;
@@ -60,12 +60,12 @@ namespace Puppy.Controllers
                 return Unauthorized();
             }
 
-            if (_context.Like == null)
+            if (_context.Likes == null)
             {
                 return Problem("Entity set 'AppDbContext.Like' is null.");
             }
             
-            var existingLike = await _context.Like.FirstOrDefaultAsync(l => l.UserId.ToString() == userId && l.PostId == PostId);
+            var existingLike = await _context.Likes.FirstOrDefaultAsync(l => l.UserId.ToString() == userId && l.PostId == PostId);
             if (existingLike != null)
             {
                 return BadRequest("Like is already exist.");
@@ -82,7 +82,7 @@ namespace Puppy.Controllers
                 PostId = PostId,
             };
 
-            _context.Like.Add(newLike);
+            _context.Likes.Add(newLike);
             await _context.SaveChangesAsync();
 
             return StatusCode(201);
@@ -94,8 +94,8 @@ namespace Puppy.Controllers
         public async Task<IActionResult> DeleteLike(int PostId)
         {
             var UserId = HttpContext.User.Identity.Name;
-            var like = await _context.Like.FirstOrDefaultAsync(l => l.PostId == PostId && l.UserId.ToString() == UserId);
-            if (_context.Like == null)
+            var like = await _context.Likes.FirstOrDefaultAsync(l => l.PostId == PostId && l.UserId.ToString() == UserId);
+            if (_context.Likes == null)
             {
                 return NotFound();
             }
@@ -104,7 +104,7 @@ namespace Puppy.Controllers
                 return NotFound();
             }
 
-            _context.Like.Remove(like);
+            _context.Likes.Remove(like);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -112,7 +112,7 @@ namespace Puppy.Controllers
 
         private bool LikeExists(int id)
         {
-            return (_context.Like?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Likes?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

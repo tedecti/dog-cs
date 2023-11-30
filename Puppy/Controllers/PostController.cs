@@ -28,14 +28,22 @@ namespace Puppy.Controllers
 
         // GET: api/Post
         [HttpGet]
+        // [Authorize]
         public async Task<ActionResult<IEnumerable<GetPostDto>>> GetPost()
         {
-            if (_context.Post == null)
+            if (_context.Posts == null)
             {
                 return NotFound();
             }
+
+            // var user = HttpContext.User.Identity.Name;
+            // var friend = _context.Friends.FindAsync(user);
+            // if (friend != null)
+            // {
+            //     var ordered = _context.Posts.OrderBy(p => );
+            // }
             
-            var posts = await _context.Post.Include(p => p.User).OrderByDescending(x=>x.UploadDate).ToListAsync();
+            var posts = await _context.Posts.Include(p => p.User).OrderByDescending(x=>x.UploadDate).ToListAsync();
             var dtos = _mapper.Map<IEnumerable<GetPostDto>>(posts);
 
             return Ok(dtos);
@@ -45,11 +53,11 @@ namespace Puppy.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<GetPostDto>> GetPost(int id)
         {
-            if (_context.Post == null)
+            if (_context.Posts == null)
             {
                 return NotFound();
             }
-            var post = await _context.Post.Include(p => p.User).FirstOrDefaultAsync(p=> p.Id == id);
+            var post = await _context.Posts.Include(p => p.User).FirstOrDefaultAsync(p=> p.Id == id);
 
             if (post == null)
             {
@@ -107,7 +115,7 @@ namespace Puppy.Controllers
             {
                 return Unauthorized();
             }
-            if (_context.Post == null)
+            if (_context.Posts == null)
             {
                 return Problem("Entity set 'AppDbContext.Post'  is null.");
             }
@@ -126,7 +134,7 @@ namespace Puppy.Controllers
                 Imgs = imgs.ToArray(),
                 UploadDate = DateTime.UtcNow
             };
-            _context.Post.Add(newPost);
+            _context.Posts.Add(newPost);
             await _context.SaveChangesAsync();
 
             return StatusCode(201);
@@ -137,18 +145,18 @@ namespace Puppy.Controllers
         [Authorize]
         public async Task<IActionResult> DeletePost(int id)
         {
-            if (_context.Post == null)
+            if (_context.Posts == null)
             {
                 return NotFound();
             }
 
-            var post = await _context.Post.FindAsync(id);
+            var post = await _context.Posts.FindAsync(id);
             if (post == null)
             {
                 return NotFound();
             }
 
-            _context.Post.Remove(post);
+            _context.Posts.Remove(post);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -156,7 +164,7 @@ namespace Puppy.Controllers
 
         private bool PostExists(int id)
         {
-            return (_context.Post?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Posts?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

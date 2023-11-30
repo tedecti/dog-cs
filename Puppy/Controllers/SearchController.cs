@@ -23,7 +23,7 @@ public class SearchController : ControllerBase
     [HttpGet]
     async public Task<IActionResult> Search([FromQuery] string query)
     {
-        var postResult = await _context.Post.Include(x=>x.User).Where(p =>
+        var postResult = await _context.Posts.Include(x=>x.User).Where(p =>
             p.Title.ToLower().Contains(query.ToLower()))
             .ToListAsync();
 
