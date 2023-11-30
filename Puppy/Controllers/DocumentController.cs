@@ -41,7 +41,7 @@ namespace Puppy.Controllers
                 return NotFound();
             }
 
-            var documents = await _context.Documents.Where(x => x.PetId == petId).ToListAsync();
+            var documents = await _context.Document.Where(x => x.PetId == petId).ToListAsync();
             var documentDto = _mapper.Map<IEnumerable<ShortDocumentDto>>(documents);
             return Ok(documentDto);
         }
@@ -59,7 +59,7 @@ namespace Puppy.Controllers
 
             var userId = Convert.ToInt32(HttpContext.User.Identity.Name);
             
-            var document = await _context.Documents.Where(x => x.Id == id).Include(x => x.Pet).FirstOrDefaultAsync();
+            var document = await _context.Document.Where(x => x.Id == id).Include(x => x.Pet).FirstOrDefaultAsync();
             
             if (document == null)
             {
@@ -86,7 +86,7 @@ namespace Puppy.Controllers
         public async Task<ActionResult<Document>> PostDocument(int petId, [FromForm] UploadDocumentDto document)
         {
             var userId = Convert.ToInt32(HttpContext.User.Identity.Name);
-            var pet = await _context.Pets.FindAsync(petId);
+            var pet = await _context.Pet.FindAsync(petId);
 
             if (pet == null)
             {
@@ -112,7 +112,7 @@ namespace Puppy.Controllers
                 UploadDate = DateTime.UtcNow
             };
 
-            _context.Documents.Add(newDocument);
+            _context.Document.Add(newDocument);
             await _context.SaveChangesAsync();
 
             return Ok();

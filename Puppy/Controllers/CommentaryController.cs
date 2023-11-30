@@ -32,7 +32,7 @@ namespace Puppy.Controllers
         {
             try
             {
-                var comments = await _context.Commentaries 
+                var comments = await _context.Commentary 
                     .Include(x=>x.User)
                     .Where(comment => comment.PostId == postId)
                     .ToListAsync();
@@ -44,7 +44,7 @@ namespace Puppy.Controllers
 
                 var commentDtos = _mapper.Map<IEnumerable<GetCommentsDto>>(comments);
 
-                int count = _context.Commentaries
+                int count = _context.Commentary
                     .Include(x => x.User)
                     .Where(comment => comment.PostId == postId).Count();
                 
@@ -101,7 +101,7 @@ namespace Puppy.Controllers
         [Authorize]
         public async Task<ActionResult<Commentary>> PostCommentary(int postId, AddCommentaryRequestDto commentary)
         {
-          if (_context.Commentaries == null)
+          if (_context.Commentary == null)
           {
               return Problem("Entity set 'AppDbContext.Commentary'  is null.");
           }
@@ -113,7 +113,7 @@ namespace Puppy.Controllers
               Text = commentary.Text,
               UploadDate = DateTime.UtcNow
           };
-            _context.Commentaries.Add(newCommentary);
+            _context.Commentary.Add(newCommentary);
             await _context.SaveChangesAsync();
 
             return StatusCode(201);
@@ -125,8 +125,8 @@ namespace Puppy.Controllers
         public async Task<IActionResult> DeleteCommentary(int PostId)
         {
             var UserId = HttpContext.User.Identity.Name;
-            var commentary = await _context.Commentaries.FirstOrDefaultAsync(c => c.PostId == PostId && c.UserId.ToString() == UserId);
-            if (_context.Commentaries == null)
+            var commentary = await _context.Commentary.FirstOrDefaultAsync(c => c.PostId == PostId && c.UserId.ToString() == UserId);
+            if (_context.Commentary == null)
             {
                 return NotFound();
             }
@@ -136,7 +136,7 @@ namespace Puppy.Controllers
                 return NotFound();
             }
 
-            _context.Commentaries.Remove(commentary);
+            _context.Commentary.Remove(commentary);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -144,7 +144,7 @@ namespace Puppy.Controllers
 
         private bool CommentaryExists(int id)
         {
-            return (_context.Commentaries?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Commentary?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
