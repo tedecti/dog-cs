@@ -140,7 +140,7 @@ Returns 201 Code
 ```
 GET: /
 ```
-Returns array of all of the posts by relevance:
+Returns array of all of the posts by relevance, but if you have friends, their posts will appear firstly (required authorize):
 1. Title
 2. Description
 3. Imgs
