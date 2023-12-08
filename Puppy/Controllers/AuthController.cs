@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Puppy.Models.Dto;
 using Puppy.Repository.IRepository;
+using Puppy.Services.Interfaces;
 
 namespace Puppy.Controllers
 {
@@ -11,12 +12,12 @@ namespace Puppy.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IUserRepository _userRepo;
-        private readonly IMapper _mapper;
+        private readonly IUserService _userService;
 
-        public AuthController(IUserRepository userRepo, IMapper mapper)
+        public AuthController(IUserRepository userRepo, IUserService userService)
         {
             _userRepo = userRepo;
-            _mapper = mapper;
+            _userService = userService;
         }
 
 
@@ -38,7 +39,7 @@ namespace Puppy.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegistrationRequestDto model)
         {
-            var isUnique = _userRepo.IsUnique(model.Email, model.Username);
+            var isUnique = _userService.IsUnique(model.Email, model.Username);
             if (!isUnique)
             {
                 return BadRequest("Username or email is not unique");
@@ -58,7 +59,7 @@ namespace Puppy.Controllers
         [HttpPost("unique")]
         public bool CheckUnique([FromBody] CheckUniqueDto uniqueDto)
         {
-            var isUnique = _userRepo.IsUniqueEmail(uniqueDto.Email);
+            var isUnique = _userService.IsUniqueEmail(uniqueDto.Email);
             return isUnique;
         }
     }
