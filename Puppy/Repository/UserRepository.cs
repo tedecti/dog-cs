@@ -24,19 +24,6 @@ namespace Puppy.Repository
             _mapper = mapper;
             secretKey = configuration.GetValue<string>("ApiSettings:Secret");
         }
-
-        public bool IsUniqueEmail(string email)
-        {
-            var userEmail = _context.Users.FirstOrDefault(x => x.Email == email);
-            return userEmail == null;
-        }
-
-        public bool IsUnique(string email, string username)
-        {
-            var user = _context.Users.FirstOrDefault(x => x.Email == email || x.Username == username);
-            
-            return user == null;
-        }
         public async Task<LoginResponseDto> Login(LoginRequestDto loginRequestDTO)
         {
             
@@ -104,16 +91,6 @@ namespace Puppy.Repository
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
             user.Password = "";
-            return user;
-        }
-
-        public async Task<User> GetUser(int userId)
-        {
-            var user = await _context.Users.Include(x => x.Pets)
-                .Include(x=>x.Posts)
-                .Include(x=>x.Followers).ThenInclude(x=>x.Follower)
-                .Include(x=>x.Friends).ThenInclude(x=>x.User)
-                .FirstAsync(x => x.Id == Convert.ToInt32(userId));
             return user;
         }
     }
