@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Puppy.Models.Dto;
 using Puppy.Repository.IRepository;
+using Puppy.Services.Interfaces;
 
 namespace Puppy.Controllers
 {
@@ -15,33 +16,26 @@ namespace Puppy.Controllers
     {
         private readonly AppDbContext _context;
         private readonly IMapper _mapper;
-        private readonly IWebHostEnvironment _environment;
         private readonly IFileRepository _fileRepo;
-        private readonly IUserRepository _userRepo;
+        private readonly IUserService _userService;
 
-        public UserController(AppDbContext context, IMapper mapper, IWebHostEnvironment environment, IFileRepository fileRepo, IUserRepository userRepo)
+        public UserController(AppDbContext context, IMapper mapper, IFileRepository fileRepo, IUserService userService)
         {
             _context = context;
             _mapper = mapper;
-            _environment = environment;
             _fileRepo = fileRepo;
-            _userRepo = userRepo;
+            _userService = userService;
         }
 
-        // GET: api/User
+       
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ShortUserDto>>> GetUsers()
+        public async Task<IActionResult> GetUsers()
         {
-            if (_context.Users == null)
-            {
-                return NotFound();
-            }
-
-            var users = await _context.Users.ToListAsync();
+            var users = await _userService.GetUsers();
 
             if (users == null || !users.Any())
             {
-                return NoContent();
+                return NotFound();
             }
 
             var userResponses = _mapper.Map<IEnumerable<ShortUserDto>>(users);
@@ -49,36 +43,28 @@ namespace Puppy.Controllers
             return Ok(userResponses);
         }
 
-        // GET: api/User/5
+        
         [HttpGet("{id}")]
-        public async Task<ActionResult<UserResponseDto>> GetUser(int id)
+        public async Task<IActionResult> GetUser(int id)
         {
-            if (_context.Users == null)
-            {
-                return NotFound();
-            }
-            
-            var user = await _userRepo.GetUser(id);
+            var user = await _userService.GetUser(id);
             
             if (user == null)
             {
                 return NotFound();
             }
 
-            return _mapper.Map<UserResponseDto>(user);
+            var response = _mapper.Map<UserResponseDto>(user);
+            return Ok(response);
         }
 
         [HttpGet("me")]
         [Authorize]
         public async Task<ActionResult<UserResponseDto>> GetMe()
         {
-            if (_context.Users == null)
-            {
-                return NotFound();
-            }
             var userId = Convert.ToInt32(HttpContext.User.Identity.Name);
             
-            var user = await _userRepo.GetUser(userId);
+            var user = await _userService.GetUser(userId);
             
             if (user == null)
             {
@@ -88,30 +74,13 @@ namespace Puppy.Controllers
             return _mapper.Map<UserResponseDto>(user);
         }
         
-        [HttpGet("{userId}/Pets")]
-        [Authorize]
-        public async Task<ActionResult<Pet>> GetPets(int userId)
-        {
-            if (_context.Pet == null)
-            {
-                return NotFound();
-            }
-
-            var pets = await _context.Pet.Include(x => x.Documents).Where(x => x.UserId == userId).ToListAsync();
-
-            var responseDto = _mapper.Map<IEnumerable<GetPetDto>>(pets);
-            return Ok(responseDto);
-        }
         
-
-        // PUT: api/User/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("edit")]
         [Authorize]
         public async Task<IActionResult> PutUser(UpdateUserDto user)
         {
             var id = Convert.ToInt32(User.Identity.Name);
-            var existingUser = await _context.Users.FindAsync(id);
+            var existingUser = await _userService.GetUser(id);
             if (existingUser == null)
             {
                 return NotFound();
@@ -151,12 +120,12 @@ namespace Puppy.Controllers
 
             var file = httpRequest.Form.Files["image"];
 
-            var userId = HttpContext.User.Identity.Name;
+            var userId = Convert.ToInt32(HttpContext.User.Identity.Name);
 
             Console.WriteLine("a");
             string fName = await _fileRepo.SaveFile(file);
 
-            var user = await _context.Users.FirstOrDefaultAsync(x => x.Id.ToString() == userId);
+            var user = await _userService.GetUser(userId);
             user.Avatar = fName;
 
             await _context.SaveChangesAsync();

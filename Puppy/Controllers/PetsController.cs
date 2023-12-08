@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Authorization;
 using Puppy.Models.Dto;
 using Microsoft.AspNetCore.Identity;
 using Puppy.Repository.IRepository;
+using Puppy.Services;
 
 namespace Puppy.Controllers
 {
@@ -25,27 +26,24 @@ namespace Puppy.Controllers
         private readonly AppDbContext _context;
         private readonly IMapper _mapper;
         private readonly IFileRepository _fileRepo;
+        private readonly IPetService _service;
 
-        public PetsController(AppDbContext context, IMapper mapper, IFileRepository fileRepo)
+        public PetsController(AppDbContext context, IMapper mapper, IFileRepository fileRepo, IPetService service)
         {
             _context = context;
             _mapper = mapper;
             _fileRepo = fileRepo;
+            _service = service;
         }
-
-        // GET: api/Pets/5
+        
         [HttpGet("{id}")]
         [Authorize]
         public async Task<ActionResult<Pet>> GetPet(int id)
         {
-            if (_context.Pet == null)
-            {
-                return NotFound();
-            }
 
             var userId = Convert.ToInt32(HttpContext.User.Identity.Name);
         
-            var pet = await _context.Pet.Include(x => x.Documents).Where(x => x.Id == id).FirstOrDefaultAsync();
+            var pet = await _service.GetPetById(id);
 
             if (pet == null)
             {
@@ -65,9 +63,19 @@ namespace Puppy.Controllers
             var responseDto = _mapper.Map<GetPetDto>(pet);
             return Ok(responseDto);
         }
+        
+        // GET: api/Pets/1
+        [HttpGet("/api/User/{userId}/Pets")]
+        [Authorize]
+        public async Task<ActionResult<Pet>> GetPets(int userId)
+        {
+            var pets = await _service.GetPetsByUser(userId);
+
+            var responseDto = _mapper.Map<IEnumerable<GetPetDto>>(pets);
+            return Ok(responseDto);
+        }
 
         // PUT: api/Pets/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         [Authorize]
         public async Task<IActionResult> PutPet(int id, Pet pet)
@@ -99,7 +107,6 @@ namespace Puppy.Controllers
         }
 
         // POST: api/Pets
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         [Authorize]
         public async Task<ActionResult<Pet>> PostPet([FromForm] AddPetRequestDto pet)
