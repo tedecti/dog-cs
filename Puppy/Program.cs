@@ -8,6 +8,8 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.OpenApi.Models;
+using Puppy.Services;
+using Puppy.Services.Interfaces;
 
 namespace Puppy
 {
@@ -22,6 +24,8 @@ namespace Puppy
             builder.Services.AddDbContext<AppDbContext>();
 
             builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IPetService, PetService>();
             builder.Services.AddScoped<IFileRepository, FileRepository>();
 
             var key = builder.Configuration.GetValue<string>("ApiSettings:Secret");
