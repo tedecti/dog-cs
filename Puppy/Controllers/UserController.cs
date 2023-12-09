@@ -14,17 +14,17 @@ namespace Puppy.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly AppDbContext _context;
         private readonly IMapper _mapper;
         private readonly IFileRepository _fileRepo;
         private readonly IUserService _userService;
+        private readonly IUserRepository _userRepo;
 
-        public UserController(AppDbContext context, IMapper mapper, IFileRepository fileRepo, IUserService userService)
+        public UserController(IMapper mapper, IFileRepository fileRepo, IUserService userService, IUserRepository userRepo)
         {
-            _context = context;
             _mapper = mapper;
             _fileRepo = fileRepo;
             _userService = userService;
+            _userRepo = userRepo;
         }
 
        
@@ -80,36 +80,12 @@ namespace Puppy.Controllers
         public async Task<IActionResult> PutUser(UpdateUserDto user)
         {
             var id = Convert.ToInt32(User.Identity.Name);
-            var existingUser = await _userService.GetUser(id);
+            var existingUser = await _userRepo.Edit(user, id);
             if (existingUser == null)
             {
                 return NotFound();
             }
-            existingUser.FirstName = user.FirstName;
-            existingUser.LastName = user.LastName;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!UserExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
             return NoContent();
-        }
-
-        private bool UserExists(int id)
-        {
-            return (_context.Users?.Any(e => e.Id == id)).GetValueOrDefault();
         }
 
         [Authorize]
@@ -117,19 +93,10 @@ namespace Puppy.Controllers
         public async Task<IActionResult> UploadAvatar()
         {
             var httpRequest = HttpContext.Request;
-
             var file = httpRequest.Form.Files["image"];
-
             var userId = Convert.ToInt32(HttpContext.User.Identity.Name);
-
-            Console.WriteLine("a");
             string fName = await _fileRepo.SaveFile(file);
-
-            var user = await _userService.GetUser(userId);
-            user.Avatar = fName;
-
-            await _context.SaveChangesAsync();
-
+            await _userRepo.UploadAvatar(userId, fName);
             return Ok();
         }
     }
