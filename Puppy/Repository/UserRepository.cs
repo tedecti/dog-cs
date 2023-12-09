@@ -9,6 +9,7 @@ using System.Security.Claims;
 using AutoMapper;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
+using Puppy.Services.Interfaces;
 
 namespace Puppy.Repository
 {
@@ -16,13 +17,15 @@ namespace Puppy.Repository
     {
         private readonly AppDbContext _context;
         private readonly IMapper _mapper;
+        private readonly IUserService _userService;
         private string secretKey;
 
-        public UserRepository(AppDbContext context, IConfiguration configuration, IMapper mapper)
+        public UserRepository(AppDbContext context, IConfiguration configuration, IMapper mapper, IUserService service)
         {
             _context = context;
             _mapper = mapper;
             secretKey = configuration.GetValue<string>("ApiSettings:Secret");
+            _userService = service;
         }
         public async Task<LoginResponseDto> Login(LoginRequestDto loginRequestDTO)
         {
@@ -91,6 +94,27 @@ namespace Puppy.Repository
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
             user.Password = "";
+            return user;
+        }
+
+        public async Task<User> Edit(UpdateUserDto updateUserDto, int userId)
+        {
+            var existingUser = await _userService.GetUser(userId);
+            existingUser.FirstName = updateUserDto.FirstName;
+            existingUser.LastName = updateUserDto.LastName;
+            if (existingUser == null)
+            {
+                return null;
+            }
+            await _context.SaveChangesAsync();
+            return existingUser;
+        }
+
+        public async Task<User> UploadAvatar(int userId, string fName)
+        {
+            var user = await _userService.GetUser(userId);
+            user.Avatar = fName;
+            await _context.SaveChangesAsync();
             return user;
         }
     }

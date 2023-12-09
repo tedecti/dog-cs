@@ -7,5 +7,7 @@ namespace Puppy.Repository.IRepository
 	{
 		Task<LoginResponseDto> Login(LoginRequestDto loginRequestDTO);
 		Task<User> Register(RegistrationRequestDto registerRequestDTO);
+		Task<User> Edit(UpdateUserDto updateUserDto, int userId);
+		Task<User> UploadAvatar(int userId, string fName);
 	}
 }
