@@ -367,3 +367,7 @@ FodyWeavers.xsd*.jpg
 *.jpeg
 *.png
 *.gif
+
+# Ignore appsettings files 
+/appsettings.json 
+/appsettings.Development.json
