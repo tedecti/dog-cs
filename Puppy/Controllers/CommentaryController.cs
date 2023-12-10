@@ -105,7 +105,7 @@ namespace Puppy.Controllers
           {
               return Problem("Entity set 'AppDbContext.Commentary'  is null.");
           }
-          var userId = HttpContext.User.Identity.Name;
+          var userId = HttpContext.User.Identity?.Name;
           var newCommentary = new Commentary()
           {
               PostId = postId,
@@ -124,7 +124,7 @@ namespace Puppy.Controllers
         [Authorize]
         public async Task<IActionResult> DeleteCommentary(int PostId)
         {
-            var UserId = HttpContext.User.Identity.Name;
+            var UserId = HttpContext.User.Identity?.Name;
             var commentary = await _context.Commentary.FirstOrDefaultAsync(c => c.PostId == PostId && c.UserId.ToString() == UserId);
             if (_context.Commentary == null)
             {

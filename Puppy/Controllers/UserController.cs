@@ -62,7 +62,7 @@ namespace Puppy.Controllers
         [Authorize]
         public async Task<ActionResult<UserResponseDto>> GetMe()
         {
-            var userId = Convert.ToInt32(HttpContext.User.Identity.Name);
+            var userId = Convert.ToInt32(HttpContext.User.Identity?.Name);
             
             var user = await _userService.GetUser(userId);
             
@@ -77,10 +77,10 @@ namespace Puppy.Controllers
         
         [HttpPut("edit")]
         [Authorize]
-        public async Task<IActionResult> PutUser(UpdateUserDto user)
+        public async Task<IActionResult> PutUser(UpdateUserDto updateUserDto)
         {
-            var id = Convert.ToInt32(User.Identity.Name);
-            var existingUser = await _userRepo.Edit(user, id);
+            var id = Convert.ToInt32(User.Identity?.Name);
+            var existingUser = await _userRepo.Edit(updateUserDto, id);
             if (existingUser == null)
             {
                 return NotFound();
@@ -94,7 +94,7 @@ namespace Puppy.Controllers
         {
             var httpRequest = HttpContext.Request;
             var file = httpRequest.Form.Files["image"];
-            var userId = Convert.ToInt32(HttpContext.User.Identity.Name);
+            var userId = Convert.ToInt32(HttpContext.User.Identity?.Name);
             string fName = await _fileRepo.SaveFile(file);
             await _userRepo.UploadAvatar(userId, fName);
             return Ok();

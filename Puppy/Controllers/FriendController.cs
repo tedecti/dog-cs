@@ -30,7 +30,7 @@ public class FriendsController : ControllerBase
             return Problem("Entity set 'AppDbContext.Users'  is null.");
         }
 
-        var userId = HttpContext.User.Identity.Name;
+        var userId = HttpContext.User.Identity?.Name;
 
         if (string.IsNullOrEmpty(userId))
         {
@@ -59,7 +59,7 @@ public class FriendsController : ControllerBase
             return Problem("Entity set 'AppDbContext.Users'  is null.");
         }
 
-        var userId = HttpContext.User.Identity.Name;
+        var userId = HttpContext.User.Identity?.Name;
 
         if (string.IsNullOrEmpty(userId))
         {
@@ -124,7 +124,7 @@ public class FriendsController : ControllerBase
     [HttpGet("{UserId}/check")]
     public async Task<ActionResult<bool>> IsFriend(int UserId)
     {
-        int currentUserId = Convert.ToInt32(User.Identity.Name);
+        int currentUserId = Convert.ToInt32(User.Identity?.Name);
 
         if (_context.Friend == null)
         {

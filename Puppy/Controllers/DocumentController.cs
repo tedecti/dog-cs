@@ -57,7 +57,7 @@ namespace Puppy.Controllers
                 return NotFound();
             }
 
-            var userId = Convert.ToInt32(HttpContext.User.Identity.Name);
+            var userId = Convert.ToInt32(HttpContext.User.Identity?.Name);
             
             var document = await _context.Document.Where(x => x.Id == id).Include(x => x.Pet).FirstOrDefaultAsync();
             
@@ -85,7 +85,7 @@ namespace Puppy.Controllers
         [Authorize]
         public async Task<ActionResult<Document>> PostDocument(int petId, [FromForm] UploadDocumentDto document)
         {
-            var userId = Convert.ToInt32(HttpContext.User.Identity.Name);
+            var userId = Convert.ToInt32(HttpContext.User.Identity?.Name);
             var pet = await _context.Pet.FindAsync(petId);
 
             if (pet == null)

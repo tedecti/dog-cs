@@ -31,7 +31,7 @@ namespace Puppy.Controllers
         [Authorize]
         public async Task<ActionResult<IEnumerable<GetPostDto>>> GetPosts()
         {
-            var userId = Convert.ToInt32(HttpContext.User.Identity.Name);
+            var userId = Convert.ToInt32(HttpContext.User.Identity?.Name);
 
             var friends = await _context.Friend.Where(f => f.UserId == userId).ToListAsync();
 
@@ -126,7 +126,7 @@ namespace Puppy.Controllers
         [Authorize]
         public async Task<ActionResult<Post>> PostPost([FromForm] UploadPostRequestDto post)
         {
-            var userId = HttpContext.User.Identity.Name;
+            var userId = HttpContext.User.Identity?.Name;
             int userIdInt = Convert.ToInt32(userId);
             if (userIdInt == null)
             {

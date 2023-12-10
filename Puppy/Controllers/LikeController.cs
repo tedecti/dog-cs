@@ -34,7 +34,7 @@ namespace Puppy.Controllers
               return NotFound();
           }
           
-          var userId = HttpContext.User.Identity.Name;
+          var userId = HttpContext.User.Identity?.Name;
 
           if (string.IsNullOrEmpty(userId))
           {
@@ -53,7 +53,7 @@ namespace Puppy.Controllers
         [Authorize]
         public async Task<ActionResult<Like>> PostLike(int PostId)
         {
-            var userId = HttpContext.User.Identity.Name;
+            var userId = HttpContext.User.Identity?.Name;
             int userIdInt = Convert.ToInt32(userId);
             if (userIdInt == null)
             {
@@ -93,7 +93,7 @@ namespace Puppy.Controllers
         [Authorize]
         public async Task<IActionResult> DeleteLike(int PostId)
         {
-            var UserId = HttpContext.User.Identity.Name;
+            var UserId = HttpContext.User.Identity?.Name;
             var like = await _context.Like.FirstOrDefaultAsync(l => l.PostId == PostId && l.UserId.ToString() == UserId);
             if (_context.Like == null)
             {
