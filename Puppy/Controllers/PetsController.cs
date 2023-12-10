@@ -1,19 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using AutoMapper;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
 using Curs.Data;
 using Curs.Models;
-using Curs.Models.Dto.DocumentDto;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Puppy.Models.Dto;
-using Microsoft.AspNetCore.Identity;
 using Puppy.Repository.IRepository;
 using Puppy.Services;
 
@@ -26,14 +16,16 @@ namespace Puppy.Controllers
         private readonly AppDbContext _context;
         private readonly IMapper _mapper;
         private readonly IFileRepository _fileRepo;
-        private readonly IPetService _service;
+        private readonly IPetService _petService;
+        private readonly IPetRepository _petRepo;
 
-        public PetsController(AppDbContext context, IMapper mapper, IFileRepository fileRepo, IPetService service)
+        public PetsController(AppDbContext context, IMapper mapper, IFileRepository fileRepo, IPetService petService, IPetRepository petRepo)
         {
             _context = context;
             _mapper = mapper;
             _fileRepo = fileRepo;
-            _service = service;
+            _petService = petService;
+            _petRepo = petRepo;
         }
         
         [HttpGet("{id}")]
@@ -41,9 +33,9 @@ namespace Puppy.Controllers
         public async Task<ActionResult<Pet>> GetPet(int id)
         {
 
-            var userId = Convert.ToInt32(HttpContext.User.Identity.Name);
+            var userId = Convert.ToInt32(HttpContext.User.Identity?.Name);
         
-            var pet = await _service.GetPetById(id);
+            var pet = await _petService.GetPetById(id);
 
             if (pet == null)
             {
@@ -69,7 +61,7 @@ namespace Puppy.Controllers
         [Authorize]
         public async Task<ActionResult<Pet>> GetPets(int userId)
         {
-            var pets = await _service.GetPetsByUser(userId);
+            var pets = await _petService.GetPetsByUser(userId);
 
             var responseDto = _mapper.Map<IEnumerable<GetPetDto>>(pets);
             return Ok(responseDto);
@@ -78,29 +70,12 @@ namespace Puppy.Controllers
         // PUT: api/Pets/5
         [HttpPut("{id}")]
         [Authorize]
-        public async Task<IActionResult> PutPet(int id, Pet pet)
+        public async Task<IActionResult> PutPet(UpdatePetDto updatePetDto, int petId)
         {
-            if (id != pet.Id)
+            var existingPet = await _petRepo.EditPet(updatePetDto, petId);
+            if (existingPet == null)
             {
-                return BadRequest();
-            }
-
-            _context.Entry(pet).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!PetExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return NotFound();
             }
 
             return NoContent();
@@ -111,17 +86,7 @@ namespace Puppy.Controllers
         [Authorize]
         public async Task<ActionResult<Pet>> PostPet([FromForm] AddPetRequestDto pet)
         {
-            if (_context.Pet == null)
-            {
-                return Problem("Entity set 'AppDbContext.Pet'  is null.");
-            }
-
-            var userId = HttpContext.User.Identity.Name;
-
-            if (string.IsNullOrEmpty(userId))
-            {
-                return Unauthorized();
-            }
+            var userId = Convert.ToInt32(HttpContext.User.Identity?.Name);
             List<string> imgs = new List<string>();
             foreach (var file in pet.Imgs)
             {
