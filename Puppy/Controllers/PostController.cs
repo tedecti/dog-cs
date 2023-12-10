@@ -4,6 +4,7 @@ using Curs.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Puppy.Data;
 using Puppy.Models.Dto;
 using Puppy.Repository.IRepository;
 

@@ -3,6 +3,7 @@ using AutoMapper;
 using Curs.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Puppy.Data;
 using Puppy.Models.Dto;
 
 namespace Puppy.Controllers;

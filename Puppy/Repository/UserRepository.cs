@@ -9,6 +9,7 @@ using System.Security.Claims;
 using AutoMapper;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
+using Puppy.Data;
 using Puppy.Services.Interfaces;
 
 namespace Puppy.Repository

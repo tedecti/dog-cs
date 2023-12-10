@@ -1,12 +1,17 @@
 using Curs.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace Curs.Data
+namespace Puppy.Data
 {
     public class AppDbContext : DbContext
     {
+        private readonly IConfiguration _configuration;
+        public AppDbContext(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-            => optionsBuilder.UseNpgsql("Host=cornelius.db.elephantsql.com;Database=qtzdvcyq;Username=qtzdvcyq;Password=jXT76DhO3geh4fq7halb_gCFVayQjShJ");
+            => optionsBuilder.UseNpgsql(_configuration.GetConnectionString("dogString"));
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -42,7 +47,7 @@ namespace Curs.Data
                 .WithMany(p => p.Documents);
         }
 
-        public DbSet<User> Users { get; set; }
+        public DbSet<User> Users { get; set; } = default!;
 
         public DbSet<Curs.Models.Pet> Pet { get; set; } = default!;
         public DbSet<Like> Like { get; set; } = default!;

@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Curs.Data;
 using Curs.Models;
 using Microsoft.AspNetCore.Authorization;
+using Puppy.Data;
 using Puppy.Models.Dto;
 
 namespace Puppy.Controllers
