@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Curs.Data;
 using Curs.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,17 +12,13 @@ namespace Puppy.Controllers
     [ApiController]
     public class PetsController : ControllerBase
     {
-        private readonly AppDbContext _context;
         private readonly IMapper _mapper;
-        private readonly IFileRepository _fileRepo;
         private readonly IPetService _petService;
         private readonly IPetRepository _petRepo;
 
-        public PetsController(AppDbContext context, IMapper mapper, IFileRepository fileRepo, IPetService petService, IPetRepository petRepo)
+        public PetsController(IMapper mapper, IPetService petService, IPetRepository petRepo)
         {
-            _context = context;
             _mapper = mapper;
-            _fileRepo = fileRepo;
             _petService = petService;
             _petRepo = petRepo;
         }
@@ -87,23 +82,7 @@ namespace Puppy.Controllers
         public async Task<ActionResult<Pet>> PostPet([FromForm] AddPetRequestDto pet)
         {
             var userId = Convert.ToInt32(HttpContext.User.Identity?.Name);
-            List<string> imgs = new List<string>();
-            foreach (var file in pet.Imgs)
-            {
-                imgs.Add(await _fileRepo.SaveFile(file));
-            }
-            
-            var newPet = new Pet()
-            {
-                Name = pet.Name,
-                PassportNumber = pet.PassportNumber,
-                UserId = Convert.ToInt32(userId),
-                Imgs = imgs.ToArray()
-            };
-
-            _context.Pet.Add(newPet);
-            await _context.SaveChangesAsync();
-            
+            await _petRepo.PostPet(pet, userId);
             return StatusCode(201);
         }
 
@@ -112,26 +91,12 @@ namespace Puppy.Controllers
         [Authorize]
         public async Task<IActionResult> DeletePet(int id)
         {
-            if (_context.Pet == null)
-            {
-                return NotFound();
-            }
-
-            var pet = await _context.Pet.FindAsync(id);
+            var pet = await _petRepo.DeletePet(id);
             if (pet == null)
             {
                 return NotFound();
             }
-
-            _context.Pet.Remove(pet);
-            await _context.SaveChangesAsync();
-
             return NoContent();
-        }
-
-        private bool PetExists(int id)
-        {
-            return (_context.Pet?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
