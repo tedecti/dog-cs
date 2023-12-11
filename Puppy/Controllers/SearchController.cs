@@ -1,10 +1,8 @@
 
 using AutoMapper;
-using Curs.Data;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Puppy.Data;
 using Puppy.Models.Dto;
+using Puppy.Services.Interfaces;
 
 namespace Puppy.Controllers;
 
@@ -12,29 +10,22 @@ namespace Puppy.Controllers;
 [ApiController]
 public class SearchController : ControllerBase
 {
-    private readonly AppDbContext _context;
+    private readonly ISearchService _searchService;
     private readonly IMapper _mapper;
     
-    public SearchController(AppDbContext context, IMapper mapper)
+    public SearchController(ISearchService searchService, IMapper mapper)
     {
-        _context = context;
+        _searchService = searchService;
         _mapper = mapper;
     }
 
     [HttpGet]
-    async public Task<IActionResult> Search([FromQuery] string query)
+    public async Task<IActionResult> Search([FromQuery] string query)
     {
-        var postResult = await _context.Post.Include(x=>x.User).Where(p =>
-            p.Title.ToLower().Contains(query.ToLower()))
-            .ToListAsync();
-
+        var postResult = await _searchService.SearchPosts(query);
         var postDtos = _mapper.Map<IEnumerable<GetPostDto>>(postResult);
-
-        var userResult = await _context.Users.Where(u => u.Username.ToLower().Contains(query.ToLower()))
-            .ToListAsync();
-
+        var userResult = await _searchService.SearchUsers(query);
         var resultDtos = _mapper.Map<IEnumerable<ShortUserDto>>(userResult);
-        
         var result = new
         {
             Posts = postDtos,
