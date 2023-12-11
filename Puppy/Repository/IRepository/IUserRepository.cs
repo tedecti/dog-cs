@@ -5,8 +5,8 @@ namespace Puppy.Repository.IRepository
 {
 	public interface IUserRepository
 	{
-		Task<LoginResponseDto> Login(LoginRequestDto loginRequestDTO);
-		Task<User> Register(RegistrationRequestDto registerRequestDTO);
+		Task<LoginResponseDto> Login(LoginRequestDto loginRequestDto);
+		Task<User> Register(RegistrationRequestDto registerRequestDto);
 		Task<User> Edit(UpdateUserDto updateUserDto, int userId);
 		Task<User> UploadAvatar(int userId, string fName);
 	}
