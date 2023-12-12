@@ -26,6 +26,7 @@ namespace Puppy
 
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<ISearchService, SearchService>();
             builder.Services.AddScoped<IPetService, PetService>();
             builder.Services.AddScoped<IFileRepository, FileRepository>();
 

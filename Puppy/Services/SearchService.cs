@@ -1,10 +1,11 @@
 using Curs.Models;
 using Microsoft.EntityFrameworkCore;
 using Puppy.Data;
+using Puppy.Services.Interfaces;
 
 namespace Puppy.Services;
 
-public class SearchService
+public class SearchService : ISearchService
 {
     private readonly AppDbContext _context;
 
