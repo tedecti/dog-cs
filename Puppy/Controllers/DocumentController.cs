@@ -13,6 +13,8 @@ using Microsoft.EntityFrameworkCore;
 using Puppy.Data;
 using Puppy.Repository;
 using Puppy.Repository.IRepository;
+using Puppy.Services;
+using Puppy.Services.Interfaces;
 
 namespace Puppy.Controllers
 {
@@ -21,14 +23,18 @@ namespace Puppy.Controllers
     public class DocumentController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IDocumentService _documentService;
+        private readonly IPetService _petService;
         private readonly IMapper _mapper;
         private readonly IFileRepository _fileRepo;
 
-        public DocumentController(AppDbContext context, IMapper mapper, IFileRepository fileRepo)
+        public DocumentController(AppDbContext context, IMapper mapper, IFileRepository fileRepo, IPetService petService, IDocumentService documentService)
         {
             _context = context;
             _mapper = mapper;
             _fileRepo = fileRepo;
+            _petService = petService;
+            _documentService = documentService;
         }
 
         // GET: api/Document/Pet/1
@@ -37,12 +43,12 @@ namespace Puppy.Controllers
         [Authorize]
         public async Task<ActionResult<GetDocumentDto>> GetDocument(int petId)
         {
-            if (petId == null)
+            var pet = await _petService.GetPetById(petId);
+            if (pet == null)
             {
                 return NotFound();
             }
-
-            var documents = await _context.Document.Where(x => x.PetId == petId).ToListAsync();
+            var documents = await _documentService.GetDocumentsByPet(petId);
             var documentDto = _mapper.Map<IEnumerable<ShortDocumentDto>>(documents);
             return Ok(documentDto);
         }
@@ -53,14 +59,9 @@ namespace Puppy.Controllers
         [Authorize]
         public async Task<ActionResult<GetDocumentDto>> GetDocumentById(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             var userId = Convert.ToInt32(HttpContext.User.Identity?.Name);
-            
-            var document = await _context.Document.Where(x => x.Id == id).Include(x => x.Pet).FirstOrDefaultAsync();
+
+            var document = await _documentService.GetDocumentById(id);
             
             if (document == null)
             {
@@ -75,7 +76,6 @@ namespace Puppy.Controllers
             {
                 return Forbid();
             }
-
             var documentDto = _mapper.Map<GetDocumentDto>(document);
             return Ok(documentDto);
         }
@@ -87,7 +87,7 @@ namespace Puppy.Controllers
         public async Task<ActionResult<Document>> PostDocument(int petId, [FromForm] UploadDocumentDto document)
         {
             var userId = Convert.ToInt32(HttpContext.User.Identity?.Name);
-            var pet = await _context.Pet.FindAsync(petId);
+            var pet = await _petService.GetPetById(petId);
 
             if (pet == null)
             {
