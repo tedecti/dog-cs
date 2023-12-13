@@ -2,6 +2,7 @@ using Curs.Data;
 using Curs.Models;
 using Puppy.Data;
 using Puppy.Models.Dto;
+using Puppy.Models.Dto.PetDtos;
 using Puppy.Repository.IRepository;
 using Puppy.Services;
 

@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Puppy.Data;
+using Puppy.Models.Dto.DocumentDto;
 using Puppy.Repository;
 using Puppy.Repository.IRepository;
 using Puppy.Services;
@@ -97,25 +98,7 @@ namespace Puppy.Controllers
             {
                 return Forbid();
             }
-            List<string> imgs = new List<string>();
-            foreach (var file in document.Imgs)
-            {
-                imgs.Add(await _fileRepo.SaveFile(file));
-            }
-            
-
-            var newDocument = new Document()
-            {
-                Title = document.Title,
-                Description = document.Description,
-                PetId = petId,
-                Imgs = imgs.ToArray(),
-                UploadDate = DateTime.UtcNow
-            };
-
-            _context.Document.Add(newDocument);
-            await _context.SaveChangesAsync();
-
+           
             return Ok();
         }
 

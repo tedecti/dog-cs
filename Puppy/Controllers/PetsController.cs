@@ -3,6 +3,7 @@ using Curs.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Puppy.Models.Dto;
+using Puppy.Models.Dto.PetDtos;
 using Puppy.Repository.IRepository;
 using Puppy.Services;
 

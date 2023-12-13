@@ -1,5 +1,6 @@
 using Curs.Models;
 using Puppy.Models.Dto;
+using Puppy.Models.Dto.PetDtos;
 
 namespace Puppy.Repository.IRepository;
 
