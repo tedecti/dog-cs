@@ -92,11 +92,7 @@ namespace Puppy.Controllers
         [Authorize]
         public async Task<IActionResult> DeletePet(int id)
         {
-            var pet = await _petRepo.DeletePet(id);
-            if (pet == null)
-            {
-                return NotFound();
-            }
+            await _petRepo.DeletePet(id);
             return NoContent();
         }
     }
