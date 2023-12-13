@@ -23,17 +23,15 @@ namespace Puppy.Controllers
     [ApiController]
     public class DocumentController : ControllerBase
     {
-        private readonly AppDbContext _context;
         private readonly IDocumentService _documentService;
         private readonly IPetService _petService;
         private readonly IMapper _mapper;
-        private readonly IFileRepository _fileRepo;
+        private readonly IDocumentRepository _documentRepository;
 
-        public DocumentController(AppDbContext context, IMapper mapper, IFileRepository fileRepo, IPetService petService, IDocumentService documentService)
+        public DocumentController(IDocumentRepository documentRepository, IMapper mapper, IPetService petService, IDocumentService documentService)
         {
-            _context = context;
             _mapper = mapper;
-            _fileRepo = fileRepo;
+            _documentRepository = documentRepository;
             _petService = petService;
             _documentService = documentService;
         }
@@ -98,22 +96,27 @@ namespace Puppy.Controllers
             {
                 return Forbid();
             }
-           
+
+            await _documentRepository.CreateDocument(document, petId);
             return Ok();
         }
 
         // PUT: api/Document/5
         [HttpPut("{id}")]
         [Authorize]
-        public void Put(int id, [FromBody] string value)
+        public async Task<IActionResult> PutDocument(UpdateDocumentDto updateDocumentDto, int id)
         {
+            await _documentRepository.EditDocument(updateDocumentDto, id);
+            return NoContent();
         }
 
         // DELETE: api/Document/5
         [HttpDelete("{id}")]
         [Authorize]
-        public void Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
+            await _documentRepository.DeleteDocument(id);
+            return NoContent();
         }
     }
 }
