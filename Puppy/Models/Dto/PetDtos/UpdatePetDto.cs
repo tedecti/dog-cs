@@ -1,4 +1,4 @@
-namespace Puppy.Models.Dto;
+namespace Puppy.Models.Dto.PetDtos;
 
 public class UpdatePetDto
 {
