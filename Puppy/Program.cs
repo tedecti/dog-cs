@@ -31,6 +31,7 @@ namespace Puppy
             builder.Services.AddScoped<IFileRepository, FileRepository>();
             builder.Services.AddScoped<IDocumentService, DocumentService>();
             builder.Services.AddScoped<IDocumentRepository, DocumentRepository>();
+            builder.Services.AddScoped<IPostService, PostService>();
 
             var key = builder.Configuration.GetValue<string>("ApiSettings:Secret");
 
