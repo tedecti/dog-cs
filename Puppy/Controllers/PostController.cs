@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Puppy.Data;
 using Puppy.Models.Dto;
+using Puppy.Repository;
 using Puppy.Repository.IRepository;
 
 namespace Puppy.Controllers
@@ -15,14 +16,14 @@ namespace Puppy.Controllers
     public class PostController : ControllerBase
     {
         private readonly AppDbContext _context;
-        private readonly IWebHostEnvironment _environment;
         private readonly IFileRepository _fileRepo;
+        private readonly IPostService _postService;
         private readonly IMapper _mapper;
 
-        public PostController(AppDbContext context, IWebHostEnvironment environment, IFileRepository fileRepo, IMapper mapper)
+        public PostController(AppDbContext context, IPostService postService, IFileRepository fileRepo, IMapper mapper)
         {
             _context = context;
-            _environment = environment;
+            _postService = postService;
             _fileRepo = fileRepo;
             _mapper = mapper;
         }
@@ -34,33 +35,7 @@ namespace Puppy.Controllers
         {
             var userId = Convert.ToInt32(HttpContext.User.Identity?.Name);
 
-            var friends = await _context.Friend.Where(f => f.UserId == userId).ToListAsync();
-
-            if (friends.Any())
-            {
-                var friendIds = friends.Select(f => f.FollowerId).ToList();
-
-                var friendPosts = await _context.Post
-                    .Where(p => friendIds.Contains(p.UserId))
-                    .Include(p=>p.User)
-                    .ToListAsync();
-
-                var otherPosts = await _context.Post
-                    .Where(p => !friendIds.Contains(p.UserId))
-                    .Include(p=>p.User)
-                    .OrderByDescending(p => p.UploadDate)
-                    .ToListAsync();
-
-                var combinedPosts = friendPosts.Concat(otherPosts);
-
-                var orderedDtos = _mapper.Map<IEnumerable<GetPostDto>>(combinedPosts);
-                return Ok(orderedDtos);
-            }
-
-            var allPosts = await _context.Post
-                .Include(p => p.User)
-                .OrderByDescending(p => p.UploadDate)
-                .ToListAsync();
+            var allPosts = await _postService.GetPosts(userId);
 
             var dtos = _mapper.Map<IEnumerable<GetPostDto>>(allPosts);
             return Ok(dtos);
@@ -71,11 +46,9 @@ namespace Puppy.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<GetPostDto>> GetPost(int id)
         {
-            if (_context.Post == null)
-            {
-                return NotFound();
-            }
-            var post = await _context.Post.Include(p => p.User).FirstOrDefaultAsync(p=> p.Id == id);
+
+            var post = await _postService.GetPostById(id);
+            
 
             if (post == null)
             {
