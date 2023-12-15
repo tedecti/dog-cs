@@ -15,16 +15,14 @@ namespace Puppy.Controllers
     [ApiController]
     public class PostController : ControllerBase
     {
-        private readonly AppDbContext _context;
-        private readonly IFileRepository _fileRepo;
+        private readonly IPostRepository _postRepository;
         private readonly IPostService _postService;
         private readonly IMapper _mapper;
 
-        public PostController(AppDbContext context, IPostService postService, IFileRepository fileRepo, IMapper mapper)
+        public PostController(IPostService postService, IPostRepository postRepository, IMapper mapper)
         {
-            _context = context;
             _postService = postService;
-            _fileRepo = fileRepo;
+            _postRepository = postRepository;
             _mapper = mapper;
         }
 
@@ -60,102 +58,39 @@ namespace Puppy.Controllers
             
             return Ok(dtos);
         }
-
-        // PUT: api/Post/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        
         [HttpPut("{id}")]
         [Authorize]
-        public async Task<IActionResult> PutPost(int id, Post post)
+        public async Task<IActionResult> PutPost(EditPostRequestDto editPostRequestDto, int id, Post post)
         {
             if (id != post.Id)
             {
                 return BadRequest();
             }
-
-            _context.Entry(post).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!PostExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            await _postRepository.EditPost(editPostRequestDto, id);
 
             return NoContent();
         }
 
-
-        // POST: api/Post
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        
         [HttpPost]
         [Authorize]
         public async Task<ActionResult<Post>> PostPost([FromForm] UploadPostRequestDto post)
         {
-            var userId = HttpContext.User.Identity?.Name;
-            int userIdInt = Convert.ToInt32(userId);
-            if (userIdInt == null)
-            {
-                return Unauthorized();
-            }
-            if (_context.Post == null)
-            {
-                return Problem("Entity set 'AppDbContext.Post'  is null.");
-            }
+            var userId = Convert.ToInt32(HttpContext.User.Identity?.Name);
 
-            List<string> imgs = new List<string>();
-            foreach (var file in post.Imgs)
-            {
-                imgs.Add(await _fileRepo.SaveFile(file));
-            }
+            await _postRepository.CreatePost(post, userId); 
             
-            var newPost = new Post()
-            {
-                Title = post.Title,
-                Description = post.Description,
-                UserId = userIdInt,
-                Imgs = imgs.ToArray(),
-                UploadDate = DateTime.UtcNow
-            };
-            _context.Post.Add(newPost);
-            await _context.SaveChangesAsync();
-
             return StatusCode(201);
         }
 
-        // DELETE: api/Post/5
         [HttpDelete("{id}")]
         [Authorize]
         public async Task<IActionResult> DeletePost(int id)
         {
-            if (_context.Post == null)
-            {
-                return NotFound();
-            }
-
-            var post = await _context.Post.FindAsync(id);
-            if (post == null)
-            {
-                return NotFound();
-            }
-
-            _context.Post.Remove(post);
-            await _context.SaveChangesAsync();
-
+            await _postRepository.DeletePost(id);
             return NoContent();
         }
-
-        private bool PostExists(int id)
-        {
-            return (_context.Post?.Any(e => e.Id == id)).GetValueOrDefault();
-        }
+        
     }
 }
