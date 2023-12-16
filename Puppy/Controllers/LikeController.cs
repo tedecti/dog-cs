@@ -52,27 +52,19 @@ namespace Puppy.Controllers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost("{PostId}")]
         [Authorize]
-        public async Task<ActionResult<Like>> PostLike(int PostId)
+        public async Task<ActionResult<Like>> PostLike(int postId)
         {
             var userId = HttpContext.User.Identity?.Name;
             int userIdInt = Convert.ToInt32(userId);
-            if (userIdInt == null)
-            {
-                return Unauthorized();
-            }
-
-            if (_context.Like == null)
-            {
-                return Problem("Entity set 'AppDbContext.Like' is null.");
-            }
             
-            var existingLike = await _context.Like.FirstOrDefaultAsync(l => l.UserId.ToString() == userId && l.PostId == PostId);
+            
+            var existingLike = await _context.Like.FirstOrDefaultAsync(l => l.UserId.ToString() == userId && l.PostId == postId);
             if (existingLike != null)
             {
                 return BadRequest("Like is already exist.");
             }
 
-            if (PostId == null)
+            if (postId == null)
             {
                 return NotFound();
             }
@@ -80,7 +72,7 @@ namespace Puppy.Controllers
             var newLike = new Like()
             {
                 UserId = userIdInt,
-                PostId = PostId,
+                PostId = postId,
             };
 
             _context.Like.Add(newLike);
@@ -94,26 +86,13 @@ namespace Puppy.Controllers
         [Authorize]
         public async Task<IActionResult> DeleteLike(int PostId)
         {
-            var UserId = HttpContext.User.Identity?.Name;
-            var like = await _context.Like.FirstOrDefaultAsync(l => l.PostId == PostId && l.UserId.ToString() == UserId);
-            if (_context.Like == null)
-            {
-                return NotFound();
-            }
+            var userId = HttpContext.User.Identity?.Name;
+            var like = await _context.Like.FirstOrDefaultAsync(l => l.PostId == PostId && l.UserId.ToString() == userId);
             if (like == null)
             {
                 return NotFound();
             }
-
-            _context.Like.Remove(like);
-            await _context.SaveChangesAsync();
-
             return NoContent();
-        }
-
-        private bool LikeExists(int id)
-        {
-            return (_context.Like?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
