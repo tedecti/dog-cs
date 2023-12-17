@@ -28,21 +28,11 @@ namespace Puppy.Controllers
         // GET: api/Like/1
         [HttpGet("{postId}")]
         [Authorize]
-        public async Task<ActionResult<bool>> GetLike(string postId)
+        public async Task<ActionResult<bool>> GetLike(int postId)
         {
-          if (_context.Like == null)
-          {
-              return NotFound();
-          }
-          
-          var userId = HttpContext.User.Identity?.Name;
+          var userId = Convert.ToInt32(HttpContext.User.Identity?.Name);
 
-          if (string.IsNullOrEmpty(userId))
-          {
-              return Unauthorized();
-          }
-
-          var like = await _context.Like.Where(x => x.PostId.ToString() == postId && x.UserId.ToString() == userId)
+          var like = await _context.Like.Where(x => x.PostId == postId && x.UserId == userId)
               .FirstOrDefaultAsync();
           if (like == null) return false;
           return true;
