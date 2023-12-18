@@ -1,12 +1,10 @@
-using Curs.Data;
+
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Puppy.Repository;
 using Puppy.Repository.IRepository;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using System.Text.Json;
 using System.Text.Json.Serialization;
-using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.OpenApi.Models;
 using Puppy.Data;
 using Puppy.Services;
@@ -32,6 +30,10 @@ namespace Puppy
             builder.Services.AddScoped<IDocumentService, DocumentService>();
             builder.Services.AddScoped<IDocumentRepository, DocumentRepository>();
             builder.Services.AddScoped<IPostService, PostService>();
+            builder.Services.AddScoped<IPostRepository, PostRepository>();
+            builder.Services.AddScoped<ILikeService, LikeService>();
+            builder.Services.AddScoped<ILikeRepository, LikeRepository>();
+            
 
             var key = builder.Configuration.GetValue<string>("ApiSettings:Secret");
 
