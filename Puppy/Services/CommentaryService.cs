@@ -2,10 +2,11 @@ using Curs.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Puppy.Data;
+using Puppy.Services.Interfaces;
 
 namespace Puppy.Services;
 
-public class CommentaryService
+public class CommentaryService : ICommentaryService
 {
     private readonly AppDbContext _context;
 
