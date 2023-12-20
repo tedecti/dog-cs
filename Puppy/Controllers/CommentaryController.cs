@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,6 +12,7 @@ using Curs.Models;
 using Microsoft.AspNetCore.Authorization;
 using Puppy.Data;
 using Puppy.Models.Dto;
+using Puppy.Services.Interfaces;
 
 namespace Puppy.Controllers
 {
@@ -20,47 +22,36 @@ namespace Puppy.Controllers
     {
         private readonly AppDbContext _context;
         private readonly IMapper _mapper;
+        private readonly ICommentaryService _commentaryService;
 
-        public CommentaryController(AppDbContext context, IMapper mapper)
+        public CommentaryController(AppDbContext context, IMapper mapper, ICommentaryService commentaryService)
         {
             _context = context;
             _mapper = mapper;
+            _commentaryService = commentaryService;
         }
-        
+
         // GET: api/Commentary/5
         [HttpGet("{postId}")]
         public async Task<ActionResult<PostCommentaries>> GetCommentary(int postId)
         {
-            try
+            var comments = _commentaryService.GetCommentaries(postId);
+            if (comments == null)
             {
-                var comments = await _context.Commentary 
-                    .Include(x=>x.User)
-                    .Where(comment => comment.PostId == postId)
-                    .ToListAsync();
-
-                if (comments == null )
-                {
-                    return NotFound();
-                }
-
-                var commentDtos = _mapper.Map<IEnumerable<GetCommentsDto>>(comments);
-
-                int count = _context.Commentary
-                    .Include(x => x.User)
-                    .Where(comment => comment.PostId == postId).Count();
-                
-                var response = new PostCommentaries()
-                {
-                    comments = commentDtos,
-                    total = count,
-                };
-                
-                return Ok(response);
+                return NotFound();
             }
-            catch (Exception ex)
+
+            var commentDtos = _mapper.Map<IEnumerable<GetCommentsDto>>(comments);
+
+            var count = Convert.ToInt32(_commentaryService.GetTotal(postId));
+
+            var response = new PostCommentaries()
             {
-                return StatusCode(500, "Internal Server Error: " + ex.Message);
-            }
+                Comments = commentDtos,
+                Total = count,
+            };
+
+            return Ok(response);
         }
 
         // PUT: api/Commentary/5
@@ -102,18 +93,19 @@ namespace Puppy.Controllers
         [Authorize]
         public async Task<ActionResult<Commentary>> PostCommentary(int postId, AddCommentaryRequestDto commentary)
         {
-          if (_context.Commentary == null)
-          {
-              return Problem("Entity set 'AppDbContext.Commentary'  is null.");
-          }
-          var userId = HttpContext.User.Identity?.Name;
-          var newCommentary = new Commentary()
-          {
-              PostId = postId,
-              UserId = Convert.ToInt32(userId),
-              Text = commentary.Text,
-              UploadDate = DateTime.UtcNow
-          };
+            if (_context.Commentary == null)
+            {
+                return Problem("Entity set 'AppDbContext.Commentary'  is null.");
+            }
+
+            var userId = HttpContext.User.Identity?.Name;
+            var newCommentary = new Commentary()
+            {
+                PostId = postId,
+                UserId = Convert.ToInt32(userId),
+                Text = commentary.Text,
+                UploadDate = DateTime.UtcNow
+            };
             _context.Commentary.Add(newCommentary);
             await _context.SaveChangesAsync();
 
@@ -126,7 +118,8 @@ namespace Puppy.Controllers
         public async Task<IActionResult> DeleteCommentary(int PostId)
         {
             var UserId = HttpContext.User.Identity?.Name;
-            var commentary = await _context.Commentary.FirstOrDefaultAsync(c => c.PostId == PostId && c.UserId.ToString() == UserId);
+            var commentary =
+                await _context.Commentary.FirstOrDefaultAsync(c => c.PostId == PostId && c.UserId.ToString() == UserId);
             if (_context.Commentary == null)
             {
                 return NotFound();
