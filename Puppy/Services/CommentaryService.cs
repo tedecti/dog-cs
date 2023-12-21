@@ -30,4 +30,10 @@ public class CommentaryService : ICommentaryService
             .Include(x => x.User).Count(comment => comment.PostId == postId);
         return Task.FromResult(count);
     }
+
+    public async Task<Commentary> GetComment(int commentaryId)
+    {
+        var comment = await _context.Commentary.FirstAsync(c => c.Id == commentaryId);
+        return comment;
+    }
 }
