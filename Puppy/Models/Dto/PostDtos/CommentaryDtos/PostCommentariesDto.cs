@@ -1,6 +1,6 @@
-﻿namespace Puppy.Models.Dto;
+﻿namespace Puppy.Models.Dto.PostDtos.CommentaryDtos;
 
-public class PostCommentaries
+public class PostCommentariesDto
 {
     public int Total { get; set; }
     public IEnumerable<GetCommentsDto> Comments { get; set; }
