@@ -33,6 +33,8 @@ namespace Puppy
             builder.Services.AddScoped<IPostRepository, PostRepository>();
             builder.Services.AddScoped<ILikeService, LikeService>();
             builder.Services.AddScoped<ILikeRepository, LikeRepository>();
+            builder.Services.AddScoped<ICommentaryRepository, CommentaryRepository>();
+            builder.Services.AddScoped<ICommentaryService, CommentaryService>();
             
 
             var key = builder.Configuration.GetValue<string>("ApiSettings:Secret");
