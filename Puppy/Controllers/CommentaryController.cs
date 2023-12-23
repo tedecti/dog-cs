@@ -12,6 +12,8 @@ using Curs.Models;
 using Microsoft.AspNetCore.Authorization;
 using Puppy.Data;
 using Puppy.Models.Dto;
+using Puppy.Models.Dto.PostDtos.CommentaryDtos;
+using Puppy.Repository.IRepository;
 using Puppy.Services.Interfaces;
 
 namespace Puppy.Controllers
@@ -23,17 +25,19 @@ namespace Puppy.Controllers
         private readonly AppDbContext _context;
         private readonly IMapper _mapper;
         private readonly ICommentaryService _commentaryService;
+        private readonly ICommentaryRepository _commentaryRepository;
 
-        public CommentaryController(AppDbContext context, IMapper mapper, ICommentaryService commentaryService)
+        public CommentaryController(AppDbContext context, IMapper mapper, ICommentaryService commentaryService, ICommentaryRepository commentaryRepository)
         {
             _context = context;
             _mapper = mapper;
             _commentaryService = commentaryService;
+            _commentaryRepository = commentaryRepository;
         }
 
         // GET: api/Commentary/5
         [HttpGet("{postId}")]
-        public async Task<ActionResult<PostCommentaries>> GetCommentary(int postId)
+        public async Task<ActionResult<PostCommentariesDto>> GetCommentary(int postId)
         {
             var comments = _commentaryService.GetCommentaries(postId);
             if (comments == null)
@@ -45,7 +49,7 @@ namespace Puppy.Controllers
 
             var count = Convert.ToInt32(_commentaryService.GetTotal(postId));
 
-            var response = new PostCommentaries()
+            var response = new PostCommentariesDto()
             {
                 Comments = commentDtos,
                 Total = count,
@@ -93,22 +97,8 @@ namespace Puppy.Controllers
         [Authorize]
         public async Task<ActionResult<Commentary>> PostCommentary(int postId, AddCommentaryRequestDto commentary)
         {
-            if (_context.Commentary == null)
-            {
-                return Problem("Entity set 'AppDbContext.Commentary'  is null.");
-            }
-
-            var userId = HttpContext.User.Identity?.Name;
-            var newCommentary = new Commentary()
-            {
-                PostId = postId,
-                UserId = Convert.ToInt32(userId),
-                Text = commentary.Text,
-                UploadDate = DateTime.UtcNow
-            };
-            _context.Commentary.Add(newCommentary);
-            await _context.SaveChangesAsync();
-
+            var userId = Convert.ToInt32(HttpContext.User.Identity?.Name);
+            await _commentaryRepository.CreateCommentary(commentary, userId, postId);
             return StatusCode(201);
         }
 
