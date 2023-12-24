@@ -62,31 +62,10 @@ namespace Puppy.Controllers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         [Authorize]
-        public async Task<IActionResult> PutCommentary(int id, Commentary commentary)
+        public async Task<IActionResult> PutCommentary(int id, AddCommentaryRequestDto editCommentaryRequestDto)
         {
-            if (id != commentary.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(commentary).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CommentaryExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
+            var userId = Convert.ToInt32(HttpContext.User.Identity?.Name);
+            await _commentaryRepository.EditCommentary(editCommentaryRequestDto, userId, id);
             return NoContent();
         }
 
