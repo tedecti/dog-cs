@@ -30,11 +30,19 @@ public class CommentaryRepository : ICommentaryRepository
         return newCommentary;
     }
 
-    public async Task<Commentary> EditCommentary(AddCommentaryRequestDto editCommentaryRequestDto, int userId, int commentaryId)
+    public async Task<Commentary> EditCommentary(AddCommentaryRequestDto editCommentaryRequestDto, int commentaryId)
     {
         var existingCommentary = await _commentaryService.GetComment(commentaryId);
         existingCommentary.Text = editCommentaryRequestDto.Text;
         await _context.SaveChangesAsync();
         return existingCommentary;
+    }
+
+    public async Task<Commentary> DeleteCommentary(int commentId)
+    {
+        var commentary = await _commentaryService.GetComment(commentId);
+        _context.Commentary.Remove(commentary);
+        await _context.SaveChangesAsync();
+        return commentary;
     }
 }
