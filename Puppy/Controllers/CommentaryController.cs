@@ -64,8 +64,8 @@ namespace Puppy.Controllers
         [Authorize]
         public async Task<IActionResult> PutCommentary(int id, AddCommentaryRequestDto editCommentaryRequestDto)
         {
-            var userId = Convert.ToInt32(HttpContext.User.Identity?.Name);
-            await _commentaryRepository.EditCommentary(editCommentaryRequestDto, userId, id);
+            // var userId = Convert.ToInt32(HttpContext.User.Identity?.Name);
+            await _commentaryRepository.EditCommentary(editCommentaryRequestDto, id);
             return NoContent();
         }
 
@@ -84,30 +84,10 @@ namespace Puppy.Controllers
         // DELETE: api/Commentary/5
         [HttpDelete("{PostId}")]
         [Authorize]
-        public async Task<IActionResult> DeleteCommentary(int PostId)
+        public async Task<IActionResult> DeleteCommentary(int commentId)
         {
-            var UserId = HttpContext.User.Identity?.Name;
-            var commentary =
-                await _context.Commentary.FirstOrDefaultAsync(c => c.PostId == PostId && c.UserId.ToString() == UserId);
-            if (_context.Commentary == null)
-            {
-                return NotFound();
-            }
-
-            if (commentary == null)
-            {
-                return NotFound();
-            }
-
-            _context.Commentary.Remove(commentary);
-            await _context.SaveChangesAsync();
-
+            await _commentaryRepository.DeleteCommentary(commentId);
             return NoContent();
-        }
-
-        private bool CommentaryExists(int id)
-        {
-            return (_context.Commentary?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
