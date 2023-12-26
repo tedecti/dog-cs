@@ -26,11 +26,6 @@ public class FriendsController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<ActionResult<string>> RemoveFriend(int id)
     {
-        if (_context.Users == null)
-        {
-            return Problem("Entity set 'AppDbContext.Users'  is null.");
-        }
-
         var userId = HttpContext.User.Identity?.Name;
 
         if (string.IsNullOrEmpty(userId))
@@ -55,10 +50,6 @@ public class FriendsController : ControllerBase
     [HttpPost("{id}")]
     public async Task<ActionResult<string>> AddFriend(int id)
     {
-        if (_context.Users == null)
-        {
-            return Problem("Entity set 'AppDbContext.Users'  is null.");
-        }
 
         var userId = HttpContext.User.Identity?.Name;
 
@@ -95,10 +86,6 @@ public class FriendsController : ControllerBase
     [HttpGet("{UserId}")]
     public async Task<ActionResult<IEnumerable<Friend>>> GetFriends(int UserId)
     {
-        if (_context.Friend == null)
-        {
-            return Problem("Entity set 'AppDbContext.Friend' is null.");
-        }
 
         var friends = await _context.Friend.Where(x => x.FollowerId == UserId).Include(x=>x.User)
             .ToListAsync();
@@ -109,10 +96,6 @@ public class FriendsController : ControllerBase
     [HttpGet("/api/followers/{UserId}")]
     public async Task<ActionResult<IEnumerable<Friend>>> GetFollowers(int UserId)
     {
-        if (_context.Friend == null)
-        {
-            return Problem("Entity set 'AppDbContext.Friend' is null.");
-        }
 
         var followers = await _context.Friend.Where(x => x.FollowerId == UserId).Include(x=>x.User).Include(x=>x.Follower)
             .ToListAsync();
@@ -126,11 +109,6 @@ public class FriendsController : ControllerBase
     public async Task<ActionResult<bool>> IsFriend(int UserId)
     {
         int currentUserId = Convert.ToInt32(User.Identity?.Name);
-
-        if (_context.Friend == null)
-        {
-            return Problem("Entity set 'AppDbContext.Friend' is null.");
-        }
 
         var follower = await _context.Friend.Where(x => x.FollowerId == currentUserId && x.UserId == UserId)
             .FirstOrDefaultAsync();
