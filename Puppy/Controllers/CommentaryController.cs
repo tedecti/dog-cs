@@ -22,14 +22,12 @@ namespace Puppy.Controllers
     [ApiController]
     public class CommentaryController : ControllerBase
     {
-        private readonly AppDbContext _context;
         private readonly IMapper _mapper;
         private readonly ICommentaryService _commentaryService;
         private readonly ICommentaryRepository _commentaryRepository;
 
-        public CommentaryController(AppDbContext context, IMapper mapper, ICommentaryService commentaryService, ICommentaryRepository commentaryRepository)
+        public CommentaryController(IMapper mapper, ICommentaryService commentaryService, ICommentaryRepository commentaryRepository)
         {
-            _context = context;
             _mapper = mapper;
             _commentaryService = commentaryService;
             _commentaryRepository = commentaryRepository;
@@ -39,7 +37,7 @@ namespace Puppy.Controllers
         [HttpGet("{postId}")]
         public async Task<ActionResult<PostCommentariesDto>> GetCommentary(int postId)
         {
-            var comments = _commentaryService.GetCommentaries(postId);
+            var comments = await _commentaryService.GetCommentaries(postId);
             if (comments == null)
             {
                 return NotFound();
@@ -59,7 +57,6 @@ namespace Puppy.Controllers
         }
 
         // PUT: api/Commentary/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         [Authorize]
         public async Task<IActionResult> PutCommentary(int id, AddCommentaryRequestDto editCommentaryRequestDto)
