@@ -1,3 +1,4 @@
+using Curs.Models;
 using Microsoft.EntityFrameworkCore;
 using Puppy.Data;
 using Puppy.Services.Interfaces;
@@ -18,5 +19,11 @@ public class FriendService : IFriendService
         var follower = await _context.Friend.Where(x => x.FollowerId == currentUserId && x.UserId == userId)
             .FirstOrDefaultAsync();
         return follower != null;
+    }
+
+    public async Task<IEnumerable<Friend>> GetFriends(int userId)
+    {
+        var friend = await _context.Friend.Where(f=> f.FollowerId == userId).Include(f=>f.User).ToListAsync();
+        return friend;
     }
 }
