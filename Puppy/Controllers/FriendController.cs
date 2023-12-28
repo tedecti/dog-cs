@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Collections;
+using AutoMapper;
 using Curs.Data;
 using Curs.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Puppy.Data;
 using Puppy.Models.Dto;
+using Puppy.Services.Interfaces;
 
 namespace Puppy.Controllers;
 
@@ -14,12 +16,14 @@ namespace Puppy.Controllers;
 public class FriendsController : ControllerBase
 {
     private readonly AppDbContext _context;
+    private readonly IFriendService _friendService;
     private readonly IMapper _mapper;
 
-    public FriendsController(AppDbContext context, IMapper mapper)
+    public FriendsController(AppDbContext context, IMapper mapper, IFriendService friendService)
     {
         _context = context;
         _mapper = mapper;
+        _friendService = friendService;
     }
 
     [Authorize]
@@ -83,38 +87,33 @@ public class FriendsController : ControllerBase
     }
 
     
-    [HttpGet("{UserId}")]
-    public async Task<ActionResult<IEnumerable<Friend>>> GetFriends(int UserId)
+    [HttpGet("{userId}")]
+    public async Task<IActionResult> GetFriends(int userId)
     {
-
-        var friends = await _context.Friend.Where(x => x.FollowerId == UserId).Include(x=>x.User)
-            .ToListAsync();
-
-        return Ok(_mapper.Map<IEnumerable<GetFollowersDto>>(friends));
+        var friends = await _friendService.GetFriends(userId);
+        var response = _mapper.Map<IEnumerable<GetFollowersDto>>(friends);
+        return Ok(response);
     }
     
-    [HttpGet("/api/followers/{UserId}")]
-    public async Task<ActionResult<IEnumerable<Friend>>> GetFollowers(int UserId)
-    {
-
-        var followers = await _context.Friend.Where(x => x.FollowerId == UserId).Include(x=>x.User).Include(x=>x.Follower)
-            .ToListAsync();
-        
-
-        return Ok(_mapper.Map<IEnumerable<GetFollowersDto>>(followers));
-    }
+    // [HttpGet("/api/followers/{userId}")]
+    // public async Task<ActionResult<IEnumerable<Friend>>> GetFollowers(int userId)
+    // {
+    //
+    //     var followers = await _context.Friend.Where(x => x.FollowerId == userId).Include(x=>x.User).Include(x=>x.Follower)
+    //         .ToListAsync();
+    //
+    //     var response = _mapper.Map<IEnumerable<GetFollowersDto>>(followers);
+    //     return Ok(response);
+    // }
 
     [Authorize]
-    [HttpGet("{UserId}/check")]
-    public async Task<ActionResult<bool>> IsFriend(int UserId)
+    [HttpGet("{userId}/check")]
+    public async Task<ActionResult<bool>> IsFriend(int userId)
     {
-        int currentUserId = Convert.ToInt32(User.Identity?.Name);
+        var currentUserId = Convert.ToInt32(User.Identity?.Name);
 
-        var follower = await _context.Friend.Where(x => x.FollowerId == currentUserId && x.UserId == UserId)
-            .FirstOrDefaultAsync();
-
-        if (follower == null) return false;
-
-        return true;
+        var follower = await _friendService.IsFriend(userId, currentUserId);
+        
+        return follower;
     }
 }
