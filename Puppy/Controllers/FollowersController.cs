@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Puppy.Data;
-using Puppy.Models;
 using Puppy.Models.Dto.FollowerDtos;
+using Puppy.Repository.Interfaces;
 using Puppy.Services.Interfaces;
 
 namespace Puppy.Controllers;
@@ -15,37 +15,15 @@ public class FollowersController : ControllerBase
 {
     private readonly AppDbContext _context;
     private readonly IFollowerService _followerService;
+    private readonly IFollowerRepository _followerRepository;
     private readonly IMapper _mapper;
 
-    public FollowersController(AppDbContext context, IMapper mapper, IFollowerService followerService)
+    public FollowersController(AppDbContext context, IMapper mapper, IFollowerService followerService, IFollowerRepository followerRepository)
     {
         _context = context;
         _mapper = mapper;
         _followerService = followerService;
-    }
-
-    [Authorize]
-    [HttpDelete("{id}")]
-    public async Task<ActionResult<string>> RemoveFollow(int id)
-    {
-        var userId = HttpContext.User.Identity?.Name;
-
-        if (string.IsNullOrEmpty(userId))
-        {
-            return Unauthorized();
-        }
-
-        var existingFriend = await _context.Friend.FirstOrDefaultAsync(
-            f => f.FollowerId.ToString() == userId && f.UserId == id);
-
-        if (existingFriend == null)
-        {
-            return BadRequest("You are not followed");
-        }
-
-        _context.Friend.Remove(existingFriend);
-        await _context.SaveChangesAsync();
-        return NoContent();
+        _followerRepository = followerRepository;
     }
 
     [Authorize]
@@ -60,30 +38,44 @@ public class FollowersController : ControllerBase
             return Unauthorized();
         }
 
-        var existingFriend = await _context.Friend.FirstOrDefaultAsync(
-            f => f.FollowerId.ToString() == userId && f.UserId == id);
-        if (existingFriend != null)
-        {
-            return BadRequest("You already followed");
-        }
+        var existingFollow = await _followerService.IsFollowed(id, Convert.ToInt32(userId));
 
+        if (existingFollow == true)
+        {
+            return BadRequest("You already followed this person");
+        }
+        
         if (userId == id.ToString())
         {
             return BadRequest("You can't follow yourself");
         }
 
-        var newFriend = new Friend()
-        {
-            UserId = id,
-            FollowerId = Convert.ToInt32(userId)
-        };
-
-        _context.Friend.Add(newFriend);
-        await _context.SaveChangesAsync();
+        await _followerRepository.Follow(id, Convert.ToInt32(userId));
 
         return StatusCode(201);
     }
 
+    [Authorize]
+    [HttpDelete("{id}")]
+    public async Task<ActionResult<string>> RemoveFollow(int id)
+    {
+        var userId = HttpContext.User.Identity?.Name;
+
+        if (string.IsNullOrEmpty(userId))
+        {
+            return Unauthorized();
+        }
+
+        var existingFriend = await _followerService.IsFollowed(id, Convert.ToInt32(userId));
+
+        if (existingFriend == false)
+        {
+            return BadRequest("You are not followed");
+        }
+
+        await _followerRepository.Unfollow(id, Convert.ToInt32(userId));
+        return NoContent();
+    }
     
     [HttpGet("{userId}")]
     public async Task<IActionResult> GetFollowers(int userId)
