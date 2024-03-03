@@ -5,11 +5,11 @@ using Puppy.Services.Interfaces;
 
 namespace Puppy.Services;
 
-public class FriendService : IFriendService
+public class FollowerService : IFollowerService
 {
     private readonly AppDbContext _context;
 
-    public FriendService(AppDbContext context)
+    public FollowerService(AppDbContext context)
     {
         _context = context;
     }

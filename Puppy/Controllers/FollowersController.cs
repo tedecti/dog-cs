@@ -11,19 +11,19 @@ using Puppy.Services.Interfaces;
 
 namespace Puppy.Controllers;
 
-[Route("api/friends")]
+[Route("api/followers")]
 [ApiController]
-public class FriendsAndFollowersController : ControllerBase
+public class FollowersController : ControllerBase
 {
     private readonly AppDbContext _context;
-    private readonly IFriendService _friendService;
+    private readonly IFollowerService _followerService;
     private readonly IMapper _mapper;
 
-    public FriendsAndFollowersController(AppDbContext context, IMapper mapper, IFriendService friendService)
+    public FollowersController(AppDbContext context, IMapper mapper, IFollowerService followerService)
     {
         _context = context;
         _mapper = mapper;
-        _friendService = friendService;
+        _followerService = followerService;
     }
 
     [Authorize]
@@ -90,7 +90,7 @@ public class FriendsAndFollowersController : ControllerBase
     // [HttpGet("{userId}/friends")]
     // public async Task<IActionResult> GetFriends(int userId)
     // {
-    //     var friends = await _friendService.GetFollowers(userId);
+    //     var friends = await _followerService.GetFollowers(userId);
     //     var response = _mapper.Map<IEnumerable<GetFollowersDto>>(friends);
     //     return Ok(response);
     //     
@@ -98,7 +98,7 @@ public class FriendsAndFollowersController : ControllerBase
     [HttpGet("{userId}/followers")]
     public async Task<IActionResult> GetFollowers(int userId)
     {
-        var friends = await _friendService.GetFollowers(userId);
+        var friends = await _followerService.GetFollowers(userId);
         var response = _mapper.Map<IEnumerable<GetFollowersDto>>(friends);
         return Ok(response);
         
@@ -110,7 +110,7 @@ public class FriendsAndFollowersController : ControllerBase
     {
         var currentUserId = Convert.ToInt32(User.Identity?.Name);
 
-        var follower = await _friendService.IsFollowed(userId, currentUserId);
+        var follower = await _followerService.IsFollowed(userId, currentUserId);
         
         return follower;
     }
