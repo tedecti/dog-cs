@@ -37,7 +37,7 @@ namespace Puppy.Controllers
         public async Task<ActionResult<PostCommentariesDto>> GetCommentary(int postId)
         {
             var comments = await _commentaryService.GetCommentaries(postId);
-            if (comments == null)
+            if (string.IsNullOrEmpty(comments.ToString()))
             {
                 return NotFound();
             }
@@ -65,8 +65,7 @@ namespace Puppy.Controllers
             return NoContent();
         }
 
-        // POST: api/Commentary/1
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+
         [Route("{postId}")]
         [HttpPost]
         [Authorize]
