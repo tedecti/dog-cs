@@ -1,9 +1,13 @@
 ﻿using AutoMapper;
-using Curs.Models;
-using Curs.Models.Dto.DocumentDto;
-using Puppy.Models.Dto;
+using Puppy.Models;
+using Puppy.Models.Dto.DocumentDto;
+using Puppy.Models.Dto.FollowerDtos;
+using Puppy.Models.Dto.PetDtos;
+using Puppy.Models.Dto.PostDtos;
+using Puppy.Models.Dto.PostDtos.CommentaryDtos;
+using Puppy.Models.Dto.UserDtos;
 
-namespace Curs.Data;
+namespace Puppy.Data;
 
 public class AutoMapper : Profile
 {

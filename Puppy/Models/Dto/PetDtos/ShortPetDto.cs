@@ -1,6 +1,4 @@
-using Curs.Models.Dto.DocumentDto;
-
-namespace Puppy.Models.Dto;
+namespace Puppy.Models.Dto.PetDtos;
 
 public class ShortPetDto
 {

@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Curs.Models;
 
-namespace Puppy.Models.Dto
+namespace Puppy.Models.Dto.PetDtos
 {
 	public class AddPetRequestDto
 	{

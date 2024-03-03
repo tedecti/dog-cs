@@ -1,6 +1,6 @@
-﻿using Curs.Models;
+﻿using Puppy.Models.Dto.UserDtos;
 
-namespace Puppy.Models.Dto
+namespace Puppy.Models.Dto.AuthDtos
 {
 	public class LoginResponseDto
 	{

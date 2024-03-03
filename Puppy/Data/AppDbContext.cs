@@ -1,5 +1,5 @@
-using Curs.Models;
 using Microsoft.EntityFrameworkCore;
+using Puppy.Models;
 
 namespace Puppy.Data
 {
@@ -49,14 +49,14 @@ namespace Puppy.Data
 
         public DbSet<User> Users { get; set; } = default!;
 
-        public DbSet<Curs.Models.Pet> Pet { get; set; } = default!;
+        public DbSet<Pet> Pet { get; set; } = default!;
         public DbSet<Like> Like { get; set; } = default!;
 
-        public DbSet<Curs.Models.Post> Post { get; set; } = default!;
+        public DbSet<Post> Post { get; set; } = default!;
 
-        public DbSet<Curs.Models.Commentary> Commentary { get; set; } = default!;
+        public DbSet<Commentary> Commentary { get; set; } = default!;
 
-        public DbSet<Curs.Models.Friend> Friend { get; set; } = default!;
+        public DbSet<Friend> Friend { get; set; } = default!;
         public DbSet<Document> Document { get; set; } = default!;
     }
 }

@@ -2,6 +2,8 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Puppy.Models.Dto;
+using Puppy.Models.Dto.PostDtos;
+using Puppy.Models.Dto.UserDtos;
 using Puppy.Services.Interfaces;
 
 namespace Puppy.Controllers;

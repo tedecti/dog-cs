@@ -8,7 +8,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using Puppy.Config;
-using Puppy.Repository.IRepository;
+using Puppy.Repository.Interfaces;
 
 namespace Puppy.Repository
 {

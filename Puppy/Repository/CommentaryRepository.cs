@@ -1,7 +1,8 @@
-using Curs.Models;
 using Puppy.Data;
+using Puppy.Models;
 using Puppy.Models.Dto;
-using Puppy.Repository.IRepository;
+using Puppy.Models.Dto.PostDtos.CommentaryDtos;
+using Puppy.Repository.Interfaces;
 using Puppy.Services.Interfaces;
 
 namespace Puppy.Repository;

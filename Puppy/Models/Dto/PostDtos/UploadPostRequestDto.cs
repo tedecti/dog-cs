@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Puppy.Models.Dto;
+namespace Puppy.Models.Dto.PostDtos;
 
 public class UploadPostRequestDto
 {

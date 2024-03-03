@@ -1,25 +1,25 @@
 ﻿using System.Collections;
 using AutoMapper;
-using Curs.Data;
-using Curs.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Puppy.Data;
+using Puppy.Models;
 using Puppy.Models.Dto;
+using Puppy.Models.Dto.FollowerDtos;
 using Puppy.Services.Interfaces;
 
 namespace Puppy.Controllers;
 
 [Route("api/friends")]
 [ApiController]
-public class FriendsController : ControllerBase
+public class FriendsAndFollowersController : ControllerBase
 {
     private readonly AppDbContext _context;
     private readonly IFriendService _friendService;
     private readonly IMapper _mapper;
 
-    public FriendsController(AppDbContext context, IMapper mapper, IFriendService friendService)
+    public FriendsAndFollowersController(AppDbContext context, IMapper mapper, IFriendService friendService)
     {
         _context = context;
         _mapper = mapper;
@@ -93,18 +93,8 @@ public class FriendsController : ControllerBase
         var friends = await _friendService.GetFriends(userId);
         var response = _mapper.Map<IEnumerable<GetFollowersDto>>(friends);
         return Ok(response);
+        
     }
-    
-    // [HttpGet("/api/followers/{userId}")]
-    // public async Task<ActionResult<IEnumerable<Friend>>> GetFollowers(int userId)
-    // {
-    //
-    //     var followers = await _context.Friend.Where(x => x.FollowerId == userId).Include(x=>x.User).Include(x=>x.Follower)
-    //         .ToListAsync();
-    //
-    //     var response = _mapper.Map<IEnumerable<GetFollowersDto>>(followers);
-    //     return Ok(response);
-    // }
 
     [Authorize]
     [HttpGet("{userId}/check")]

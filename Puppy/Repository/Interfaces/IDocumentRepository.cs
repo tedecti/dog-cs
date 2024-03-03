@@ -1,8 +1,7 @@
-using Curs.Models;
-using Curs.Models.Dto.DocumentDto;
+using Puppy.Models;
 using Puppy.Models.Dto.DocumentDto;
 
-namespace Puppy.Repository.IRepository;
+namespace Puppy.Repository.Interfaces;
 
 public interface IDocumentRepository
 {

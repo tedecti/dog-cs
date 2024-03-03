@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Curs.Models;
+namespace Puppy.Models;
 
 public class Document
 {

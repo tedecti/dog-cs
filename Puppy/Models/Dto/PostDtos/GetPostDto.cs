@@ -1,4 +1,6 @@
-﻿namespace Puppy.Models.Dto;
+﻿using Puppy.Models.Dto.UserDtos;
+
+namespace Puppy.Models.Dto.PostDtos;
 
 public class GetPostDto
 {

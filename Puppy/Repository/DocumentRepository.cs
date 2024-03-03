@@ -1,7 +1,7 @@
-using Curs.Models;
 using Puppy.Data;
+using Puppy.Models;
 using Puppy.Models.Dto.DocumentDto;
-using Puppy.Repository.IRepository;
+using Puppy.Repository.Interfaces;
 using Puppy.Services;
 using Puppy.Services.Interfaces;
 

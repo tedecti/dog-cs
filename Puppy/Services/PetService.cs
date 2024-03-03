@@ -1,7 +1,7 @@
-using Curs.Data;
-using Curs.Models;
 using Microsoft.EntityFrameworkCore;
 using Puppy.Data;
+using Puppy.Models;
+using Puppy.Services.Interfaces;
 
 namespace Puppy.Services;
 

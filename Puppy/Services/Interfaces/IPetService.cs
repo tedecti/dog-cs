@@ -1,6 +1,6 @@
-using Curs.Models;
+using Puppy.Models;
 
-namespace Puppy.Services;
+namespace Puppy.Services.Interfaces;
 
 public interface IPetService
 {

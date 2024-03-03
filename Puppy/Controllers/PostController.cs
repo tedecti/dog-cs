@@ -1,13 +1,13 @@
 using AutoMapper;
-using Curs.Data;
-using Curs.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Puppy.Data;
+using Puppy.Models;
 using Puppy.Models.Dto;
+using Puppy.Models.Dto.PostDtos;
 using Puppy.Repository;
-using Puppy.Repository.IRepository;
+using Puppy.Repository.Interfaces;
 
 namespace Puppy.Controllers
 {

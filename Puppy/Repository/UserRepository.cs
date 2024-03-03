@@ -1,8 +1,5 @@
-﻿using Curs.Data;
-using Curs.Models;
-using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.IdentityModel.Tokens;
 using Puppy.Models.Dto;
-using Puppy.Repository.IRepository;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using System.Security.Claims;
@@ -10,6 +7,10 @@ using AutoMapper;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using Puppy.Data;
+using Puppy.Models;
+using Puppy.Models.Dto.AuthDtos;
+using Puppy.Models.Dto.UserDtos;
+using Puppy.Repository.Interfaces;
 using Puppy.Services.Interfaces;
 
 namespace Puppy.Repository

@@ -1,6 +1,6 @@
-using Curs.Models;
+using Puppy.Models;
 
-namespace Puppy.Repository;
+namespace Puppy.Repository.Interfaces;
 
 public interface IPostService
 {

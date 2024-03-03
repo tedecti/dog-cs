@@ -1,6 +1,7 @@
-using Curs.Models;
+using Puppy.Models.Dto.FollowerDtos;
+using Puppy.Models.Dto.PetDtos;
 
-namespace Puppy.Models.Dto;
+namespace Puppy.Models.Dto.UserDtos;
 
 public class UserResponseDto
 {

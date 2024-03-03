@@ -1,12 +1,12 @@
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Puppy.Repository;
-using Puppy.Repository.IRepository;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Text.Json.Serialization;
 using Microsoft.OpenApi.Models;
 using Puppy.Data;
+using Puppy.Repository.Interfaces;
 using Puppy.Services;
 using Puppy.Services.Interfaces;
 

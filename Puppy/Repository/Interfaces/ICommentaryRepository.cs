@@ -1,7 +1,8 @@
-using Curs.Models;
+using Puppy.Models;
 using Puppy.Models.Dto;
+using Puppy.Models.Dto.PostDtos.CommentaryDtos;
 
-namespace Puppy.Repository.IRepository;
+namespace Puppy.Repository.Interfaces;
 
 public interface ICommentaryRepository
 {

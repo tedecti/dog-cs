@@ -1,6 +1,6 @@
-using Curs.Models.Dto.DocumentDto;
+using Puppy.Models.Dto.DocumentDto;
 
-namespace Puppy.Models.Dto;
+namespace Puppy.Models.Dto.PetDtos;
 
 public class GetPetDto
 {

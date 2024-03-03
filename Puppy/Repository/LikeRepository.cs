@@ -1,7 +1,7 @@
-using Curs.Models;
 using Microsoft.EntityFrameworkCore;
 using Puppy.Data;
-using Puppy.Repository.IRepository;
+using Puppy.Models;
+using Puppy.Repository.Interfaces;
 
 namespace Puppy.Repository;
 

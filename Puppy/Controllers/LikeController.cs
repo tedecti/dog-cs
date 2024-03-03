@@ -6,12 +6,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Curs.Data;
-using Curs.Models;
 using Microsoft.AspNetCore.Authorization;
 using Puppy.Data;
+using Puppy.Models;
 using Puppy.Models.Dto;
-using Puppy.Repository.IRepository;
+using Puppy.Repository.Interfaces;
 using Puppy.Services.Interfaces;
 
 namespace Puppy.Controllers

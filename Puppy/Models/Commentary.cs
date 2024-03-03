@@ -1,4 +1,4 @@
-﻿namespace Curs.Models;
+﻿namespace Puppy.Models;
 
 public class Commentary
 {

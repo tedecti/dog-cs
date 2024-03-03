@@ -1,6 +1,4 @@
-﻿using System.Collections;
-
-namespace Curs.Models
+﻿namespace Puppy.Models
 {
 	public class User
 	{

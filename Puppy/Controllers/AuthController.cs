@@ -1,8 +1,6 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Puppy.Models.Dto;
-using Puppy.Repository.IRepository;
+﻿using Microsoft.AspNetCore.Mvc;
+using Puppy.Models.Dto.AuthDtos;
+using Puppy.Repository.Interfaces;
 using Puppy.Services.Interfaces;
 
 namespace Puppy.Controllers

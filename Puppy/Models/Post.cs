@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Puppy.Models.Dto;
 
-namespace Curs.Models;
+namespace Puppy.Models;
 
 public class Post
 {

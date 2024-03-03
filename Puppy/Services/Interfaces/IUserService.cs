@@ -1,4 +1,4 @@
-using Curs.Models;
+using Puppy.Models;
 
 namespace Puppy.Services.Interfaces;
 

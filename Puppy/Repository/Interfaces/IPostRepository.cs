@@ -1,7 +1,7 @@
-using Curs.Models;
-using Puppy.Models.Dto;
+using Puppy.Models;
+using Puppy.Models.Dto.PostDtos;
 
-namespace Puppy.Repository.IRepository;
+namespace Puppy.Repository.Interfaces;
 
 public interface IPostRepository
 {

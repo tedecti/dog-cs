@@ -1,7 +1,8 @@
-﻿using Curs.Models;
-using Puppy.Models.Dto;
+﻿using Puppy.Models;
+using Puppy.Models.Dto.AuthDtos;
+using Puppy.Models.Dto.UserDtos;
 
-namespace Puppy.Repository.IRepository
+namespace Puppy.Repository.Interfaces
 {
 	public interface IUserRepository
 	{
