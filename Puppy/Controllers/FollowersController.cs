@@ -1,11 +1,9 @@
-﻿using System.Collections;
-using AutoMapper;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Puppy.Data;
 using Puppy.Models;
-using Puppy.Models.Dto;
 using Puppy.Models.Dto.FollowerDtos;
 using Puppy.Services.Interfaces;
 
@@ -87,15 +85,7 @@ public class FollowersController : ControllerBase
     }
 
     
-    // [HttpGet("{userId}/friends")]
-    // public async Task<IActionResult> GetFriends(int userId)
-    // {
-    //     var friends = await _followerService.GetFollowers(userId);
-    //     var response = _mapper.Map<IEnumerable<GetFollowersDto>>(friends);
-    //     return Ok(response);
-    //     
-    // }
-    [HttpGet("{userId}/followers")]
+    [HttpGet("{userId}")]
     public async Task<IActionResult> GetFollowers(int userId)
     {
         var friends = await _followerService.GetFollowers(userId);
