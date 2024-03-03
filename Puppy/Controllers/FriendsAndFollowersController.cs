@@ -28,7 +28,7 @@ public class FriendsAndFollowersController : ControllerBase
 
     [Authorize]
     [HttpDelete("{id}")]
-    public async Task<ActionResult<string>> RemoveFriend(int id)
+    public async Task<ActionResult<string>> RemoveFollow(int id)
     {
         var userId = HttpContext.User.Identity?.Name;
 
@@ -52,7 +52,7 @@ public class FriendsAndFollowersController : ControllerBase
 
     [Authorize]
     [HttpPost("{id}")]
-    public async Task<ActionResult<string>> AddFriend(int id)
+    public async Task<ActionResult<string>> Follow(int id)
     {
 
         var userId = HttpContext.User.Identity?.Name;
@@ -87,10 +87,18 @@ public class FriendsAndFollowersController : ControllerBase
     }
 
     
-    [HttpGet("{userId}")]
-    public async Task<IActionResult> GetFriends(int userId)
+    // [HttpGet("{userId}/friends")]
+    // public async Task<IActionResult> GetFriends(int userId)
+    // {
+    //     var friends = await _friendService.GetFollowers(userId);
+    //     var response = _mapper.Map<IEnumerable<GetFollowersDto>>(friends);
+    //     return Ok(response);
+    //     
+    // }
+    [HttpGet("{userId}/followers")]
+    public async Task<IActionResult> GetFollowers(int userId)
     {
-        var friends = await _friendService.GetFriends(userId);
+        var friends = await _friendService.GetFollowers(userId);
         var response = _mapper.Map<IEnumerable<GetFollowersDto>>(friends);
         return Ok(response);
         
@@ -98,11 +106,11 @@ public class FriendsAndFollowersController : ControllerBase
 
     [Authorize]
     [HttpGet("{userId}/check")]
-    public async Task<ActionResult<bool>> IsFriend(int userId)
+    public async Task<ActionResult<bool>> IsFollowed(int userId)
     {
         var currentUserId = Convert.ToInt32(User.Identity?.Name);
 
-        var follower = await _friendService.IsFriend(userId, currentUserId);
+        var follower = await _friendService.IsFollowed(userId, currentUserId);
         
         return follower;
     }
