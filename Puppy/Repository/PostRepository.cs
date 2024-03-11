@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc;
 using Puppy.Data;
 using Puppy.Models;
 using Puppy.Models.Dto;
@@ -40,7 +41,7 @@ public class PostRepository : IPostRepository
         return newPost;
     }
 
-    public async Task<Post> EditPost(EditPostRequestDto editPostRequestDto, int postId)
+    public async Task<Post> EditPost(UploadPostRequestDto editPostRequestDto, int postId)
     {
         var existingPost = await _postService.GetPostById(postId);
         existingPost.Title = editPostRequestDto.Title;

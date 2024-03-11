@@ -1,10 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using Puppy.Data;
 using Puppy.Models;
+using Puppy.Repository.Interfaces;
 
 namespace Puppy.Repository;
 
-public class FollowerRepository
+public class FollowerRepository:IFollowerRepository
 {
     private readonly AppDbContext _context;
 

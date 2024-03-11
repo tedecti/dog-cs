@@ -61,9 +61,11 @@ namespace Puppy.Controllers
         
         [HttpPut("{id}")]
         [Authorize]
-        public async Task<IActionResult> PutPost(EditPostRequestDto editPostRequestDto, int id, Post post)
+        public async Task<IActionResult> PutPost([FromBody] UploadPostRequestDto editPostRequestDto, int id)
         {
-            if (id != post.Id)
+            var post = await _postService.GetPostById(id);
+            var userId = Convert.ToInt32(HttpContext.User.Identity?.Name);
+            if (userId != post.UserId)
             {
                 return BadRequest();
             }
