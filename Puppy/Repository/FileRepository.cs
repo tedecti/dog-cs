@@ -1,12 +1,6 @@
-﻿using Azure;
-using Azure.Storage.Blobs;
-using Azure.Storage.Blobs.Models;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
-using System;
-using System.IO;
-using System.Threading.Tasks;
+﻿using Minio;
+using Minio.DataModel.Args;
+using Minio.Exceptions;
 using Puppy.Config;
 using Puppy.Repository.Interfaces;
 
@@ -14,25 +8,20 @@ namespace Puppy.Repository
 {
     public class FileRepository : IFileRepository
     {
+        private const string BucketName = "Puppy";
         private readonly IConfiguration _configuration;
-        private readonly IWebHostEnvironment _environment;
 
-        public FileRepository(IConfiguration configuration, IWebHostEnvironment environment)
+        public FileRepository(IConfiguration configuration)
         {
             _configuration = configuration;
-            _environment = environment;
         }
 
         public async Task<string> SaveFile(IFormFile file)
         {
-            Guid myuuid = Guid.NewGuid();
-            string fileName = myuuid.ToString() + "." + file.ContentType.Split("/")[1].ToString();
-
-            // Save the file to Azure Blob Storage
-            using (var stream = file.OpenReadStream())
-            {
-                await UploadFileToStorage(stream, fileName);
-            }
+            var myUuid = Guid.NewGuid();
+            var fileName = myUuid + "." + file.ContentType.Split("/")[1];
+            await using var stream = file.OpenReadStream();
+            await UploadFileToStorage(stream, fileName);
 
             return fileName;
         }
@@ -45,41 +34,51 @@ namespace Puppy.Repository
 
         private async Task<bool> UploadFileToStorage(Stream fileStream, string fileName)
         {
-            // Retrieve Azure Storage configuration from appsettings.json
-            var storageConfig = _configuration.GetSection("AzureStorageConfig").Get<AzureStorageConfig>();
 
-            // Create the BlobServiceClient
-            var blobServiceClient = new BlobServiceClient(storageConfig.ConnectionString);
-
-            // Get a reference to the container
-            var containerClient = blobServiceClient.GetBlobContainerClient(storageConfig.ImageContainer);
-
-            // Get a reference to the blob
-            var blobClient = containerClient.GetBlobClient(fileName);
-
-            // Upload the file
-            await blobClient.UploadAsync(fileStream, true);
-
-            return true;
+            const string contentType = "image/png";
+            var storageConfig = _configuration.GetSection("Minio").Get<MinioStorageConfig>();
+            var minioClient = new MinioClient()
+                .WithEndpoint(storageConfig?.Endpoint)
+                .WithCredentials(storageConfig?.AccessKey, storageConfig?.SecretKey)
+                .WithSSL()
+                .Build();
+            try
+            {
+                var upload = new PutObjectArgs()
+                    .WithBucket(BucketName)
+                    .WithObject(fileName)
+                    .WithStreamData(fileStream)
+                    .WithObjectSize(fileStream.Length)
+                    .WithContentType(contentType);
+                await minioClient.PutObjectAsync(upload);
+                return true;
+            }
+                
+            catch (MinioException e)
+            {
+                Console.WriteLine($"[Minio Error] {e.Message}");
+                return false;
+            }
         }
 
         private async Task<Stream> DownloadFileFromStorage(string fileName)
         {
-            // Retrieve Azure Storage configuration from appsettings.json
-            var storageConfig = _configuration.GetSection("AzureStorageConfig").Get<AzureStorageConfig>();
+            var storageConfig = _configuration.GetSection("Minio").Get<MinioStorageConfig>();
+            var minioClient = new MinioClient()
+                .WithEndpoint(storageConfig?.Endpoint)
+                .WithCredentials(storageConfig?.AccessKey, storageConfig?.SecretKey)
+                .WithSSL()
+                .Build();
+            var statObjectArgs = new StatObjectArgs().WithBucket(BucketName).WithObject(fileName);
+            await minioClient.StatObjectAsync(statObjectArgs);
 
-            // Create the BlobServiceClient
-            var blobServiceClient = new BlobServiceClient(storageConfig.ConnectionString);
+            var getObjectArgs = new GetObjectArgs()
+                .WithBucket(BucketName)
+                .WithObject(fileName);
+            var responseStream = new MemoryStream();
+            await minioClient.GetObjectAsync(getObjectArgs);
 
-            // Get a reference to the container
-            var containerClient = blobServiceClient.GetBlobContainerClient(storageConfig.ImageContainer);
-
-            // Get a reference to the blob
-            var blobClient = containerClient.GetBlobClient(fileName);
-
-            // Download the blob
-            var response = await blobClient.OpenReadAsync();
-            return response;
+            return responseStream;
         }
     }
 }
