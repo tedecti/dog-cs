@@ -24,11 +24,11 @@ public class CommentaryService : ICommentaryService
         return comments.IsNullOrEmpty() ? null : comments;
     }
 
-    public Task<int> GetTotal(int postId)
+    public int GetTotal(int postId)
     {
         var count = _context.Commentary
             .Include(x => x.User).Count(comment => comment.PostId == postId);
-        return Task.FromResult(count);
+        return count;
     }
 
     public async Task<Commentary> GetComment(int commentaryId)

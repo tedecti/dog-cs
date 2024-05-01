@@ -16,8 +16,9 @@ public class FollowerService : IFollowerService
     
     public async Task<bool> IsFollowed(int userId, int currentUserId)
     {
-        var follower = await _context.Friend.Where(x => x.FollowerId == currentUserId && x.UserId == userId)
+        var follower = await _context.Friend.Where(x => x.FollowerId == userId && x.UserId == currentUserId)
             .FirstOrDefaultAsync();
+        Console.WriteLine(follower);
         return follower != null;
     }
 

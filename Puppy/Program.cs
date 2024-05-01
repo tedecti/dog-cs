@@ -18,13 +18,12 @@ namespace Puppy
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-
             builder.Services.AddDbContext<AppDbContext>();
 
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<ISearchService, SearchService>();
+            builder.Services.AddScoped<IPetRepository, PetRepository>();
             builder.Services.AddScoped<IPetService, PetService>();
             builder.Services.AddScoped<IFileRepository, FileRepository>();
             builder.Services.AddScoped<IDocumentService, DocumentService>();

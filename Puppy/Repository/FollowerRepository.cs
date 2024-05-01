@@ -5,7 +5,7 @@ using Puppy.Repository.Interfaces;
 
 namespace Puppy.Repository;
 
-public class FollowerRepository:IFollowerRepository
+public class FollowerRepository : IFollowerRepository
 {
     private readonly AppDbContext _context;
 
@@ -17,13 +17,13 @@ public class FollowerRepository:IFollowerRepository
     public async Task<Friend> Follow(int id, int userId)
     {
         var existingFriend = await _context.Friend.FirstOrDefaultAsync(
-            f => f.FollowerId == userId && f.UserId == id);
+            f => f.FollowerId == id && f.UserId == userId);
         if (existingFriend != null)
         {
             return null;
         }
 
-        var newFollow = new Friend()
+        var newFollow = new Friend
         {
             UserId = userId,
             FollowerId = id

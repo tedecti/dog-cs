@@ -1,21 +1,16 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+
 using Microsoft.AspNetCore.Authorization;
 using Puppy.Data;
 using Puppy.Models;
-using Puppy.Models.Dto;
+
 using Puppy.Repository.Interfaces;
 using Puppy.Services.Interfaces;
 
 namespace Puppy.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api")]
     [ApiController]
     public class LikeController : ControllerBase
     {
@@ -31,7 +26,7 @@ namespace Puppy.Controllers
         }
 
         // GET: api/Like/1
-        [HttpGet("{postId}")]
+        [HttpGet("like/{postId}")]
         [Authorize]
         public async Task<ActionResult<bool>> GetLike(int postId)
         {
@@ -44,7 +39,7 @@ namespace Puppy.Controllers
         
         // POST: api/Like/1
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost("{PostId}")]
+        [HttpPost("like/{PostId}")]
         [Authorize]
         public async Task<ActionResult<Like>> PostLike(int postId)
         {
@@ -67,8 +62,8 @@ namespace Puppy.Controllers
             return StatusCode(201);
         }
 
-        // DELETE: api/Like/5
-        [HttpDelete("{PostId}")]
+        // // DELETE: api/Like/5
+        [HttpDelete("unlike/{PostId}")]
         [Authorize]
         public async Task<IActionResult> DeleteLike(int postId)
         {
@@ -78,7 +73,7 @@ namespace Puppy.Controllers
             {
                 return NotFound();
             }
-
+        
             await _likeRepository.Unlike(postId, userId);
             return NoContent();
         }

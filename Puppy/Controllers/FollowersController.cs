@@ -13,14 +13,12 @@ namespace Puppy.Controllers;
 [ApiController]
 public class FollowersController : ControllerBase
 {
-    private readonly AppDbContext _context;
     private readonly IFollowerService _followerService;
     private readonly IFollowerRepository _followerRepository;
     private readonly IMapper _mapper;
 
-    public FollowersController(AppDbContext context, IMapper mapper, IFollowerService followerService, IFollowerRepository followerRepository)
+    public FollowersController(IMapper mapper, IFollowerService followerService, IFollowerRepository followerRepository)
     {
-        _context = context;
         _mapper = mapper;
         _followerService = followerService;
         _followerRepository = followerRepository;
@@ -40,7 +38,7 @@ public class FollowersController : ControllerBase
 
         var existingFollow = await _followerService.IsFollowed(id, Convert.ToInt32(userId));
 
-        if (existingFollow == true)
+        if (existingFollow)
         {
             return BadRequest("You already followed this person");
         }

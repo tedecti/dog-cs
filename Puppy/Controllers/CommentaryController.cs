@@ -44,12 +44,12 @@ namespace Puppy.Controllers
 
             var commentDtos = _mapper.Map<IEnumerable<GetCommentsDto>>(comments);
 
-            var count = Convert.ToInt32(_commentaryService.GetTotal(postId));
+            var count = _commentaryService.GetTotal(postId);
 
-            var response = new PostCommentariesDto()
+            var response = new PostCommentariesDto
             {
                 Comments = commentDtos,
-                Total = count,
+                Total = count
             };
 
             return Ok(response);

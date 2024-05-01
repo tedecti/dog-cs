@@ -22,7 +22,7 @@ public class PostRepository : IPostRepository
 
     public async Task<Post> CreatePost(UploadPostRequestDto uploadPostRequestDto, int userId)
     {
-        List<string> imgs = new List<string>();
+        var imgs = new List<string>();
         foreach (var file in uploadPostRequestDto.Imgs)
         {
             imgs.Add(await _fileRepo.SaveFile(file));
