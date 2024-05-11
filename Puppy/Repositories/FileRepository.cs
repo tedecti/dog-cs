@@ -2,9 +2,10 @@
 using Minio.DataModel.Args;
 using Minio.Exceptions;
 using Puppy.Config;
-using Puppy.Repository.Interfaces;
+using Puppy.Repositories.Interfaces;
+using static System.Guid;
 
-namespace Puppy.Repository
+namespace Puppy.Repositories
 {
     public class FileRepository : IFileRepository
     {
@@ -18,14 +19,12 @@ namespace Puppy.Repository
 
         public async Task<string> SaveFile(IFormFile file)
         {
-            var myUuid = Guid.NewGuid();
+            var myUuid = NewGuid();
             var fileName = myUuid + "." + file.ContentType.Split("/")[1];
             await using var stream = file.OpenReadStream();
-            await UploadFileToStorage(stream, fileName);
-
-            return fileName;
+            var uploadFile = await UploadFileToStorage(stream, fileName);
+            return uploadFile ? fileName : "";
         }
-        
 
         public async Task<Stream> GetFile(string fileName)
         {
@@ -34,7 +33,6 @@ namespace Puppy.Repository
 
         private async Task<bool> UploadFileToStorage(Stream fileStream, string fileName)
         {
-
             const string contentType = "image/png";
             var storageConfig = _configuration.GetSection("Minio").Get<MinioStorageConfig>();
             var minioClient = new MinioClient()
@@ -53,10 +51,9 @@ namespace Puppy.Repository
                 await minioClient.PutObjectAsync(upload);
                 return true;
             }
-                
+
             catch (MinioException e)
             {
-                Console.WriteLine($"[Minio Error] {e.Message}");
                 return false;
             }
         }

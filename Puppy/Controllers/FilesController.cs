@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using Puppy.Repository.Interfaces;
+using Puppy.Repositories.Interfaces;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.Processing;

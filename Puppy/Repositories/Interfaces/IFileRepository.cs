@@ -1,4 +1,4 @@
-﻿namespace Puppy.Repository.Interfaces
+﻿namespace Puppy.Repositories.Interfaces
 {
     public interface IFileRepository
     {
