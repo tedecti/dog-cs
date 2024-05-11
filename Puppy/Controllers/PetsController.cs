@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Puppy.Models;
 using Puppy.Models.Dto;
 using Puppy.Models.Dto.PetDtos;
-using Puppy.Repository.Interfaces;
+using Puppy.Repositories.Interfaces;
 using Puppy.Services;
 using Puppy.Services.Interfaces;
 
@@ -15,13 +15,11 @@ namespace Puppy.Controllers
     public class PetsController : ControllerBase
     {
         private readonly IMapper _mapper;
-        private readonly IPetService _petService;
         private readonly IPetRepository _petRepo;
 
-        public PetsController(IMapper mapper, IPetService petService, IPetRepository petRepo)
+        public PetsController(IMapper mapper, IPetRepository petRepo)
         {
             _mapper = mapper;
-            _petService = petService;
             _petRepo = petRepo;
         }
         
@@ -32,7 +30,7 @@ namespace Puppy.Controllers
 
             var userId = Convert.ToInt32(HttpContext.User.Identity?.Name);
         
-            var pet = await _petService.GetPetById(id);
+            var pet = await _petRepo.GetPetById(id);
 
             if (pet == null)
             {
@@ -58,7 +56,7 @@ namespace Puppy.Controllers
         [Authorize]
         public async Task<ActionResult<Pet>> GetPets(int userId)
         {
-            var pets = await _petService.GetPetsByUser(userId);
+            var pets = await _petRepo.GetPetsByUser(userId);
 
             var responseDto = _mapper.Map<IEnumerable<GetPetDto>>(pets);
             return Ok(responseDto);
@@ -67,9 +65,9 @@ namespace Puppy.Controllers
         // PUT: api/Pets/5
         [HttpPut("{id}")]
         [Authorize]
-        public async Task<IActionResult> PutPet(UpdatePetDto updatePetDto, int petId)
+        public async Task<IActionResult> PutPet(UpdatePetDto updatePetDto, int id)
         {
-            var existingPet = await _petRepo.EditPet(updatePetDto, petId);
+            var existingPet = await _petRepo.EditPet(updatePetDto, id);
             if (existingPet == null)
             {
                 return NotFound();
