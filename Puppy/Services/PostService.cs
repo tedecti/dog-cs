@@ -2,52 +2,31 @@ using Microsoft.EntityFrameworkCore;
 using Puppy.Data;
 using Puppy.Models;
 using Puppy.Models.Dto;
-using Puppy.Repository;
-using Puppy.Repository.Interfaces;
+using Puppy.Repositories.Interfaces;
+using Puppy.Services.Interfaces;
 
 namespace Puppy.Services;
 
 public class PostService : IPostService
 {
-    private readonly AppDbContext _context;
+    private readonly IPostRepository _postRepository;
+    private readonly IFollowerRepository _followerRepository;
 
-    public PostService(AppDbContext context)
+    public PostService(AppDbContext context, IPostRepository postRepository, IFollowerRepository followerRepository)
     {
-        _context = context;
+        _postRepository = postRepository;
+        _followerRepository = followerRepository;
     }
 
-    public async Task<IEnumerable<Post>> GetPosts(int userId)
+    public async Task<IEnumerable<Post>> GetFilteredPostsAsync(int userId)
     {
-        var friends = await _context.Friend.Where(f => f.UserId == userId).ToListAsync();
+        var friends = await _followerRepository.GetFollowers(userId);
 
-        if (friends.Any())
-        {
-            var friendIds = friends.Select(f => f.FollowerId).ToList();
-
-            var friendPosts = await _context.Post
-                .Where(p => friendIds.Contains(p.UserId))
-                .Include(p=>p.User)
-                .ToListAsync();
-
-            var otherPosts = await _context.Post
-                .Where(p => !friendIds.Contains(p.UserId))
-                .Include(p=>p.User)
-                .OrderByDescending(p => p.UploadDate)
-                .ToListAsync();
-
-            var combinedPosts = friendPosts.Concat(otherPosts);
-        }
-
-        var allPosts = await _context.Post
-            .Include(p => p.User)
-            .OrderByDescending(p => p.UploadDate)
-            .ToListAsync();
-        return allPosts;
-    }
-
-    public async Task<Post> GetPostById(int postId)
-    {
-        var post = await _context.Post.Include(p => p.User).FirstOrDefaultAsync(p=> p.Id == postId);
-        return post;
+        if (!friends.Any()) return await _postRepository.GetAllPosts();
+        var friendIds = friends.Select(f => f.FollowerId).ToList();
+        var friendPosts = await _postRepository.GetFriendPostsAsync(friendIds);
+        var allPosts = await _postRepository.GetAllPosts();
+        var otherPosts = allPosts.Where(p => !friendIds.Contains(p.UserId));
+        return friendPosts.Concat(otherPosts);
     }
 }

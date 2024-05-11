@@ -6,8 +6,8 @@ using Puppy.Data;
 using Puppy.Models;
 using Puppy.Models.Dto;
 using Puppy.Models.Dto.PostDtos;
-using Puppy.Repository;
-using Puppy.Repository.Interfaces;
+using Puppy.Repositories.Interfaces;
+using Puppy.Services.Interfaces;
 
 namespace Puppy.Controllers
 {
@@ -33,7 +33,7 @@ namespace Puppy.Controllers
         {
             var userId = Convert.ToInt32(HttpContext.User.Identity?.Name);
 
-            var allPosts = await _postService.GetPosts(userId);
+            var allPosts = await _postService.GetFilteredPostsAsync(userId);
 
             var dtos = _mapper.Map<IEnumerable<GetPostDto>>(allPosts);
             return Ok(dtos);
@@ -45,7 +45,7 @@ namespace Puppy.Controllers
         public async Task<ActionResult<GetPostDto>> GetPost(int id)
         {
 
-            var post = await _postService.GetPostById(id);
+            var post = await _postRepository.GetPostById(id);
             
 
             if (post == null)
@@ -63,7 +63,7 @@ namespace Puppy.Controllers
         [Authorize]
         public async Task<IActionResult> PutPost([FromBody] UploadPostRequestDto editPostRequestDto, int id)
         {
-            var post = await _postService.GetPostById(id);
+            var post = await _postRepository.GetPostById(id);
             var userId = Convert.ToInt32(HttpContext.User.Identity?.Name);
             if (userId != post.UserId)
             {
