@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Puppy.Data;
 using Puppy.Models.Dto.FollowerDtos;
-using Puppy.Repository.Interfaces;
+using Puppy.Repositories.Interfaces;
 using Puppy.Services.Interfaces;
 
 namespace Puppy.Controllers;
@@ -13,14 +13,12 @@ namespace Puppy.Controllers;
 [ApiController]
 public class FollowersController : ControllerBase
 {
-    private readonly IFollowerService _followerService;
     private readonly IFollowerRepository _followerRepository;
     private readonly IMapper _mapper;
 
-    public FollowersController(IMapper mapper, IFollowerService followerService, IFollowerRepository followerRepository)
+    public FollowersController(IMapper mapper, IFollowerRepository followerRepository)
     {
         _mapper = mapper;
-        _followerService = followerService;
         _followerRepository = followerRepository;
     }
 
@@ -36,7 +34,7 @@ public class FollowersController : ControllerBase
             return Unauthorized();
         }
 
-        var existingFollow = await _followerService.IsFollowed(id, Convert.ToInt32(userId));
+        var existingFollow = await _followerRepository.IsFollowed(id, Convert.ToInt32(userId));
 
         if (existingFollow)
         {
@@ -64,7 +62,7 @@ public class FollowersController : ControllerBase
             return Unauthorized();
         }
 
-        var existingFriend = await _followerService.IsFollowed(id, Convert.ToInt32(userId));
+        var existingFriend = await _followerRepository.IsFollowed(id, Convert.ToInt32(userId));
 
         if (existingFriend == false)
         {
@@ -78,7 +76,7 @@ public class FollowersController : ControllerBase
     [HttpGet("{userId}")]
     public async Task<IActionResult> GetFollowers(int userId)
     {
-        var friends = await _followerService.GetFollowers(userId);
+        var friends = await _followerRepository.GetFollowers(userId);
         var response = _mapper.Map<IEnumerable<GetFollowersDto>>(friends);
         return Ok(response);
         
@@ -90,7 +88,7 @@ public class FollowersController : ControllerBase
     {
         var currentUserId = Convert.ToInt32(User.Identity?.Name);
 
-        var follower = await _followerService.IsFollowed(userId, currentUserId);
+        var follower = await _followerRepository.IsFollowed(userId, currentUserId);
         
         return follower;
     }
