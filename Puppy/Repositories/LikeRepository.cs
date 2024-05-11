@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Puppy.Data;
 using Puppy.Models;
-using Puppy.Repository.Interfaces;
+using Puppy.Repositories.Interfaces;
 
-namespace Puppy.Repository;
+namespace Puppy.Repositories;
 
 public class LikeRepository : ILikeRepository
 {
@@ -13,8 +13,13 @@ public class LikeRepository : ILikeRepository
     {
         _context = context;
     }
-
-    public async Task<Like> LikePost(int postId, int userId)
+    public async Task<Like?> GetLike(int postId, int userId)
+    {
+        var like = await _context.Like.Where(x => x.PostId == postId && x.UserId == userId)
+            .FirstOrDefaultAsync();
+        return like;
+    }
+    public async Task<Like?> LikePost(int postId, int userId)
     {
         var existingLike = await _context.Like.FirstOrDefaultAsync(l => l.UserId == userId && l.PostId == postId);
         if (existingLike != null)
@@ -32,7 +37,7 @@ public class LikeRepository : ILikeRepository
         return newLike;
     }
 
-    public async Task<Like> Unlike(int postId, int userId)
+    public async Task<Like?> Unlike(int postId, int userId)
     {
         var like = await _context.Like.FirstOrDefaultAsync(l => l.PostId == postId && l.UserId == userId);
         if (like != null) _context.Like.Remove(like);

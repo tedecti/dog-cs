@@ -4,8 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Puppy.Data;
 using Puppy.Models;
-
-using Puppy.Repository.Interfaces;
+using Puppy.Repositories.Interfaces;
 using Puppy.Services.Interfaces;
 
 namespace Puppy.Controllers
@@ -16,13 +15,11 @@ namespace Puppy.Controllers
     {
         private readonly AppDbContext _context;
         private readonly ILikeRepository _likeRepository;
-        private readonly ILikeService _likeService;
 
-        public LikeController(AppDbContext context, ILikeRepository likeRepository, ILikeService likeService)
+        public LikeController(AppDbContext context, ILikeRepository likeRepository)
         {
             _context = context;
             _likeRepository = likeRepository;
-            _likeService = likeService;
         }
 
         // GET: api/Like/1
@@ -32,7 +29,7 @@ namespace Puppy.Controllers
         {
           var userId = Convert.ToInt32(HttpContext.User.Identity?.Name);
 
-          var like = await _likeService.GetLike(postId, userId); 
+          var like = await _likeRepository.GetLike(postId, userId); 
           if (like == null) return false;
           return true;
         }
@@ -46,7 +43,7 @@ namespace Puppy.Controllers
             var userId = Convert.ToInt32(HttpContext.User.Identity?.Name);
 
 
-            var existingLike = await _likeService.GetLike(postId, userId);
+            var existingLike = await _likeRepository.GetLike(postId, userId);
             if (existingLike != null)
             {
                 return BadRequest("Like is already exist.");
@@ -68,7 +65,7 @@ namespace Puppy.Controllers
         public async Task<IActionResult> DeleteLike(int postId)
         {
             var userId = Convert.ToInt32(HttpContext.User.Identity?.Name);
-            var like = await _likeService.GetLike(postId, userId);
+            var like = await _likeRepository.GetLike(postId, userId);
             if (like == null)
             {
                 return NotFound();
