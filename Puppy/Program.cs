@@ -1,12 +1,12 @@
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Puppy.Repository;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Text.Json.Serialization;
 using Microsoft.OpenApi.Models;
 using Puppy.Data;
-using Puppy.Repository.Interfaces;
+using Puppy.Repositories;
+using Puppy.Repositories.Interfaces;
 using Puppy.Services;
 using Puppy.Services.Interfaces;
 
@@ -21,21 +21,14 @@ namespace Puppy
             builder.Services.AddDbContext<AppDbContext>();
 
             builder.Services.AddScoped<IUserRepository, UserRepository>();
-            builder.Services.AddScoped<IUserService, UserService>();
-            builder.Services.AddScoped<ISearchService, SearchService>();
             builder.Services.AddScoped<IPetRepository, PetRepository>();
-            builder.Services.AddScoped<IPetService, PetService>();
             builder.Services.AddScoped<IFileRepository, FileRepository>();
-            builder.Services.AddScoped<IDocumentService, DocumentService>();
             builder.Services.AddScoped<IDocumentRepository, DocumentRepository>();
             builder.Services.AddScoped<IPostService, PostService>();
             builder.Services.AddScoped<IPostRepository, PostRepository>();
-            builder.Services.AddScoped<ILikeService, LikeService>();
             builder.Services.AddScoped<ILikeRepository, LikeRepository>();
             builder.Services.AddScoped<ICommentaryRepository, CommentaryRepository>();
-            builder.Services.AddScoped<ICommentaryService, CommentaryService>();
             builder.Services.AddScoped<IFollowerRepository, FollowerRepository>();
-            builder.Services.AddScoped<IFollowerService, FollowerService>();
             
 
             var key = builder.Configuration.GetValue<string>("ApiSettings:Secret");
