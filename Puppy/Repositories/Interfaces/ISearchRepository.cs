@@ -1,8 +1,8 @@
 using Puppy.Models;
 
-namespace Puppy.Services.Interfaces;
+namespace Puppy.Repositories.Interfaces;
 
-public interface ISearchService
+public interface ISearchRepository
 {
     Task<IEnumerable<Post>> SearchPosts(string query);
     Task<IEnumerable<User>> SearchUsers(string query);
