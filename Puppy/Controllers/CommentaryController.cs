@@ -12,7 +12,7 @@ using Puppy.Data;
 using Puppy.Models;
 using Puppy.Models.Dto;
 using Puppy.Models.Dto.PostDtos.CommentaryDtos;
-using Puppy.Repository.Interfaces;
+using Puppy.Repositories.Interfaces;
 using Puppy.Services.Interfaces;
 
 namespace Puppy.Controllers
@@ -22,13 +22,11 @@ namespace Puppy.Controllers
     public class CommentaryController : ControllerBase
     {
         private readonly IMapper _mapper;
-        private readonly ICommentaryService _commentaryService;
         private readonly ICommentaryRepository _commentaryRepository;
 
-        public CommentaryController(IMapper mapper, ICommentaryService commentaryService, ICommentaryRepository commentaryRepository)
+        public CommentaryController(IMapper mapper, ICommentaryRepository commentaryRepository)
         {
             _mapper = mapper;
-            _commentaryService = commentaryService;
             _commentaryRepository = commentaryRepository;
         }
 
@@ -36,15 +34,14 @@ namespace Puppy.Controllers
         [HttpGet("{postId}")]
         public async Task<ActionResult<PostCommentariesDto>> GetCommentary(int postId)
         {
-            var comments = await _commentaryService.GetCommentaries(postId);
-            if (string.IsNullOrEmpty(comments.ToString()))
+            var comments = await _commentaryRepository.GetCommentariesByPost(postId);
+            if (string.IsNullOrEmpty(comments?.ToString()))
             {
                 return NotFound();
             }
-
             var commentDtos = _mapper.Map<IEnumerable<GetCommentsDto>>(comments);
 
-            var count = _commentaryService.GetTotal(postId);
+            var count = _commentaryRepository.GetTotal(postId);
 
             var response = new PostCommentariesDto
             {
@@ -60,12 +57,13 @@ namespace Puppy.Controllers
         [Authorize]
         public async Task<IActionResult> PutCommentary(int id, AddCommentaryRequestDto editCommentaryRequestDto)
         {
-            // var userId = Convert.ToInt32(HttpContext.User.Identity?.Name);
+            var userId = Convert.ToInt32(HttpContext.User.Identity?.Name);
+            var existingComment = await _commentaryRepository.GetCommentById(id);
+            if (userId != existingComment.UserId) return Unauthorized();
             await _commentaryRepository.EditCommentary(editCommentaryRequestDto, id);
             return NoContent();
         }
-
-
+        
         [Route("{postId}")]
         [HttpPost]
         [Authorize]
@@ -77,10 +75,11 @@ namespace Puppy.Controllers
         }
 
         // DELETE: api/Commentary/5
-        [HttpDelete("{PostId}")]
+        [HttpDelete("{commentId}")]
         [Authorize]
         public async Task<IActionResult> DeleteCommentary(int commentId)
         {
+            var userId = Convert.ToInt32(HttpContext.User.Identity?.Name);
             await _commentaryRepository.DeleteCommentary(commentId);
             return NoContent();
         }
