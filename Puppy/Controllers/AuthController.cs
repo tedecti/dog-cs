@@ -1,21 +1,19 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Puppy.Models.Dto.AuthDtos;
-using Puppy.Repository.Interfaces;
+using Puppy.Repositories.Interfaces;
 using Puppy.Services.Interfaces;
 
 namespace Puppy.Controllers
 {
-    [Route("api/UserAuth")]
+    [Route("api/auth")]
     [ApiController]
     public class AuthController : ControllerBase
     {
         private readonly IUserRepository _userRepo;
-        private readonly IUserService _userService;
 
-        public AuthController(IUserRepository userRepo, IUserService userService)
+        public AuthController(IUserRepository userRepo)
         {
             _userRepo = userRepo;
-            _userService = userService;
         }
 
 
@@ -24,11 +22,10 @@ namespace Puppy.Controllers
         {
             var response = await _userRepo.Login(model);
 
-            if (response.User == null || string.IsNullOrEmpty(response.Token))
+            if (response?.User == null || string.IsNullOrEmpty(response.Token))
             {
                 return BadRequest(new { message = "Email or password incorrect" });
             }
-
 
             return StatusCode(200, response);
         }
@@ -37,7 +34,7 @@ namespace Puppy.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegistrationRequestDto model)
         {
-            var isUnique = _userService.IsUnique(model.Email, model.Username);
+            var isUnique = _userRepo.IsUnique(model.Email, model.Username);
             if (!isUnique)
             {
                 return BadRequest("Username or email is not unique");
@@ -50,14 +47,13 @@ namespace Puppy.Controllers
                 return BadRequest(new { message = "Error while register" });
             }
 
-
             return StatusCode(201);
         }
 
         [HttpPost("unique")]
         public bool CheckUnique([FromBody] CheckUniqueDto uniqueDto)
         {
-            var isUnique = _userService.IsUniqueEmail(uniqueDto.Email);
+            var isUnique = _userRepo.IsUniqueEmail(uniqueDto.Email);
             return isUnique;
         }
     }

@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Puppy.Models.Dto;
 using Puppy.Models.Dto.UserDtos;
-using Puppy.Repository.Interfaces;
+using Puppy.Repositories.Interfaces;
 using Puppy.Services.Interfaces;
 
 namespace Puppy.Controllers
@@ -15,14 +15,12 @@ namespace Puppy.Controllers
     {
         private readonly IMapper _mapper;
         private readonly IFileRepository _fileRepo;
-        private readonly IUserService _userService;
         private readonly IUserRepository _userRepo;
 
-        public UserController(IMapper mapper, IFileRepository fileRepo, IUserService userService, IUserRepository userRepo)
+        public UserController(IMapper mapper, IFileRepository fileRepo, IUserRepository userRepo)
         {
             _mapper = mapper;
             _fileRepo = fileRepo;
-            _userService = userService;
             _userRepo = userRepo;
         }
 
@@ -30,7 +28,7 @@ namespace Puppy.Controllers
         [HttpGet]
         public async Task<IActionResult> GetUsers()
         {
-            var users = await _userService.GetUsers();
+            var users = await _userRepo.GetUsers();
 
             if (users == null || !users.Any())
             {
@@ -46,7 +44,7 @@ namespace Puppy.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUser(int id)
         {
-            var user = await _userService.GetUser(id);
+            var user = await _userRepo.GetUser(id);
             
             if (user == null)
             {
@@ -63,7 +61,7 @@ namespace Puppy.Controllers
         {
             var userId = Convert.ToInt32(HttpContext.User.Identity?.Name);
             
-            var user = await _userService.GetUser(userId);
+            var user = await _userRepo.GetUser(userId);
             
             if (user == null)
             {
