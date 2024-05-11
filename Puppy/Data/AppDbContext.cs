@@ -50,13 +50,13 @@ namespace Puppy.Data
         public DbSet<User> Users { get; set; } = default!;
 
         public DbSet<Pet> Pet { get; set; } = default!;
-        public DbSet<Like> Like { get; set; } = default!;
+        public DbSet<Like?> Like { get; set; } = default!;
 
         public DbSet<Post> Post { get; set; } = default!;
 
         public DbSet<Commentary> Commentary { get; set; } = default!;
 
-        public DbSet<Friend> Friend { get; set; } = default!;
+        public DbSet<Friend?> Friend { get; set; } = default!;
         public DbSet<Document> Document { get; set; } = default!;
     }
 }
