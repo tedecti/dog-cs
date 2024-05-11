@@ -10,8 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Puppy.Data;
 using Puppy.Models;
 using Puppy.Models.Dto.DocumentDto;
-using Puppy.Repository;
-using Puppy.Repository.Interfaces;
+using Puppy.Repositories.Interfaces;
 using Puppy.Services;
 using Puppy.Services.Interfaces;
 
@@ -21,17 +20,15 @@ namespace Puppy.Controllers
     [ApiController]
     public class DocumentController : ControllerBase
     {
-        private readonly IDocumentService _documentService;
-        private readonly IPetService _petService;
         private readonly IMapper _mapper;
         private readonly IDocumentRepository _documentRepository;
+        private readonly IPetRepository _petRepository;
 
-        public DocumentController(IDocumentRepository documentRepository, IMapper mapper, IPetService petService, IDocumentService documentService)
+        public DocumentController(IDocumentRepository documentRepository, IMapper mapper, IPetRepository petRepository)
         {
             _mapper = mapper;
+            _petRepository = petRepository;
             _documentRepository = documentRepository;
-            _petService = petService;
-            _documentService = documentService;
         }
 
         // GET: api/Document/Pet/1
@@ -40,12 +37,12 @@ namespace Puppy.Controllers
         [Authorize]
         public async Task<ActionResult<GetDocumentDto>> GetDocument(int petId)
         {
-            var pet = await _petService.GetPetById(petId);
+            var pet = await _petRepository.GetPetById(petId);
             if (pet == null)
             {
                 return NotFound();
             }
-            var documents = await _documentService.GetDocumentsByPet(petId);
+            var documents = await _documentRepository.GetDocumentsByPet(petId);
             var documentDto = _mapper.Map<IEnumerable<ShortDocumentDto>>(documents);
             return Ok(documentDto);
         }
@@ -58,7 +55,7 @@ namespace Puppy.Controllers
         {
             var userId = Convert.ToInt32(HttpContext.User.Identity?.Name);
 
-            var document = await _documentService.GetDocumentById(id);
+            var document = await _documentRepository.GetDocumentById(id);
             
             if (document == null)
             {
@@ -84,7 +81,7 @@ namespace Puppy.Controllers
         public async Task<ActionResult<Document>> PostDocument(int petId, [FromForm] UploadDocumentDto document)
         {
             var userId = Convert.ToInt32(HttpContext.User.Identity?.Name);
-            var pet = await _petService.GetPetById(petId);
+            var pet = await _petRepository.GetPetById(petId);
 
             if (pet == null)
             {
