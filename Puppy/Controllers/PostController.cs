@@ -65,9 +65,9 @@ namespace Puppy.Controllers
         {
             var post = await _postRepository.GetPostById(id);
             var userId = Convert.ToInt32(HttpContext.User.Identity?.Name);
-            if (userId != post.UserId)
+            if (post != null && userId != post.UserId)
             {
-                return BadRequest();
+                return Unauthorized();
             }
             await _postRepository.EditPost(editPostRequestDto, id);
 
