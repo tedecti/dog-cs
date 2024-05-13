@@ -8,13 +8,12 @@ public class Post
     public int UserId { get; set; }
     public string Title { get; set; }
     public string Description { get; set; }
-    
+
     public string[] Imgs { get; set; }
 
     public int Comments { get; set; }
 
-    [DataType(DataType.DateTime)]
-    public DateTime UploadDate { get; set; }
+    [DataType(DataType.DateTime)] public DateTime UploadDate { get; set; }
 
     public User User { get; set; }
     public ICollection<Commentary> Commentaries { get; set; } = new List<Commentary>();

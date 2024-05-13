@@ -42,6 +42,7 @@ namespace Puppy.Controllers
             {
                 return NotFound();
             }
+
             var documents = await _documentRepository.GetDocumentsByPet(petId);
             var documentDto = _mapper.Map<IEnumerable<ShortDocumentDto>>(documents);
             return Ok(documentDto);
@@ -56,11 +57,12 @@ namespace Puppy.Controllers
             var userId = Convert.ToInt32(HttpContext.User.Identity?.Name);
 
             var document = await _documentRepository.GetDocumentById(id);
-            
+
             if (document == null)
             {
                 return NotFound();
             }
+
             if (id != document.Id)
             {
                 return NotFound();
@@ -70,6 +72,7 @@ namespace Puppy.Controllers
             {
                 return Forbid();
             }
+
             var documentDto = _mapper.Map<GetDocumentDto>(document);
             return Ok(documentDto);
         }
@@ -87,6 +90,7 @@ namespace Puppy.Controllers
             {
                 return NotFound();
             }
+
             if (userId != Convert.ToInt32(pet.UserId))
             {
                 return Forbid();

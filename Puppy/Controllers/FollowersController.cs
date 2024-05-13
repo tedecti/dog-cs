@@ -26,7 +26,6 @@ public class FollowersController : ControllerBase
     [HttpPost("{id}")]
     public async Task<ActionResult<string>> Follow(int id)
     {
-
         var userId = HttpContext.User.Identity?.Name;
 
         if (string.IsNullOrEmpty(userId))
@@ -40,7 +39,7 @@ public class FollowersController : ControllerBase
         {
             return BadRequest("You already followed this person");
         }
-        
+
         if (userId == id.ToString())
         {
             return BadRequest("You can't follow yourself");
@@ -72,14 +71,13 @@ public class FollowersController : ControllerBase
         await _followerRepository.Unfollow(id, Convert.ToInt32(userId));
         return NoContent();
     }
-    
+
     [HttpGet("{userId}")]
     public async Task<IActionResult> GetFollowers(int userId)
     {
         var friends = await _followerRepository.GetFollowers(userId);
         var response = _mapper.Map<IEnumerable<GetFollowersDto>>(friends);
         return Ok(response);
-        
     }
 
     [Authorize]
@@ -89,7 +87,7 @@ public class FollowersController : ControllerBase
         var currentUserId = Convert.ToInt32(User.Identity?.Name);
 
         var follower = await _followerRepository.IsFollowed(userId, currentUserId);
-        
+
         return follower;
     }
 }

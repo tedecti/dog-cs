@@ -1,4 +1,3 @@
-
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Puppy.Models.Dto;
@@ -15,8 +14,8 @@ public class SearchController : ControllerBase
 {
     private readonly ISearchRepository _searchRepository;
     private readonly IMapper _mapper;
-    
-    public SearchController( IMapper mapper, ISearchRepository searchRepository)
+
+    public SearchController(IMapper mapper, ISearchRepository searchRepository)
     {
         _mapper = mapper;
         _searchRepository = searchRepository;

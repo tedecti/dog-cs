@@ -12,15 +12,11 @@ public class PostRepository : IPostRepository
 {
     private readonly AppDbContext _context;
     private readonly IFileRepository _fileRepo;
-    private readonly IPostService _postService;
-    private readonly IFollowerRepository _followerRepository;
 
-    public PostRepository(AppDbContext context, IFileRepository fileRepo, IPostService postService, IFollowerRepository followerRepository)
+    public PostRepository(AppDbContext context, IFileRepository fileRepo)
     {
         _context = context;
         _fileRepo = fileRepo;
-        _postService = postService;
-        _followerRepository = followerRepository;
     }
 
     public async Task<IEnumerable<Post>> GetAllPosts()
@@ -39,13 +35,13 @@ public class PostRepository : IPostRepository
             .Include(p => p.User)
             .ToListAsync();
     }
-    
+
     public async Task<Post?> GetPostById(int postId)
     {
-        var post = await _context.Post.Include(p => p.User).FirstOrDefaultAsync(p=> p.Id == postId);
+        var post = await _context.Post.Include(p => p.User).FirstOrDefaultAsync(p => p.Id == postId);
         return post;
     }
-    
+
     public async Task<Post> CreatePost(UploadPostRequestDto uploadPostRequestDto, int userId)
     {
         var imgs = new List<string>();
@@ -53,7 +49,7 @@ public class PostRepository : IPostRepository
         {
             imgs.Add(await _fileRepo.SaveFile(file));
         }
-            
+
         var newPost = new Post()
         {
             Title = uploadPostRequestDto.Title,
@@ -75,7 +71,6 @@ public class PostRepository : IPostRepository
         existingPost.Description = editPostRequestDto.Description;
         await _context.SaveChangesAsync();
         return existingPost;
-
     }
 
     public async Task<Post> DeletePost(int postId)

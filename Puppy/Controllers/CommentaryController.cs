@@ -39,6 +39,7 @@ namespace Puppy.Controllers
             {
                 return NotFound();
             }
+
             var commentDtos = _mapper.Map<IEnumerable<GetCommentsDto>>(comments);
 
             var count = _commentaryRepository.GetTotal(postId);
@@ -63,7 +64,7 @@ namespace Puppy.Controllers
             await _commentaryRepository.EditCommentary(editCommentaryRequestDto, id);
             return NoContent();
         }
-        
+
         [Route("{postId}")]
         [HttpPost]
         [Authorize]

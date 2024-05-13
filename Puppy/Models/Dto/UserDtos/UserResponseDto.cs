@@ -12,7 +12,7 @@ public class UserResponseDto
     public string LastName { get; set; }
     public int FriendsCount { get; set; }
     public int FollowersCount { get; set; }
-		
+
     public ICollection<UserPetDto> Pets { get; set; } = new List<UserPetDto>();
 
     public ICollection<GetFollowersDto> Friends { get; set; } = new List<GetFollowersDto>();

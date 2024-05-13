@@ -1,4 +1,3 @@
-
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -29,7 +28,7 @@ namespace Puppy
             builder.Services.AddScoped<ILikeRepository, LikeRepository>();
             builder.Services.AddScoped<ICommentaryRepository, CommentaryRepository>();
             builder.Services.AddScoped<IFollowerRepository, FollowerRepository>();
-            
+
 
             var key = builder.Configuration.GetValue<string>("ApiSettings:Secret");
 
@@ -92,7 +91,7 @@ namespace Puppy
 
 
             var app = builder.Build();
-            
+
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Lotus.API.Integration v1"));
 

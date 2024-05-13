@@ -40,7 +40,7 @@ public class FollowerRepository : IFollowerRepository
         await _context.SaveChangesAsync();
         return follower;
     }
-    
+
     public async Task<bool> IsFollowed(int userId, int currentUserId)
     {
         var follower = await _context.Friend.Where(x => x.FollowerId == userId && x.UserId == currentUserId)
@@ -51,7 +51,7 @@ public class FollowerRepository : IFollowerRepository
 
     public async Task<List<Friend>> GetFollowers(int userId)
     {
-        var friends = await _context.Friend.Where(f=> f.FollowerId == userId).Include(f=>f.User).ToListAsync();
+        var friends = await _context.Friend.Where(f => f.FollowerId == userId).Include(f => f.User).ToListAsync();
         return friends;
     }
 
@@ -59,5 +59,5 @@ public class FollowerRepository : IFollowerRepository
     {
         var friend = await _context.Friend.Where(f => f.FollowerId == followerId).FirstOrDefaultAsync();
         return friend;
-    }  
+    }
 }

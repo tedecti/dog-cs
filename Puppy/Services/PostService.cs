@@ -1,7 +1,5 @@
-using Microsoft.EntityFrameworkCore;
 using Puppy.Data;
 using Puppy.Models;
-using Puppy.Models.Dto;
 using Puppy.Repositories.Interfaces;
 using Puppy.Services.Interfaces;
 
@@ -9,11 +7,13 @@ namespace Puppy.Services;
 
 public class PostService : IPostService
 {
+    private readonly AppDbContext _context;
     private readonly IPostRepository _postRepository;
     private readonly IFollowerRepository _followerRepository;
 
     public PostService(AppDbContext context, IPostRepository postRepository, IFollowerRepository followerRepository)
     {
+        _context = context;
         _postRepository = postRepository;
         _followerRepository = followerRepository;
     }

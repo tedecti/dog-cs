@@ -73,5 +73,4 @@ public class CommentaryRepository : ICommentaryRepository
         var comments = await _context.Commentary.Where(c => c.UserId == userId).ToListAsync();
         return comments;
     }
-    
 }

@@ -1,6 +1,4 @@
-
 using Microsoft.AspNetCore.Mvc;
-
 using Microsoft.AspNetCore.Authorization;
 using Puppy.Data;
 using Puppy.Models;
@@ -27,13 +25,13 @@ namespace Puppy.Controllers
         [Authorize]
         public async Task<ActionResult<bool>> GetLike(int postId)
         {
-          var userId = Convert.ToInt32(HttpContext.User.Identity?.Name);
+            var userId = Convert.ToInt32(HttpContext.User.Identity?.Name);
 
-          var like = await _likeRepository.GetLike(postId, userId); 
-          if (like == null) return false;
-          return true;
+            var like = await _likeRepository.GetLike(postId, userId);
+            if (like == null) return false;
+            return true;
         }
-        
+
         // POST: api/Like/1
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost("like/{PostId}")]
@@ -70,7 +68,7 @@ namespace Puppy.Controllers
             {
                 return NotFound();
             }
-        
+
             await _likeRepository.Unlike(postId, userId);
             return NoContent();
         }

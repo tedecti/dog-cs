@@ -44,21 +44,20 @@ namespace Puppy.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<GetPostDto>> GetPost(int id)
         {
-
             var post = await _postRepository.GetPostById(id);
-            
+
 
             if (post == null)
             {
                 return NotFound();
             }
 
-            
+
             var dtos = _mapper.Map<GetPostDto>(post);
-            
+
             return Ok(dtos);
         }
-        
+
         [HttpPut("{id}")]
         [Authorize]
         public async Task<IActionResult> PutPost([FromBody] UploadPostRequestDto editPostRequestDto, int id)
@@ -69,20 +68,21 @@ namespace Puppy.Controllers
             {
                 return Unauthorized();
             }
+
             await _postRepository.EditPost(editPostRequestDto, id);
 
             return NoContent();
         }
 
-        
+
         [HttpPost]
         [Authorize]
         public async Task<ActionResult<Post>> PostPost([FromForm] UploadPostRequestDto post)
         {
             var userId = Convert.ToInt32(HttpContext.User.Identity?.Name);
 
-            await _postRepository.CreatePost(post, userId); 
-            
+            await _postRepository.CreatePost(post, userId);
+
             return StatusCode(201);
         }
 
@@ -93,6 +93,5 @@ namespace Puppy.Controllers
             await _postRepository.DeletePost(id);
             return NoContent();
         }
-        
     }
 }

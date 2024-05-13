@@ -2,9 +2,9 @@
 
 namespace Puppy.Models.Dto.AuthDtos
 {
-	public class LoginResponseDto
-	{
-		public UserResponseDto User { get; set; }
-		public string Token { get; set; }
-	}
+    public class LoginResponseDto
+    {
+        public UserResponseDto? User { get; set; }
+        public string Token { get; set; }
+    }
 }

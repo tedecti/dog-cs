@@ -22,14 +22,13 @@ namespace Puppy.Controllers
             _mapper = mapper;
             _petRepo = petRepo;
         }
-        
+
         [HttpGet("{id}")]
         [Authorize]
         public async Task<ActionResult<Pet>> GetPet(int id)
         {
-
             var userId = Convert.ToInt32(HttpContext.User.Identity?.Name);
-        
+
             var pet = await _petRepo.GetPetById(id);
 
             if (pet == null)
@@ -46,11 +45,11 @@ namespace Puppy.Controllers
             {
                 return Forbid();
             }
-            
+
             var responseDto = _mapper.Map<GetPetDto>(pet);
             return Ok(responseDto);
         }
-        
+
         // GET: api/Pets/1
         [HttpGet("/api/user/{userId}/pets")]
         [Authorize]
@@ -97,6 +96,7 @@ namespace Puppy.Controllers
             {
                 return Unauthorized();
             }
+
             await _petRepo.DeletePet(id);
             return NoContent();
         }

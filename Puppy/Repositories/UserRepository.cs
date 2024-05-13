@@ -20,16 +20,17 @@ namespace Puppy.Repositories
         private readonly IMapper _mapper;
         private readonly string? _secretKey;
 
-        public UserRepository(AppDbContext context, IConfiguration configuration, IMapper mapper, string secretKey)
+        public UserRepository(AppDbContext context, IConfiguration configuration, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
             _secretKey = configuration.GetValue<string>("ApiSettings:Secret");
         }
+
         public async Task<LoginResponseDto?> Login(LoginRequestDto loginRequestDto)
         {
             var user = _context.Users.FirstOrDefault(u =>
-                u.Email == loginRequestDto.Email );
+                u.Email == loginRequestDto.Email);
 
             if (user == null)
             {
@@ -39,8 +40,9 @@ namespace Puppy.Repositories
                     Token = ""
                 };
             }
+
             var isVerified = BCrypt.Net.BCrypt.Verify(loginRequestDto.Password, user.Password);
-            
+
             if (!isVerified)
             {
                 return new LoginResponseDto()
@@ -62,7 +64,8 @@ namespace Puppy.Repositories
                     new Claim(ClaimTypes.Role, "User"),
                 }),
                 Expires = UtcNow.AddDays(7),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
+                SigningCredentials =
+                    new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
             };
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
@@ -73,7 +76,6 @@ namespace Puppy.Repositories
                 Token = tokenHandler.WriteToken(token)
             };
             return loginResponseDto;
-
         }
 
         public async Task<User> Register(RegistrationRequestDto registerRequestDto)
@@ -104,6 +106,7 @@ namespace Puppy.Repositories
             {
                 return null;
             }
+
             await _context.SaveChangesAsync();
             return existingUser;
         }
@@ -119,17 +122,19 @@ namespace Puppy.Repositories
         public async Task<User> GetUser(int userId)
         {
             var user = await _context.Users.Include(x => x.Pets)
-                .Include(x=>x.Posts)
-                .Include(x=>x.Followers).ThenInclude(x=>x.Follower)
-                .Include(x=>x.Friends).ThenInclude(x=>x.User)
+                .Include(x => x.Posts)
+                .Include(x => x.Followers).ThenInclude(x => x.Follower)
+                .Include(x => x.Friends).ThenInclude(x => x.User)
                 .FirstAsync(x => x.Id == Convert.ToInt32(userId));
             return user;
         }
+
         public async Task<IEnumerable<User>> GetUsers()
         {
             var users = await _context.Users.ToListAsync();
             return users;
         }
+
         public bool IsUniqueEmail(string email)
         {
             var userEmail = _context.Users.FirstOrDefault(x => x.Email == email);
@@ -139,7 +144,7 @@ namespace Puppy.Repositories
         public bool IsUnique(string email, string username)
         {
             var user = _context.Users.FirstOrDefault(x => x.Email == email || x.Username == username);
-            
+
             return user == null;
         }
     }

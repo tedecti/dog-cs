@@ -13,12 +13,14 @@ public class LikeRepository : ILikeRepository
     {
         _context = context;
     }
+
     public async Task<Like?> GetLike(int postId, int userId)
     {
         var like = await _context.Like.Where(x => x.PostId == postId && x.UserId == userId)
             .FirstOrDefaultAsync();
         return like;
     }
+
     public async Task<Like?> LikePost(int postId, int userId)
     {
         var existingLike = await _context.Like.FirstOrDefaultAsync(l => l.UserId == userId && l.PostId == postId);
@@ -26,6 +28,7 @@ public class LikeRepository : ILikeRepository
         {
             return null;
         }
+
         var newLike = new Like()
         {
             UserId = userId,

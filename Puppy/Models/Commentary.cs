@@ -9,6 +9,4 @@ public class Commentary
     public int UserId { get; set; }
     public string Text { get; set; }
     public DateTime UploadDate { get; set; }
-    
-
 }

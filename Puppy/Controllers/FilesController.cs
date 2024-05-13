@@ -10,7 +10,6 @@ namespace Puppy.Controllers;
 [ApiController]
 public class FilesController : ControllerBase
 {
-
     private readonly IWebHostEnvironment _environment;
     private readonly IFileRepository _fileRepo;
 
@@ -18,9 +17,8 @@ public class FilesController : ControllerBase
     {
         _environment = environment;
         _fileRepo = fileRepo;
-
     }
-    
+
     // GET
     [HttpGet("{fileName}")]
     public async Task<IActionResult> Index(string fileName)
@@ -50,7 +48,8 @@ public class FilesController : ControllerBase
                 }
             }
         }
-    }   
+    }
+
     [HttpGet("{fileName}/small")]
     public async Task<IActionResult> Small(string fileName)
     {

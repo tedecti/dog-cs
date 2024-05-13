@@ -16,16 +16,19 @@ public class PetRepository : IPetRepository
         _context = context;
         _fileRepo = fileRepo;
     }
+
     public async Task<Pet?> GetPetById(int petId)
     {
         var pet = await _context.Pet.Include(x => x.Documents).Where(x => x.Id == petId).FirstOrDefaultAsync();
         return pet;
     }
+
     public async Task<IEnumerable<Pet>> GetPetsByUser(int userId)
     {
         var pets = await _context.Pet.Include(x => x.Documents).Where(x => x.UserId == userId).ToListAsync();
         return pets;
     }
+
     public async Task<Pet> PostPet(AddPetRequestDto addPetRequestDto, int userId)
     {
         var imgs = new List<string>();
@@ -33,7 +36,7 @@ public class PetRepository : IPetRepository
         {
             imgs.Add(await _fileRepo.SaveFile(file));
         }
-        
+
         var newPet = new Pet()
         {
             Name = addPetRequestDto.Name,
@@ -46,20 +49,21 @@ public class PetRepository : IPetRepository
         await _context.SaveChangesAsync();
         return newPet;
     }
+
     public async Task<Pet?> EditPet(UpdatePetDto updatePetDto, int petId)
     {
         var existingPet = await GetPetById(petId);
-        
+
         if (existingPet == null) return null;
-        
+
         var oldPetPhotoList = existingPet.Imgs;
-        
+
         var newPetPhotoList = new List<string>();
         foreach (var file in updatePetDto.Imgs)
         {
             newPetPhotoList.Add(await _fileRepo.SaveFile(file));
         }
-        
+
         existingPet.Name = updatePetDto.Name;
         existingPet.PassportNumber = updatePetDto.PassportNumber;
         if (oldPetPhotoList.Length > 0)
@@ -69,7 +73,7 @@ public class PetRepository : IPetRepository
                 await _fileRepo.DeleteFileFromStorage(oldPhoto);
             }
         }
-        
+
         existingPet.Imgs = newPetPhotoList.ToArray();
 
         await _context.SaveChangesAsync();
@@ -83,6 +87,7 @@ public class PetRepository : IPetRepository
         {
             return null;
         }
+
         _context.Pet.Remove(pet);
         await _context.SaveChangesAsync();
         return pet;
