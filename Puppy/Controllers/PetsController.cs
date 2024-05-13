@@ -52,7 +52,7 @@ namespace Puppy.Controllers
         }
         
         // GET: api/Pets/1
-        [HttpGet("/api/User/{userId}/Pets")]
+        [HttpGet("/api/user/{userId}/pets")]
         [Authorize]
         public async Task<ActionResult<Pet>> GetPets(int userId)
         {
@@ -91,6 +91,12 @@ namespace Puppy.Controllers
         [Authorize]
         public async Task<IActionResult> DeletePet(int id)
         {
+            var userId = Convert.ToInt32(HttpContext.User.Identity?.Name);
+            var pet = await _petRepo.GetPetsByUser(userId);
+            if (!pet.Any())
+            {
+                return Unauthorized();
+            }
             await _petRepo.DeletePet(id);
             return NoContent();
         }

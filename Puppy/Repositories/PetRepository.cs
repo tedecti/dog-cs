@@ -33,7 +33,7 @@ public class PetRepository : IPetRepository
         {
             imgs.Add(await _fileRepo.SaveFile(file));
         }
-            
+        
         var newPet = new Pet()
         {
             Name = addPetRequestDto.Name,
@@ -49,9 +49,29 @@ public class PetRepository : IPetRepository
     public async Task<Pet?> EditPet(UpdatePetDto updatePetDto, int petId)
     {
         var existingPet = await GetPetById(petId);
+        
         if (existingPet == null) return null;
+        
+        var oldPetPhotoList = existingPet.Imgs;
+        
+        var newPetPhotoList = new List<string>();
+        foreach (var file in updatePetDto.Imgs)
+        {
+            newPetPhotoList.Add(await _fileRepo.SaveFile(file));
+        }
+        
         existingPet.Name = updatePetDto.Name;
         existingPet.PassportNumber = updatePetDto.PassportNumber;
+        if (oldPetPhotoList.Length > 0)
+        {
+            foreach (var oldPhoto in oldPetPhotoList)
+            {
+                await _fileRepo.DeleteFileFromStorage(oldPhoto);
+            }
+        }
+        
+        existingPet.Imgs = newPetPhotoList.ToArray();
+
         await _context.SaveChangesAsync();
         return existingPet;
     }
