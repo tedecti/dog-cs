@@ -4,5 +4,6 @@
     {
         Task<string> SaveFile(IFormFile file);
         Task<Stream> GetFile(string fileName);
+        Task<bool> DeleteFileFromStorage(string fileName);
     }
 }

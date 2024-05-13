@@ -11,6 +11,7 @@ namespace Puppy.Repositories
     {
         private const string BucketName = "Puppy";
         private readonly IConfiguration _configuration;
+        private IMinioClient _minioClient;
 
         public FileRepository(IConfiguration configuration)
         {
@@ -35,7 +36,7 @@ namespace Puppy.Repositories
         {
             const string contentType = "image/png";
             var storageConfig = _configuration.GetSection("Minio").Get<MinioStorageConfig>();
-            var minioClient = new MinioClient()
+            _minioClient = new MinioClient()
                 .WithEndpoint(storageConfig?.Endpoint)
                 .WithCredentials(storageConfig?.AccessKey, storageConfig?.SecretKey)
                 .WithSSL()
@@ -48,7 +49,7 @@ namespace Puppy.Repositories
                     .WithStreamData(fileStream)
                     .WithObjectSize(fileStream.Length)
                     .WithContentType(contentType);
-                await minioClient.PutObjectAsync(upload);
+                await _minioClient.PutObjectAsync(upload);
                 return true;
             }
 
@@ -76,6 +77,23 @@ namespace Puppy.Repositories
             await minioClient.GetObjectAsync(getObjectArgs);
 
             return responseStream;
+        }
+
+        public async Task<bool> DeleteFileFromStorage(string fileName)
+        {
+            try
+            {
+                var args = new RemoveObjectArgs()
+                    .WithBucket(BucketName)
+                    .WithObject(fileName);
+                await _minioClient.RemoveObjectAsync(args);
+                return true;
+            }
+            catch (MinioException e)
+            {
+                return false;
+            }
+            
         }
     }
 }
