@@ -9,39 +9,32 @@ namespace Puppy.Controllers
 {
     [Route("api")]
     [ApiController]
-    public class LikeController : ControllerBase
+    public class LikeController(AppDbContext context, ILikeRepository likeRepository) : ControllerBase
     {
-        private readonly AppDbContext _context;
-        private readonly ILikeRepository _likeRepository;
-
-        public LikeController(AppDbContext context, ILikeRepository likeRepository)
-        {
-            _context = context;
-            _likeRepository = likeRepository;
-        }
+        private readonly AppDbContext _context = context;
 
         // GET: api/Like/1
-        [HttpGet("like/{postId}")]
+        [HttpGet("posts/{PostId}/like")]
         [Authorize]
         public async Task<ActionResult<bool>> GetLike(int postId)
         {
             var userId = Convert.ToInt32(HttpContext.User.Identity?.Name);
 
-            var like = await _likeRepository.GetLike(postId, userId);
+            var like = await likeRepository.GetLike(postId, userId);
             if (like == null) return false;
             return true;
         }
 
         // POST: api/Like/1
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost("like/{PostId}")]
+        [HttpPost("posts/{PostId}/like")]
         [Authorize]
         public async Task<ActionResult<Like>> PostLike(int postId)
         {
             var userId = Convert.ToInt32(HttpContext.User.Identity?.Name);
 
 
-            var existingLike = await _likeRepository.GetLike(postId, userId);
+            var existingLike = await likeRepository.GetLike(postId, userId);
             if (existingLike != null)
             {
                 return BadRequest("Like is already exist.");
@@ -52,24 +45,25 @@ namespace Puppy.Controllers
                 return NotFound();
             }
 
-            await _likeRepository.LikePost(postId, userId);
+            await likeRepository.LikePost(postId, userId);
 
             return StatusCode(201);
         }
 
         // // DELETE: api/Like/5
-        [HttpDelete("unlike/{PostId}")]
+        [HttpDelete]
+        [Route("posts/{PostId}/like")]
         [Authorize]
         public async Task<IActionResult> DeleteLike(int postId)
         {
             var userId = Convert.ToInt32(HttpContext.User.Identity?.Name);
-            var like = await _likeRepository.GetLike(postId, userId);
+            var like = await likeRepository.GetLike(postId, userId);
             if (like == null)
             {
                 return NotFound();
             }
 
-            await _likeRepository.Unlike(postId, userId);
+            await likeRepository.Unlike(postId, userId);
             return NoContent();
         }
     }
