@@ -369,6 +369,4 @@ FodyWeavers.xsd*.jpg
 *.gif
 
 # Ignore appsettings files 
-Puppy/appsettings.json
 Puppy/appsettings.Development.json
-appsettings.json
