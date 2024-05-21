@@ -30,17 +30,12 @@ namespace Puppy
             builder.Services.AddScoped<IFollowerRepository, FollowerRepository>();
             builder.Services.AddScoped<ISearchRepository, SearchRepository>();
 
-            var corses = "_myCorses";
-            builder.Services.AddCors(options =>
+            builder.Services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
             {
-                  options,AddPolicy(name: corses, 
-                 policy =<
-                    {
-                        policy.WithOrigins("http://localhost:3000")
-                            .AllowAnyHeader()
-                            .AllowAnyMethod();
-                    }
-            }
+                builder.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
+            }));
 
             var key = builder.Configuration.GetValue<string>("ApiSettings:Secret");
 
@@ -116,7 +111,7 @@ namespace Puppy
 
 
             app.MapControllers();
-            app.UseCors();
+            app.UseCors("MyPolicy");
             app.Run();
         }
     }
