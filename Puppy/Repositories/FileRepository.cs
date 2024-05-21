@@ -1,4 +1,6 @@
-﻿using Minio;
+﻿using System.Net;
+using Minio;
+using Minio.DataModel;
 using Minio.DataModel.Args;
 using Minio.Exceptions;
 using Puppy.Config;
@@ -9,9 +11,8 @@ namespace Puppy.Repositories
 {
     public class FileRepository : IFileRepository
     {
-        private const string BucketName = "Puppy";
+        private const string BucketName = "puppy";
         private readonly IConfiguration _configuration;
-        private IMinioClient _minioClient;
 
         public FileRepository(IConfiguration configuration)
         {
@@ -34,13 +35,16 @@ namespace Puppy.Repositories
 
         private async Task<bool> UploadFileToStorage(Stream fileStream, string fileName)
         {
-            const string contentType = "image/png";
+            const string contentType = "application/octet-stream";
             var storageConfig = _configuration.GetSection("Minio").Get<MinioStorageConfig>();
-            _minioClient = new MinioClient()
+            var minioClient = new MinioClient()
                 .WithEndpoint(storageConfig?.Endpoint)
                 .WithCredentials(storageConfig?.AccessKey, storageConfig?.SecretKey)
                 .WithSSL()
                 .Build();
+            if (fileStream.CanSeek)
+                fileStream.Position = 0;
+            
             try
             {
                 var upload = new PutObjectArgs()
@@ -49,12 +53,16 @@ namespace Puppy.Repositories
                     .WithStreamData(fileStream)
                     .WithObjectSize(fileStream.Length)
                     .WithContentType(contentType);
-                await _minioClient.PutObjectAsync(upload);
+                await minioClient.PutObjectAsync(upload);
+                var statObjectArgs = new StatObjectArgs().WithBucket(BucketName).WithObject(fileName);
+                var objectStat = await minioClient.StatObjectAsync(statObjectArgs);
+                Console.WriteLine(objectStat);
                 return true;
             }
 
-            catch (MinioException e)
+            catch (Exception e)
             {
+                Console.WriteLine(e);
                 return false;
             }
         }
@@ -81,12 +89,18 @@ namespace Puppy.Repositories
 
         public async Task<bool> DeleteFileFromStorage(string fileName)
         {
+            var storageConfig = _configuration.GetSection("Minio").Get<MinioStorageConfig>();
+            var minioClient = new MinioClient()
+                .WithEndpoint(storageConfig?.Endpoint)
+                .WithCredentials(storageConfig?.AccessKey, storageConfig?.SecretKey)
+                .WithSSL()
+                .Build();
             try
             {
                 var args = new RemoveObjectArgs()
                     .WithBucket(BucketName)
                     .WithObject(fileName);
-                await _minioClient.RemoveObjectAsync(args);
+                await minioClient.RemoveObjectAsync(args);
                 return true;
             }
             catch (MinioException e)

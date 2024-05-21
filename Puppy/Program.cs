@@ -28,7 +28,10 @@ namespace Puppy
             builder.Services.AddScoped<ILikeRepository, LikeRepository>();
             builder.Services.AddScoped<ICommentaryRepository, CommentaryRepository>();
             builder.Services.AddScoped<IFollowerRepository, FollowerRepository>();
+            builder.Services.AddScoped<ISearchRepository, SearchRepository>();
 
+            
+            builder.Services.AddCors();
 
             var key = builder.Configuration.GetValue<string>("ApiSettings:Secret");
 
@@ -104,7 +107,7 @@ namespace Puppy
 
 
             app.MapControllers();
-
+            app.UseCors();
             app.Run();
         }
     }
