@@ -30,8 +30,17 @@ namespace Puppy
             builder.Services.AddScoped<IFollowerRepository, FollowerRepository>();
             builder.Services.AddScoped<ISearchRepository, SearchRepository>();
 
-            
-            builder.Services.AddCors();
+            var corses = "_myCorses";
+            builder.Services.AddCors(options =>
+            {
+                  options,AddPolicy(name: corses, 
+                 policy =<
+                    {
+                        policy.WithOrigins("http://localhost:3000")
+                            .AllowAnyHeader()
+                            .AllowAnyMethod();
+                    }
+            }
 
             var key = builder.Configuration.GetValue<string>("ApiSettings:Secret");
 
