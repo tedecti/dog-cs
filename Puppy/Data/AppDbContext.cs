@@ -17,6 +17,10 @@ namespace Puppy.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Admin>();
+            modelBuilder.Entity<Complaint>()
+                .HasOne(e => e.User)
+                .WithMany(e => e.Complaints);
             modelBuilder.Entity<User>()
                 .HasMany(c => c.Pets)
                 .WithOne(e => e.User);
@@ -49,6 +53,8 @@ namespace Puppy.Data
                 .WithMany(p => p.Documents);
         }
 
+        public DbSet<Admin> Admin { get; set; }
+        public DbSet<Complaint> Complaint { get; set; }
         public DbSet<User> Users { get; set; } = default!;
 
         public DbSet<Pet> Pet { get; set; } = default!;

@@ -12,20 +12,45 @@ using Puppy.Data;
 namespace Puppy.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20231127032413_Initial")]
-    partial class Initial
+    [Migration("20240521140500_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.12")
+                .HasAnnotation("ProductVersion", "8.0.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Curs.Models.Commentary", b =>
+            modelBuilder.Entity("Puppy.Models.Admin", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Admin");
+                });
+
+            modelBuilder.Entity("Puppy.Models.Commentary", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -55,7 +80,38 @@ namespace Puppy.Migrations
                     b.ToTable("Commentary");
                 });
 
-            modelBuilder.Entity("Curs.Models.Document", b =>
+            modelBuilder.Entity("Puppy.Models.Complaint", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Commentary")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("PostId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PostId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Complaint");
+                });
+
+            modelBuilder.Entity("Puppy.Models.Document", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -88,7 +144,7 @@ namespace Puppy.Migrations
                     b.ToTable("Document");
                 });
 
-            modelBuilder.Entity("Curs.Models.Friend", b =>
+            modelBuilder.Entity("Puppy.Models.Friend", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -111,7 +167,7 @@ namespace Puppy.Migrations
                     b.ToTable("Friend");
                 });
 
-            modelBuilder.Entity("Curs.Models.Like", b =>
+            modelBuilder.Entity("Puppy.Models.Like", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -134,7 +190,7 @@ namespace Puppy.Migrations
                     b.ToTable("Like");
                 });
 
-            modelBuilder.Entity("Curs.Models.Pet", b =>
+            modelBuilder.Entity("Puppy.Models.Pet", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -164,7 +220,7 @@ namespace Puppy.Migrations
                     b.ToTable("Pet");
                 });
 
-            modelBuilder.Entity("Curs.Models.Post", b =>
+            modelBuilder.Entity("Puppy.Models.Post", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -200,7 +256,7 @@ namespace Puppy.Migrations
                     b.ToTable("Post");
                 });
 
-            modelBuilder.Entity("Curs.Models.User", b =>
+            modelBuilder.Entity("Puppy.Models.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -237,15 +293,15 @@ namespace Puppy.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Curs.Models.Commentary", b =>
+            modelBuilder.Entity("Puppy.Models.Commentary", b =>
                 {
-                    b.HasOne("Curs.Models.Post", "Post")
+                    b.HasOne("Puppy.Models.Post", "Post")
                         .WithMany("Commentaries")
                         .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Curs.Models.User", "User")
+                    b.HasOne("Puppy.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -256,9 +312,28 @@ namespace Puppy.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Curs.Models.Document", b =>
+            modelBuilder.Entity("Puppy.Models.Complaint", b =>
                 {
-                    b.HasOne("Curs.Models.Pet", "Pet")
+                    b.HasOne("Puppy.Models.Post", "Post")
+                        .WithMany()
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Puppy.Models.User", "User")
+                        .WithMany("Complaints")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Post");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Puppy.Models.Document", b =>
+                {
+                    b.HasOne("Puppy.Models.Pet", "Pet")
                         .WithMany("Documents")
                         .HasForeignKey("PetId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -267,15 +342,15 @@ namespace Puppy.Migrations
                     b.Navigation("Pet");
                 });
 
-            modelBuilder.Entity("Curs.Models.Friend", b =>
+            modelBuilder.Entity("Puppy.Models.Friend", b =>
                 {
-                    b.HasOne("Curs.Models.User", "Follower")
+                    b.HasOne("Puppy.Models.User", "Follower")
                         .WithMany("Friends")
                         .HasForeignKey("FollowerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Curs.Models.User", "User")
+                    b.HasOne("Puppy.Models.User", "User")
                         .WithMany("Followers")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -286,15 +361,15 @@ namespace Puppy.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Curs.Models.Like", b =>
+            modelBuilder.Entity("Puppy.Models.Like", b =>
                 {
-                    b.HasOne("Curs.Models.Post", "Post")
+                    b.HasOne("Puppy.Models.Post", "Post")
                         .WithMany("Likes")
                         .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Curs.Models.User", "User")
+                    b.HasOne("Puppy.Models.User", "User")
                         .WithMany("Likes")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -305,9 +380,9 @@ namespace Puppy.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Curs.Models.Pet", b =>
+            modelBuilder.Entity("Puppy.Models.Pet", b =>
                 {
-                    b.HasOne("Curs.Models.User", "User")
+                    b.HasOne("Puppy.Models.User", "User")
                         .WithMany("Pets")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -316,9 +391,9 @@ namespace Puppy.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Curs.Models.Post", b =>
+            modelBuilder.Entity("Puppy.Models.Post", b =>
                 {
-                    b.HasOne("Curs.Models.User", "User")
+                    b.HasOne("Puppy.Models.User", "User")
                         .WithMany("Posts")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -327,20 +402,22 @@ namespace Puppy.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Curs.Models.Pet", b =>
+            modelBuilder.Entity("Puppy.Models.Pet", b =>
                 {
                     b.Navigation("Documents");
                 });
 
-            modelBuilder.Entity("Curs.Models.Post", b =>
+            modelBuilder.Entity("Puppy.Models.Post", b =>
                 {
                     b.Navigation("Commentaries");
 
                     b.Navigation("Likes");
                 });
 
-            modelBuilder.Entity("Curs.Models.User", b =>
+            modelBuilder.Entity("Puppy.Models.User", b =>
                 {
+                    b.Navigation("Complaints");
+
                     b.Navigation("Followers");
 
                     b.Navigation("Friends");

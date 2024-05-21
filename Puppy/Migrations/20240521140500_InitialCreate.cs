@@ -7,11 +7,26 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Puppy.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "Admin",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Username = table.Column<string>(type: "text", nullable: false),
+                    Email = table.Column<string>(type: "text", nullable: false),
+                    Password = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Admin", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
@@ -154,6 +169,34 @@ namespace Puppy.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Complaint",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UserId = table.Column<int>(type: "integer", nullable: false),
+                    PostId = table.Column<int>(type: "integer", nullable: false),
+                    Commentary = table.Column<string>(type: "text", nullable: false),
+                    Status = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Complaint", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Complaint_Post_PostId",
+                        column: x => x.PostId,
+                        principalTable: "Post",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Complaint_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Like",
                 columns: table => new
                 {
@@ -187,6 +230,16 @@ namespace Puppy.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Commentary_UserId",
                 table: "Commentary",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Complaint_PostId",
+                table: "Complaint",
+                column: "PostId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Complaint_UserId",
+                table: "Complaint",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
@@ -229,7 +282,13 @@ namespace Puppy.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "Admin");
+
+            migrationBuilder.DropTable(
                 name: "Commentary");
+
+            migrationBuilder.DropTable(
+                name: "Complaint");
 
             migrationBuilder.DropTable(
                 name: "Document");

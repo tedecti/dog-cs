@@ -11,7 +11,7 @@
         public string Password { get; set; }
 
         public ICollection<Pet> Pets { get; set; } = new List<Pet>();
-
+        public ICollection<Complaint> Complaints { get; set; } = new List<Complaint>();
         public ICollection<Friend> Friends { get; set; } = new List<Friend>();
         public ICollection<Friend> Followers { get; set; } = new List<Friend>();
         public ICollection<Post> Posts { get; set; } = new List<Post>();
