@@ -13,19 +13,9 @@ namespace Puppy.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PostController : ControllerBase
+    public class PostController(IPostService postService, IPostRepository postRepository, IMapper mapper)
+        : ControllerBase
     {
-        private readonly IPostRepository _postRepository;
-        private readonly IPostService _postService;
-        private readonly IMapper _mapper;
-
-        public PostController(IPostService postService, IPostRepository postRepository, IMapper mapper)
-        {
-            _postService = postService;
-            _postRepository = postRepository;
-            _mapper = mapper;
-        }
-
         // GET: api/Post
         [HttpGet]
         [Authorize]
@@ -33,9 +23,9 @@ namespace Puppy.Controllers
         {
             var userId = Convert.ToInt32(HttpContext.User.Identity?.Name);
 
-            var allPosts = await _postService.GetFilteredPostsAsync(userId);
+            var allPosts = await postService.GetFilteredPostsAsync(userId);
 
-            var dtos = _mapper.Map<IEnumerable<GetPostDto>>(allPosts);
+            var dtos = mapper.Map<IEnumerable<GetPostDto>>(allPosts);
             return Ok(dtos);
         }
 
@@ -44,7 +34,7 @@ namespace Puppy.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<GetPostDto>> GetPost(int id)
         {
-            var post = await _postRepository.GetPostById(id);
+            var post = await postRepository.GetPostById(id);
 
 
             if (post == null)
@@ -53,23 +43,23 @@ namespace Puppy.Controllers
             }
 
 
-            var dtos = _mapper.Map<GetPostDto>(post);
+            var dtos = mapper.Map<GetPostDto>(post);
 
             return Ok(dtos);
         }
 
         [HttpPut("{id}")]
         [Authorize]
-        public async Task<IActionResult> PutPost([FromBody] UploadPostRequestDto editPostRequestDto, int id)
+        public async Task<IActionResult> PutPost([FromForm] UploadPostRequestDto editPostRequestDto, int id)
         {
-            var post = await _postRepository.GetPostById(id);
+            var post = await postRepository.GetPostById(id);
             var userId = Convert.ToInt32(HttpContext.User.Identity?.Name);
             if (post != null && userId != post.UserId)
             {
                 return Unauthorized();
             }
 
-            await _postRepository.EditPost(editPostRequestDto, id);
+            await postRepository.EditPost(editPostRequestDto, id);
 
             return NoContent();
         }
@@ -81,7 +71,7 @@ namespace Puppy.Controllers
         {
             var userId = Convert.ToInt32(HttpContext.User.Identity?.Name);
 
-            await _postRepository.CreatePost(post, userId);
+            await postRepository.CreatePost(post, userId);
 
             return StatusCode(201);
         }
@@ -90,7 +80,7 @@ namespace Puppy.Controllers
         [Authorize]
         public async Task<IActionResult> DeletePost(int id)
         {
-            await _postRepository.DeletePost(id);
+            await postRepository.DeletePost(id);
             return NoContent();
         }
     }

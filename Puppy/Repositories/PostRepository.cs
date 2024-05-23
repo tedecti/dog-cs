@@ -67,8 +67,23 @@ public class PostRepository : IPostRepository
     {
         var existingPost = await GetPostById(postId);
         if (existingPost == null) return null;
+        
+        var postImgs = existingPost.Imgs;
+        foreach (var img in postImgs)
+        {
+            await _fileRepo.DeleteFileFromStorage(img);
+        }
+        
+        var imgs = new List<string>();
+        foreach (var file in editPostRequestDto.Imgs)
+        {
+            imgs.Add(await _fileRepo.SaveFile(file));
+        }
+        
         existingPost.Title = editPostRequestDto.Title;
         existingPost.Description = editPostRequestDto.Description;
+        existingPost.Imgs = imgs.ToArray();
+        
         await _context.SaveChangesAsync();
         return existingPost;
     }
