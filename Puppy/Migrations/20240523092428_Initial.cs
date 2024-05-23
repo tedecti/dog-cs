@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Puppy.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -43,6 +43,33 @@ namespace Puppy.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ChatRoom",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    RoomId = table.Column<string>(type: "text", nullable: false),
+                    User1Id = table.Column<int>(type: "integer", nullable: false),
+                    User2Id = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ChatRoom", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ChatRoom_Users_User1Id",
+                        column: x => x.User1Id,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_ChatRoom_Users_User2Id",
+                        column: x => x.User2Id,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -118,6 +145,35 @@ namespace Puppy.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ChatMessage",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    RoomId = table.Column<string>(type: "text", nullable: false),
+                    UserId = table.Column<int>(type: "integer", nullable: false),
+                    Message = table.Column<string>(type: "text", nullable: false),
+                    Timestamp = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    ChatRoomId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ChatMessage", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ChatMessage_ChatRoom_ChatRoomId",
+                        column: x => x.ChatRoomId,
+                        principalTable: "ChatRoom",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ChatMessage_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Document",
                 columns: table => new
                 {
@@ -177,7 +233,8 @@ namespace Puppy.Migrations
                     UserId = table.Column<int>(type: "integer", nullable: false),
                     PostId = table.Column<int>(type: "integer", nullable: false),
                     Commentary = table.Column<string>(type: "text", nullable: false),
-                    Status = table.Column<string>(type: "text", nullable: false)
+                    Status = table.Column<string>(type: "text", nullable: false),
+                    UploadDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -221,6 +278,26 @@ namespace Puppy.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ChatMessage_ChatRoomId",
+                table: "ChatMessage",
+                column: "ChatRoomId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ChatMessage_UserId",
+                table: "ChatMessage",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ChatRoom_User1Id",
+                table: "ChatRoom",
+                column: "User1Id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ChatRoom_User2Id",
+                table: "ChatRoom",
+                column: "User2Id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Commentary_PostId",
@@ -285,6 +362,9 @@ namespace Puppy.Migrations
                 name: "Admin");
 
             migrationBuilder.DropTable(
+                name: "ChatMessage");
+
+            migrationBuilder.DropTable(
                 name: "Commentary");
 
             migrationBuilder.DropTable(
@@ -298,6 +378,9 @@ namespace Puppy.Migrations
 
             migrationBuilder.DropTable(
                 name: "Like");
+
+            migrationBuilder.DropTable(
+                name: "ChatRoom");
 
             migrationBuilder.DropTable(
                 name: "Pet");

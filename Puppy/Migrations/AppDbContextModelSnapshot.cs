@@ -47,6 +47,67 @@ namespace Puppy.Migrations
                     b.ToTable("Admin");
                 });
 
+            modelBuilder.Entity("Puppy.Models.ChatMessage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ChatRoomId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("RoomId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChatRoomId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ChatMessage");
+                });
+
+            modelBuilder.Entity("Puppy.Models.ChatRoom", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("RoomId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("User1Id")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("User2Id")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("User1Id");
+
+                    b.HasIndex("User2Id");
+
+                    b.ToTable("ChatRoom");
+                });
+
             modelBuilder.Entity("Puppy.Models.Commentary", b =>
                 {
                     b.Property<int>("Id")
@@ -95,6 +156,9 @@ namespace Puppy.Migrations
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<DateTime>("UploadDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("UserId")
                         .HasColumnType("integer");
@@ -290,6 +354,44 @@ namespace Puppy.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("Puppy.Models.ChatMessage", b =>
+                {
+                    b.HasOne("Puppy.Models.ChatRoom", "ChatRoom")
+                        .WithMany("ChatMessages")
+                        .HasForeignKey("ChatRoomId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Puppy.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ChatRoom");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Puppy.Models.ChatRoom", b =>
+                {
+                    b.HasOne("Puppy.Models.User", "User1")
+                        .WithMany()
+                        .HasForeignKey("User1Id")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Puppy.Models.User", "User2")
+                        .WithMany()
+                        .HasForeignKey("User2Id")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("User1");
+
+                    b.Navigation("User2");
+                });
+
             modelBuilder.Entity("Puppy.Models.Commentary", b =>
                 {
                     b.HasOne("Puppy.Models.Post", "Post")
@@ -397,6 +499,11 @@ namespace Puppy.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Puppy.Models.ChatRoom", b =>
+                {
+                    b.Navigation("ChatMessages");
                 });
 
             modelBuilder.Entity("Puppy.Models.Pet", b =>

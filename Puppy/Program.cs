@@ -2,8 +2,10 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.OpenApi.Models;
 using Puppy.Data;
+using Puppy.Hubs;
 using Puppy.Repositories;
 using Puppy.Repositories.Interfaces;
 using Puppy.Services;
@@ -18,7 +20,8 @@ namespace Puppy
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Services.AddDbContext<AppDbContext>();
-
+            builder.Services.AddSignalR();
+            
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IPetRepository, PetRepository>();
             builder.Services.AddScoped<IFileRepository, FileRepository>();
@@ -108,8 +111,7 @@ namespace Puppy
 
             app.UseAuthentication();
             app.UseAuthorization();
-            
-
+            app.MapHub<ChatHub>("/chathub");
             app.MapControllers();
             app.UseCors("MyPolicy");
             app.Run();
