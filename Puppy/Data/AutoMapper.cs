@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using Puppy.Models;
+using Puppy.Models.Dto.AdminDtos;
+using Puppy.Models.Dto.ComplaintDtos;
 using Puppy.Models.Dto.DocumentDto;
 using Puppy.Models.Dto.FollowerDtos;
 using Puppy.Models.Dto.PetDtos;
@@ -26,5 +28,11 @@ public class AutoMapper : Profile
         CreateMap<Commentary, GetCommentsDto>();
         CreateMap<Document, GetDocumentDto>();
         CreateMap<Document, ShortDocumentDto>();
+        CreateMap<Complaint, UserComplaintsDto>();
+        CreateMap<User, UserComplaintsDto>();
+        CreateMap<Post, PostComplaintsDto>();
+        CreateMap<Complaint, ShortComplaintDto>();
+        CreateMap<Complaint, GetComplaintDto>();
+        CreateMap<Admin, AdminDto>();
     }
 }

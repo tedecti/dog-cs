@@ -12,7 +12,7 @@ using Puppy.Data;
 namespace Puppy.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240521140500_InitialCreate")]
+    [Migration("20240523075404_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -98,6 +98,9 @@ namespace Puppy.Migrations
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<DateTime>("UploadDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("UserId")
                         .HasColumnType("integer");
@@ -315,7 +318,7 @@ namespace Puppy.Migrations
             modelBuilder.Entity("Puppy.Models.Complaint", b =>
                 {
                     b.HasOne("Puppy.Models.Post", "Post")
-                        .WithMany()
+                        .WithMany("Complaints")
                         .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -410,6 +413,8 @@ namespace Puppy.Migrations
             modelBuilder.Entity("Puppy.Models.Post", b =>
                 {
                     b.Navigation("Commentaries");
+
+                    b.Navigation("Complaints");
 
                     b.Navigation("Likes");
                 });
