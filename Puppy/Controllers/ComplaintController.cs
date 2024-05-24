@@ -40,9 +40,28 @@ public class ComplaintController : ControllerBase
             var response = _mapper.Map<UserComplaintsDto>(complaints);
             return Ok(response);
         }
-        return BadRequest("Your role is not supported");
+        return Unauthorized("Your role is not supported");
     }
 
+    [HttpGet("{Id}")]
+    [Authorize]
+    public async Task<ActionResult<UserComplaintsDto>> GetComplaint(int Id)
+    {
+        var role = _adminService.VerifyAdminRole(HttpContext.User.FindFirst(ClaimTypes.Role)?.Value);
+        if (role == true)
+        {
+            var complaints = await _repository.GetComplaint(Id);
+            if (complaints == null)
+            {
+                return NotFound();
+            }
+
+            var response = _mapper.Map<GetComplaintDto>(complaints);
+            return Ok(response);
+        }
+        return Unauthorized("Your role is not supported");
+    }
+    
     [HttpGet]
     [Authorize]
     public async Task<ActionResult<IEnumerable<GetComplaintDto>>> GetComplaints()
@@ -59,7 +78,7 @@ public class ComplaintController : ControllerBase
             var response = _mapper.Map<IEnumerable<GetComplaintDto>>(complaints);
             return Ok(response);
         }
-        return BadRequest("Your role is not supported");
+        return Unauthorized("Your role is not supported");
     }
     
     [HttpPost]
@@ -79,7 +98,7 @@ public class ComplaintController : ControllerBase
 
             return StatusCode(201, role);
         }
-        return BadRequest("Your role is not supported");
+        return Unauthorized("Your role is not supported");
     }
 
     [HttpGet("post/{postId}")]
@@ -98,7 +117,7 @@ public class ComplaintController : ControllerBase
             var response = _mapper.Map<PostComplaintsDto>(complaints);
             return Ok(response);
         }
-        return BadRequest("Your role is not supported");
+        return Unauthorized("Your role is not supported");
     }
 
     [HttpGet("users")]
@@ -117,7 +136,7 @@ public class ComplaintController : ControllerBase
             var response = _mapper.Map<IEnumerable<UserComplaintsDto>>(users);
             return Ok(response);
         }
-        return BadRequest("Your role is not supported");
+        return Unauthorized("Your role is not supported");
     }
 
     [HttpPut("{id}")]
@@ -136,6 +155,6 @@ public class ComplaintController : ControllerBase
             await _repository.SetStatus(complaintEditDto, id);
             return NoContent();
         }
-        return BadRequest("Your role is not supported");
+        return Unauthorized("Your role is not supported");
     }
 }

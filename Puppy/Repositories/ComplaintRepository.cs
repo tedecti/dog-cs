@@ -86,6 +86,8 @@ public class ComplaintRepository : IComplaintRepository
     {
         var complaint = await _context.Complaint
             .Where(x=> x.Status != "Closed")
+            .Include(x=> x.User)
+            .Include(x=> x.Post)
             .FirstOrDefaultAsync(x => x.Id == id);
         if (complaint == null)
         {
