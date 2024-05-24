@@ -2,8 +2,10 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.OpenApi.Models;
 using Puppy.Data;
+using Puppy.Hubs;
 using Puppy.Repositories;
 using Puppy.Repositories.Interfaces;
 using Puppy.Services;
@@ -18,6 +20,7 @@ namespace Puppy
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Services.AddDbContext<AppDbContext>();
+            builder.Services.AddSignalR();
             builder.Services.AddScoped<IAdminRepository, AdminRepository>();
             builder.Services.AddScoped<IComplaintRepository, ComplaintRepository>();
             builder.Services.AddScoped<IAdminService, AdminService>();
@@ -31,6 +34,7 @@ namespace Puppy
             builder.Services.AddScoped<ICommentaryRepository, CommentaryRepository>();
             builder.Services.AddScoped<IFollowerRepository, FollowerRepository>();
             builder.Services.AddScoped<ISearchRepository, SearchRepository>();
+            builder.Services.AddScoped<IChatRepository, ChatRepository>();
 
             builder.Services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
             {
@@ -69,7 +73,7 @@ namespace Puppy
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+            
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(setup =>
             {
@@ -82,16 +86,16 @@ namespace Puppy
                     Type = SecuritySchemeType.Http,
                     Scheme = JwtBearerDefaults.AuthenticationScheme,
                     Description = "Put **_ONLY_** your JWT Bearer token on textbox below!",
-
+            
                     Reference = new OpenApiReference
                     {
                         Id = JwtBearerDefaults.AuthenticationScheme,
                         Type = ReferenceType.SecurityScheme
                     }
                 };
-
+            
                 setup.AddSecurityDefinition(jwtSecurityScheme.Reference.Id, jwtSecurityScheme);
-
+            
                 setup.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
                     { jwtSecurityScheme, Array.Empty<string>() }
@@ -110,8 +114,7 @@ namespace Puppy
 
             app.UseAuthentication();
             app.UseAuthorization();
-
-
+            app.MapHub<ChatHub>("/chathub");
             app.MapControllers();
             app.UseCors("MyPolicy");
             app.Run();

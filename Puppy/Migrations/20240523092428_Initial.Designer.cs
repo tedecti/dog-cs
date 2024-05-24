@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Puppy.Data;
@@ -11,9 +12,11 @@ using Puppy.Data;
 namespace Puppy.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240523092428_Initial")]
+    partial class Initial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -414,7 +417,7 @@ namespace Puppy.Migrations
             modelBuilder.Entity("Puppy.Models.Complaint", b =>
                 {
                     b.HasOne("Puppy.Models.Post", "Post")
-                        .WithMany("Complaints")
+                        .WithMany()
                         .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -514,8 +517,6 @@ namespace Puppy.Migrations
             modelBuilder.Entity("Puppy.Models.Post", b =>
                 {
                     b.Navigation("Commentaries");
-
-                    b.Navigation("Complaints");
 
                     b.Navigation("Likes");
                 });

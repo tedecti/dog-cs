@@ -6,7 +6,7 @@ using SixLabors.ImageSharp.Processing;
 
 namespace Puppy.Controllers;
 
-[Route("api/[controller]")]
+[Route("api/[controller]/{fileName}")]
 [ApiController]
 public class FilesController : ControllerBase
 {
@@ -20,37 +20,33 @@ public class FilesController : ControllerBase
     }
 
     // GET
-    [HttpGet("{fileName}")]
+    [HttpGet]
     public async Task<IActionResult> Index(string fileName)
     {
         using (var imageStream = await _fileRepo.GetFile(fileName))
         {
-            using (var memoryStream = new MemoryStream())
+            imageStream.Seek(0, SeekOrigin.Begin);
+            
+            using (var image = Image.Load(imageStream))
             {
-                await imageStream.CopyToAsync(memoryStream);
-                memoryStream.Seek(0, SeekOrigin.Begin);
+                image.Mutate(x => x
+                    .Resize(new ResizeOptions
+                    {
+                        Size = new Size(375, 500),  
+                        Mode = ResizeMode.Max
+                    })
+                );
 
-                using (var image = Image.Load(memoryStream))
-                {
-                    image.Mutate(x => x
-                        .Resize(new ResizeOptions
-                        {
-                            Size = new Size(375, 500),
-                            Mode = ResizeMode.Max
-                        })
-                    );
+                var compressedImageStream = new MemoryStream();
+                image.Save(compressedImageStream, new PngEncoder());
+                compressedImageStream.Seek(0, SeekOrigin.Begin);
 
-                    var compressedImageStream = new MemoryStream();
-                    image.Save(compressedImageStream, new PngEncoder());
-                    compressedImageStream.Seek(0, SeekOrigin.Begin);
-
-                    return File(compressedImageStream, "image/png");
-                }
+                return File(compressedImageStream, "image/png");
             }
         }
     }
 
-    [HttpGet("{fileName}/small")]
+    [HttpGet("small")]
     public async Task<IActionResult> Small(string fileName)
     {
         using (var imageStream = await _fileRepo.GetFile(fileName))

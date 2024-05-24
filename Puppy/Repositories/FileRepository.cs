@@ -37,26 +37,30 @@ namespace Puppy.Repositories
         {
             const string contentType = "application/octet-stream";
             var storageConfig = _configuration.GetSection("Minio").Get<MinioStorageConfig>();
-            var minioClient = new MinioClient()
-                .WithEndpoint(storageConfig?.Endpoint)
-                .WithCredentials(storageConfig?.AccessKey, storageConfig?.SecretKey)
-                .WithSSL()
-                .Build();
+
             if (fileStream.CanSeek)
                 fileStream.Position = 0;
-            
             try
             {
+                var minioClient = new MinioClient()
+                    .WithEndpoint(storageConfig.Endpoint)
+                    .WithCredentials(storageConfig.AccessKey, storageConfig.SecretKey)
+                    .WithSSL()
+                    .Build();
+                var bArgs = new BucketExistsArgs().WithBucket("puppy");
+                var existsBucketsAsync = minioClient.BucketExistsAsync(bArgs);
+                if (existsBucketsAsync != null)
+                {
+                    var args = new MakeBucketArgs().WithBucket("puppy");
+                    await minioClient.MakeBucketAsync(args);
+                }
+
                 var upload = new PutObjectArgs()
                     .WithBucket(BucketName)
                     .WithObject(fileName)
                     .WithStreamData(fileStream)
-                    .WithObjectSize(fileStream.Length)
-                    .WithContentType(contentType);
+                    .WithObjectSize(fileStream.Length);
                 await minioClient.PutObjectAsync(upload);
-                var statObjectArgs = new StatObjectArgs().WithBucket(BucketName).WithObject(fileName);
-                var objectStat = await minioClient.StatObjectAsync(statObjectArgs);
-                Console.WriteLine(objectStat);
                 return true;
             }
 
@@ -67,24 +71,40 @@ namespace Puppy.Repositories
             }
         }
 
-        private async Task<Stream> DownloadFileFromStorage(string fileName)
+        private async Task<MemoryStream> DownloadFileFromStorage(string fileName)
         {
             var storageConfig = _configuration.GetSection("Minio").Get<MinioStorageConfig>();
             var minioClient = new MinioClient()
-                .WithEndpoint(storageConfig?.Endpoint)
-                .WithCredentials(storageConfig?.AccessKey, storageConfig?.SecretKey)
+                .WithEndpoint(storageConfig.Endpoint)
+                .WithCredentials(storageConfig.AccessKey, storageConfig.SecretKey)
                 .WithSSL()
                 .Build();
-            var statObjectArgs = new StatObjectArgs().WithBucket(BucketName).WithObject(fileName);
-            await minioClient.StatObjectAsync(statObjectArgs);
 
-            var getObjectArgs = new GetObjectArgs()
+            var statObjectArgs = new StatObjectArgs()
                 .WithBucket(BucketName)
                 .WithObject(fileName);
-            var responseStream = new MemoryStream();
-            await minioClient.GetObjectAsync(getObjectArgs);
 
-            return responseStream;
+            var memoryStream = new MemoryStream();
+            try
+            {
+                var getObjectArgs = new GetObjectArgs()
+                    .WithBucket(BucketName)
+                    .WithObject(fileName)
+                    .WithCallbackStream( stream =>
+                    {
+                        stream.CopyTo(memoryStream);
+                        memoryStream.Seek(0, SeekOrigin.Begin);
+                    });
+                await minioClient.GetObjectAsync(getObjectArgs);
+
+                return memoryStream;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+
+            return null;
         }
 
         public async Task<bool> DeleteFileFromStorage(string fileName)

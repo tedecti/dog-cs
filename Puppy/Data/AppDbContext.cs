@@ -24,18 +24,15 @@ namespace Puppy.Data
             modelBuilder.Entity<User>()
                 .HasMany(c => c.Pets)
                 .WithOne(e => e.User);
-
             modelBuilder.Entity<Pet>()
                 .HasOne(e => e.User)
                 .WithMany(c => c.Pets);
             modelBuilder.Entity<Post>()
                 .HasOne(e => e.User)
                 .WithMany(c => c.Posts);
-
             modelBuilder.Entity<Commentary>()
                 .HasOne(e => e.Post)
                 .WithMany(c => c.Commentaries);
-
             modelBuilder.Entity<Friend>()
                 .HasOne(e => e.Follower)
                 .WithMany(c => c.Friends);
@@ -51,6 +48,25 @@ namespace Puppy.Data
             modelBuilder.Entity<Document>()
                 .HasOne(d => d.Pet)
                 .WithMany(p => p.Documents);
+            modelBuilder.Entity<ChatRoom>()
+                .HasMany(c => c.ChatMessages)
+                .WithOne(m => m.ChatRoom)
+                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<ChatRoom>()
+                .HasOne(c => c.User1)
+                .WithMany()
+                .HasForeignKey(c => c.User1Id)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<ChatRoom>()
+                .HasOne(c => c.User2)
+                .WithMany()
+                .HasForeignKey(c => c.User2Id)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<ChatMessage>()
+                .HasOne(m => m.User)
+                .WithMany()
+                .HasForeignKey(m => m.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
 
         public DbSet<Admin> Admin { get; set; }
@@ -66,5 +82,7 @@ namespace Puppy.Data
 
         public DbSet<Friend?> Friend { get; set; } = default!;
         public DbSet<Document> Document { get; set; } = default!;
+        public DbSet<ChatMessage> ChatMessage { get; set; } = default!;
+        public DbSet<ChatRoom> ChatRoom { get; set; } = default!;
     }
 }

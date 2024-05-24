@@ -64,7 +64,8 @@ namespace Puppy.Controllers
             {
                 return NotFound();
             }
-
+            
+           
             return _mapper.Map<UserResponseDto>(user);
         }
 
