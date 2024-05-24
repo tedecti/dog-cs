@@ -21,7 +21,9 @@ namespace Puppy
 
             builder.Services.AddDbContext<AppDbContext>();
             builder.Services.AddSignalR();
-            
+            builder.Services.AddScoped<IAdminRepository, AdminRepository>();
+            builder.Services.AddScoped<IComplaintRepository, ComplaintRepository>();
+            builder.Services.AddScoped<IAdminService, AdminService>();
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IPetRepository, PetRepository>();
             builder.Services.AddScoped<IFileRepository, FileRepository>();
@@ -32,6 +34,7 @@ namespace Puppy
             builder.Services.AddScoped<ICommentaryRepository, CommentaryRepository>();
             builder.Services.AddScoped<IFollowerRepository, FollowerRepository>();
             builder.Services.AddScoped<ISearchRepository, SearchRepository>();
+            builder.Services.AddScoped<IChatRepository, ChatRepository>();
 
             builder.Services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
             {
