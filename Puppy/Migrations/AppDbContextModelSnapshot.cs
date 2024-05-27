@@ -55,9 +55,6 @@ namespace Puppy.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ChatRoomId")
-                        .HasColumnType("integer");
-
                     b.Property<string>("Message")
                         .IsRequired()
                         .HasColumnType("text");
@@ -74,7 +71,7 @@ namespace Puppy.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ChatRoomId");
+                    b.HasIndex("RoomId");
 
                     b.HasIndex("UserId");
 
@@ -83,14 +80,7 @@ namespace Puppy.Migrations
 
             modelBuilder.Entity("Puppy.Models.ChatRoom", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
                     b.Property<string>("RoomId")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("User1Id")
@@ -99,7 +89,7 @@ namespace Puppy.Migrations
                     b.Property<int>("User2Id")
                         .HasColumnType("integer");
 
-                    b.HasKey("Id");
+                    b.HasKey("RoomId");
 
                     b.HasIndex("User1Id");
 
@@ -358,7 +348,7 @@ namespace Puppy.Migrations
                 {
                     b.HasOne("Puppy.Models.ChatRoom", "ChatRoom")
                         .WithMany("ChatMessages")
-                        .HasForeignKey("ChatRoomId")
+                        .HasForeignKey("RoomId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

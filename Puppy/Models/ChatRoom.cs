@@ -1,8 +1,11 @@
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace Puppy.Models;
 
 public class ChatRoom
 {
-    public int Id { get; set; }
+    [Key]
     public string RoomId { get; set; }
     public int User1Id { get; set; }
     public int User2Id { get; set; }

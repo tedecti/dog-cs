@@ -49,15 +49,13 @@ namespace Puppy.Migrations
                 name: "ChatRoom",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     RoomId = table.Column<string>(type: "text", nullable: false),
                     User1Id = table.Column<int>(type: "integer", nullable: false),
                     User2Id = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ChatRoom", x => x.Id);
+                    table.PrimaryKey("PK_ChatRoom", x => x.RoomId);
                     table.ForeignKey(
                         name: "FK_ChatRoom_Users_User1Id",
                         column: x => x.User1Id,
@@ -153,17 +151,16 @@ namespace Puppy.Migrations
                     RoomId = table.Column<string>(type: "text", nullable: false),
                     UserId = table.Column<int>(type: "integer", nullable: false),
                     Message = table.Column<string>(type: "text", nullable: false),
-                    Timestamp = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    ChatRoomId = table.Column<int>(type: "integer", nullable: false)
+                    Timestamp = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ChatMessage", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ChatMessage_ChatRoom_ChatRoomId",
-                        column: x => x.ChatRoomId,
+                        name: "FK_ChatMessage_ChatRoom_RoomId",
+                        column: x => x.RoomId,
                         principalTable: "ChatRoom",
-                        principalColumn: "Id",
+                        principalColumn: "RoomId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_ChatMessage_Users_UserId",
@@ -280,9 +277,9 @@ namespace Puppy.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_ChatMessage_ChatRoomId",
+                name: "IX_ChatMessage_RoomId",
                 table: "ChatMessage",
-                column: "ChatRoomId");
+                column: "RoomId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ChatMessage_UserId",

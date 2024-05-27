@@ -20,7 +20,6 @@ namespace Puppy
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Services.AddDbContext<AppDbContext>();
-            builder.Services.AddSignalR();
             builder.Services.AddScoped<IAdminRepository, AdminRepository>();
             builder.Services.AddScoped<IComplaintRepository, ComplaintRepository>();
             builder.Services.AddScoped<IAdminService, AdminService>();
@@ -114,7 +113,6 @@ namespace Puppy
 
             app.UseAuthentication();
             app.UseAuthorization();
-            app.MapHub<ChatHub>("/chathub");
             app.MapControllers();
             app.UseCors("MyPolicy");
             app.Run();
