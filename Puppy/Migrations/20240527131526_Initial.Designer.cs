@@ -12,7 +12,7 @@ using Puppy.Data;
 namespace Puppy.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240523092428_Initial")]
+    [Migration("20240527131526_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -58,9 +58,6 @@ namespace Puppy.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ChatRoomId")
-                        .HasColumnType("integer");
-
                     b.Property<string>("Message")
                         .IsRequired()
                         .HasColumnType("text");
@@ -77,7 +74,7 @@ namespace Puppy.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ChatRoomId");
+                    b.HasIndex("RoomId");
 
                     b.HasIndex("UserId");
 
@@ -86,14 +83,7 @@ namespace Puppy.Migrations
 
             modelBuilder.Entity("Puppy.Models.ChatRoom", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
                     b.Property<string>("RoomId")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("User1Id")
@@ -102,7 +92,7 @@ namespace Puppy.Migrations
                     b.Property<int>("User2Id")
                         .HasColumnType("integer");
 
-                    b.HasKey("Id");
+                    b.HasKey("RoomId");
 
                     b.HasIndex("User1Id");
 
@@ -361,7 +351,7 @@ namespace Puppy.Migrations
                 {
                     b.HasOne("Puppy.Models.ChatRoom", "ChatRoom")
                         .WithMany("ChatMessages")
-                        .HasForeignKey("ChatRoomId")
+                        .HasForeignKey("RoomId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -417,7 +407,7 @@ namespace Puppy.Migrations
             modelBuilder.Entity("Puppy.Models.Complaint", b =>
                 {
                     b.HasOne("Puppy.Models.Post", "Post")
-                        .WithMany()
+                        .WithMany("Complaints")
                         .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -517,6 +507,8 @@ namespace Puppy.Migrations
             modelBuilder.Entity("Puppy.Models.Post", b =>
                 {
                     b.Navigation("Commentaries");
+
+                    b.Navigation("Complaints");
 
                     b.Navigation("Likes");
                 });

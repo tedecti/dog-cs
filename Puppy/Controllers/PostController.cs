@@ -36,12 +36,10 @@ namespace Puppy.Controllers
         {
             var post = await postRepository.GetPostById(id);
 
-
             if (post == null)
             {
                 return NotFound();
             }
-
 
             var dtos = mapper.Map<GetPostDto>(post);
 

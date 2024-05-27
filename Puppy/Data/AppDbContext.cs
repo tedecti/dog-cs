@@ -49,19 +49,25 @@ namespace Puppy.Data
                 .HasOne(d => d.Pet)
                 .WithMany(p => p.Documents);
             modelBuilder.Entity<ChatRoom>()
+                .HasKey(c => c.RoomId);
+            modelBuilder.Entity<ChatRoom>()
                 .HasMany(c => c.ChatMessages)
                 .WithOne(m => m.ChatRoom)
+                .HasForeignKey(m => m.RoomId)
                 .OnDelete(DeleteBehavior.Cascade);
+
             modelBuilder.Entity<ChatRoom>()
                 .HasOne(c => c.User1)
                 .WithMany()
                 .HasForeignKey(c => c.User1Id)
                 .OnDelete(DeleteBehavior.Restrict);
+
             modelBuilder.Entity<ChatRoom>()
                 .HasOne(c => c.User2)
                 .WithMany()
                 .HasForeignKey(c => c.User2Id)
                 .OnDelete(DeleteBehavior.Restrict);
+
             modelBuilder.Entity<ChatMessage>()
                 .HasOne(m => m.User)
                 .WithMany()
@@ -82,7 +88,7 @@ namespace Puppy.Data
 
         public DbSet<Friend?> Friend { get; set; } = default!;
         public DbSet<Document> Document { get; set; } = default!;
-        public DbSet<ChatMessage> ChatMessage { get; set; } = default!;
-        public DbSet<ChatRoom> ChatRoom { get; set; } = default!;
+        public DbSet<ChatMessage?> ChatMessage { get; set; } = default!;
+        public DbSet<ChatRoom?> ChatRoom { get; set; } = default!;
     }
 }

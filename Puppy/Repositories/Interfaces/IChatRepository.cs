@@ -1,8 +1,16 @@
 using Puppy.Models;
+using Puppy.Models.Dto.ChatDto;
 
 namespace Puppy.Repositories.Interfaces;
 
 public interface IChatRepository
 {
-    Task<IEnumerable<ChatMessage>> GetMessages(string roomId);
+    Task<List<ChatMessage>> GetMessages(string roomId);
+    Task<ChatMessage?> CreateMessage(string roomId, int userId, SendMessageDto sendMessageDto);
+    Task<ChatMessage?> EditMessage(EditMessageDto editMessageDto, int messageId);
+    Task<ChatMessage?> DeleteMessage(int messageId);
+    Task<ChatMessage?> GetMessageById(int messageId);
+    Task<List<ChatRoom?>> GetAllRooms();
+    Task<ChatRoom> GetRoomById(string roomId);
+    Task<ChatRoom?> CreateRoom(int user1Id, int user2Id);
 }
