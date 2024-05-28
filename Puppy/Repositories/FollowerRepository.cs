@@ -49,10 +49,20 @@ public class FollowerRepository : IFollowerRepository
         return follower != null;
     }
 
-    public async Task<List<Friend>> GetFollowers(int userId)
+    public async Task<List<Friend>> GetFollowers(int id)
     {
-        var friends = await _context.Friend.Where(f => f.FollowerId == userId).Include(f => f.User).ToListAsync();
+        var friends = await _context.Friend
+            .Where(f => f.FollowerId == id)
+            .Include(f => f.User)
+            .Include(f=>f.Follower).ToListAsync();
         return friends;
+    }
+
+    public async Task<List<Friend>> GetMyFollowers(int userId)
+    {
+        var myFollowers = await _context.Friend
+            .Where(f => f.UserId == userId).ToListAsync();
+        return myFollowers;
     }
 
     public async Task<Friend?> GetFollower(int followerId)
