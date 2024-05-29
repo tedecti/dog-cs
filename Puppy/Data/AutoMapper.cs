@@ -35,7 +35,10 @@ public class AutoMapper : Profile
         CreateMap<Admin, AdminDto>();
         CreateMap<ChatMessage, SendMessageDto>();
         CreateMap<ChatMessage, ShortMessagesDto>();
-        CreateMap<ChatRoom, ShortRoomDto>();
+        CreateMap<ChatRoom, ShortRoomDtoU1>();
+        CreateMap<ChatRoom, ShortRoomDtoU2>();
+        CreateMap<ChatRoom, FullRoomDto>();
         CreateMap<ChatRoom, GetRoomDto>();
+        CreateMap<ChatRoom, AllRoomsResponseDto>();
     }
 }
