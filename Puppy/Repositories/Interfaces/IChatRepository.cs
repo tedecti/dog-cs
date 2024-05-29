@@ -10,7 +10,8 @@ public interface IChatRepository
     Task<ChatMessage?> EditMessage(EditMessageDto editMessageDto, int messageId);
     Task<ChatMessage?> DeleteMessage(int messageId);
     Task<ChatMessage?> GetMessageById(int messageId);
-    Task<List<ChatRoom?>> GetAllRooms();
+    Task<List<AllRoomsResponseDto>> GetAllRooms();
     Task<ChatRoom> GetRoomById(string roomId);
+    Task<ChatRoom?> GetRoomByUser(int userId);
     Task<ChatRoom?> CreateRoom(int user1Id, int user2Id);
 }

@@ -74,19 +74,28 @@ public class ChatController(IChatRepository _chatRepository, IMapper _mapper) : 
 
     [Authorize]
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<ShortRoomDto>>> GetAllRooms()
+    public async Task<IActionResult> GetAllRooms()
     {
         var rooms = await _chatRepository.GetAllRooms();
-        var response = _mapper.Map<IEnumerable<ShortRoomDto>>(rooms);
+        var response = _mapper.Map<List<AllRoomsResponseDto>>(rooms);
         return Ok(response);
     }
 
     [Authorize]
     [HttpGet("room/{roomId}")]
-    public async Task<ActionResult<List<GetRoomDto>>> GetRoomById(string roomId)
+    public async Task<IActionResult> GetRoomById(string roomId)
     {
         var room = await _chatRepository.GetRoomById(roomId);
         var response = _mapper.Map<GetRoomDto>(room);
+        return Ok(response);
+    }
+
+    [Authorize]
+    [HttpGet("user/{userId}")]
+    public async Task<IActionResult> GetRoomByUser(int userId)
+    {
+        var room = await _chatRepository.GetRoomByUser(userId);
+        var response = _mapper.Map<FullRoomDto>(room);
         return Ok(response);
     }
 
@@ -95,7 +104,7 @@ public class ChatController(IChatRepository _chatRepository, IMapper _mapper) : 
     public async Task<IActionResult> CreateRoom(int userId2)
     {
         var userId = Convert.ToInt32(HttpContext.User.Identity?.Name);
-        await _chatRepository.CreateRoom(userId, userId2);
-        return StatusCode(201);
+        var room = await _chatRepository.CreateRoom(userId, userId2);
+        return room == null ? Conflict() : Created();
     }
 }

@@ -5,6 +5,7 @@ using Puppy.Data;
 using Puppy.Hubs;
 using Puppy.Models;
 using Puppy.Models.Dto.ChatDto;
+using Puppy.Models.Dto.UserDtos;
 using Puppy.Repositories.Interfaces;
 
 namespace Puppy.Repositories;
@@ -54,20 +55,63 @@ public class ChatRepository(AppDbContext context) : IChatRepository
         return await _context.ChatMessage.FirstOrDefaultAsync(m => m.Id == messageId);
     }
 
-    public async Task<List<ChatRoom?>> GetAllRooms()
+    public async Task<List<AllRoomsResponseDto>> GetAllRooms()
     {
-        return await _context.ChatRoom.ToListAsync();
+        var rooms = await _context.ChatRoom
+            .Include(c => c.ChatMessages)
+            .Include(c => c.User2)
+            .ToListAsync();
+
+        var roomDtos = rooms.Select<ChatRoom, AllRoomsResponseDto>(room =>
+        {
+            var latestMessage = room.ChatMessages
+                .OrderByDescending(m => m.Timestamp)
+                .FirstOrDefault();
+
+            var roomDto = new ShortRoomDtoU2
+            {
+                RoomId = room.RoomId,
+                User2 = new ShortUserDto
+                {
+                    Id = room.User2.Id,
+                    Avatar = room.User2.Avatar,
+                    Username = room.User2.Username,
+                    FirstName = room.User2.FirstName,
+                    LastName = room.User2.LastName
+                }
+            };
+
+            var messageDto = latestMessage == null
+                ? null
+                : new ShortMessagesDto
+                {
+                    Id = latestMessage.Id,
+                    UserId = latestMessage.UserId,
+                    Message = latestMessage.Message,
+                    Timestamp = latestMessage.Timestamp
+                };
+
+            return new AllRoomsResponseDto
+            {
+                Room = roomDto,
+                Message = messageDto
+            };
+        }).ToList();
+        return roomDtos;
     }
 
     public async Task<ChatRoom> GetRoomById(string roomId)
     {
-        return await _context.ChatRoom.Include(c => c.ChatMessages)
+        return await _context.ChatRoom
+            .Include(c => c.ChatMessages)
+            .Include(c => c.User2)
             .Where(c => c.RoomId == roomId)
             .FirstOrDefaultAsync();
     }
 
     public async Task<ChatRoom?> CreateRoom(int user1Id, int user2Id)
     {
+        if (GetRoomByUser(user1Id) != null && GetRoomByUser(user2Id) != null) return null;
         var roomId = GenerateRoomId(user1Id, user2Id);
         var newRoom = new ChatRoom()
         {
@@ -82,14 +126,11 @@ public class ChatRepository(AppDbContext context) : IChatRepository
 
     public static string GenerateRoomId(int userId1, int userId2)
     {
-        // Сортировка ID пользователей, чтобы не было зависимости от порядка
         var ids = new int[] { userId1, userId2 };
         Array.Sort(ids);
 
-        // Генерация случайного компонента
         var randomPart = GenerateRandomString(8);
 
-        // Создание ID комнаты
         var roomId = $"{ids[0]}_{ids[1]}_{randomPart}";
 
         return roomId;
@@ -110,5 +151,15 @@ public class ChatRepository(AppDbContext context) : IChatRepository
 
             return stringBuilder.ToString();
         }
+    }
+
+    public async Task<ChatRoom?> GetRoomByUser(int userId)
+    {
+        var response = await context.ChatRoom
+            .Where(c => c.User1Id == userId || c.User2Id==userId)
+            .Include(c => c.ChatMessages)
+            .Include(c => c.User1)
+            .Include(c=>c.User2).FirstOrDefaultAsync();
+        return response;
     }
 }
