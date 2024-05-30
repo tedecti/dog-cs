@@ -40,6 +40,8 @@ public class ComplaintRepository : IComplaintRepository
     {
         var complaints = await _context.Complaint
             .Where(x => x.UserId == userId)
+            .Include(x=> x.User)
+            .Include(x=> x.Post)
             .ToListAsync();
         if (complaints == null)
         {
