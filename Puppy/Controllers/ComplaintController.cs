@@ -37,7 +37,7 @@ public class ComplaintController : ControllerBase
                 return NotFound();
             }
 
-            var response = _mapper.Map<UserComplaintsDto>(complaints);
+            var response = _mapper.Map<IEnumerable<GetComplaintDto>>(complaints);
             return Ok(response);
         }
         return Unauthorized("Your role is not supported");
@@ -96,7 +96,7 @@ public class ComplaintController : ControllerBase
                 return BadRequest("Unable to create complaint");
             }
 
-            return StatusCode(201, role);
+            return StatusCode(201);
         }
         return Unauthorized("Your role is not supported");
     }

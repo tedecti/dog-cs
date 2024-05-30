@@ -36,16 +36,16 @@ public class ComplaintRepository : IComplaintRepository
         return complaint;
     }
 
-    public async Task<User> GetUserComplaints(int userId)
+    public async Task<IEnumerable<Complaint>> GetUserComplaints(int userId)
     {
-        var user = await _context.Users
-            .Include(x=> x.Complaints.Where(x=> x.Status != "CLosed"))
-            .FirstOrDefaultAsync(x => x.Id == userId);
-        if (user == null)
+        var complaints = await _context.Complaint
+            .Where(x => x.UserId == userId)
+            .ToListAsync();
+        if (complaints == null)
         {
             return null;
         }
-        return user;
+        return complaints;
     }
     
     public async Task<Post> GetPostComplaints(int postId)
