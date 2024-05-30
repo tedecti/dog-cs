@@ -103,8 +103,22 @@ public class ChatController(IChatRepository _chatRepository, IMapper _mapper) : 
     [HttpPost("room/{userId2}")]
     public async Task<IActionResult> CreateRoom(int userId2)
     {
+        
         var userId = Convert.ToInt32(HttpContext.User.Identity?.Name);
         var room = await _chatRepository.CreateRoom(userId, userId2);
-        return room == null ? Conflict() : Created();
+        return room == null ? Conflict() : StatusCode(201);
+    }
+
+    [Authorize]
+    [HttpPut("message/{messageId}/read")]
+    public async Task<IActionResult> ReadMessage(int messageId)
+    {
+        var userId = Convert.ToInt32(HttpContext.User.Identity?.Name);
+        var msg = await _chatRepository.SetMessageRead(messageId, userId);
+        if (!msg)
+        {
+            return NotFound();
+        }
+        return NoContent();
     }
 }
