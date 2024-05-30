@@ -27,7 +27,8 @@ public class ChatRepository(AppDbContext context) : IChatRepository
             RoomId = roomId,
             UserId = userId,
             Message = sendMessageDto.Message,
-            Timestamp = DateTime.UtcNow
+            Timestamp = DateTime.UtcNow,
+            IsRead = false
         };
         _context.ChatMessage.Add(newMessage);
         await _context.SaveChangesAsync();
@@ -111,7 +112,13 @@ public class ChatRepository(AppDbContext context) : IChatRepository
 
     public async Task<ChatRoom?> CreateRoom(int user1Id, int user2Id)
     {
-        if (GetRoomByUser(user1Id) != null && GetRoomByUser(user2Id) != null) return null;
+        var roomWithU1 = await GetRoomByUser(user1Id);
+        var roomWithU2 = await GetRoomByUser(user2Id);
+        if (roomWithU1 == roomWithU2)
+        {
+            return null;
+        }
+        
         var roomId = GenerateRoomId(user1Id, user2Id);
         var newRoom = new ChatRoom()
         {
@@ -155,11 +162,21 @@ public class ChatRepository(AppDbContext context) : IChatRepository
 
     public async Task<ChatRoom?> GetRoomByUser(int userId)
     {
+        
         var response = await context.ChatRoom
             .Where(c => c.User1Id == userId || c.User2Id==userId)
             .Include(c => c.ChatMessages)
             .Include(c => c.User1)
             .Include(c=>c.User2).FirstOrDefaultAsync();
-        return response;
+        return response ?? null;
+    }
+
+    public async Task<bool> SetMessageRead(int messageId, int userId)
+    {
+        var message = await context.ChatMessage.FirstOrDefaultAsync(m => m.Id == messageId);
+        if (message == null) return false;
+        message.IsRead = true;
+        await context.SaveChangesAsync();
+        return true;
     }
 }
