@@ -112,12 +112,6 @@ public class ChatRepository(AppDbContext context) : IChatRepository
 
     public async Task<ChatRoom?> CreateRoom(int user1Id, int user2Id)
     {
-        var roomWithU1 = await GetRoomByUser(user1Id);
-        var roomWithU2 = await GetRoomByUser(user2Id);
-        if (roomWithU1 == roomWithU2)
-        {
-            return null;
-        }
         
         var roomId = GenerateRoomId(user1Id, user2Id);
         var newRoom = new ChatRoom()
