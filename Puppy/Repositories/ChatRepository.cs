@@ -154,17 +154,16 @@ public class ChatRepository(AppDbContext context) : IChatRepository
         }
     }
 
-    public async Task<ChatRoom?> GetRoomByUser(int userId)
+    public async Task<List<ChatRoom>> GetRoomByUser(int userId)
     {
         
         var response = await context.ChatRoom
             .Where(c => c.User1Id == userId || c.User2Id==userId)
             .Include(c => c.ChatMessages)
             .Include(c => c.User1)
-            .Include(c=>c.User2).FirstOrDefaultAsync();
-        return response ?? null;
+            .Include(c=>c.User2).ToListAsync();
+        return response;
     }
-
     public async Task<bool> SetMessageRead(int messageId, int userId)
     {
         var message = await context.ChatMessage.FirstOrDefaultAsync(m => m.Id == messageId);

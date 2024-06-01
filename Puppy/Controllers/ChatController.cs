@@ -95,7 +95,7 @@ public class ChatController(IChatRepository _chatRepository, IMapper _mapper) : 
     public async Task<IActionResult> GetRoomByUser(int userId)
     {
         var room = await _chatRepository.GetRoomByUser(userId);
-        var response = _mapper.Map<FullRoomDto>(room);
+        var response = _mapper.Map<List<FullRoomDto>>(room);
         return Ok(response);
     }
 

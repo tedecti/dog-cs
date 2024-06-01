@@ -12,7 +12,7 @@ public interface IChatRepository
     Task<ChatMessage?> GetMessageById(int messageId);
     Task<List<AllRoomsResponseDto>> GetAllRooms();
     Task<ChatRoom> GetRoomById(string roomId);
-    Task<ChatRoom?> GetRoomByUser(int userId);
+    Task<List<ChatRoom>> GetRoomByUser(int userId);
     Task<ChatRoom?> CreateRoom(int user1Id, int user2Id);
     Task<bool> SetMessageRead(int messageId, int userId);
 }
