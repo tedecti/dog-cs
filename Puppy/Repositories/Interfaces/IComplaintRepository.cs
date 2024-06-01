@@ -7,7 +7,8 @@ namespace Puppy.Repositories.Interfaces;
 public interface IComplaintRepository
 {
     Task<Complaint> CreateComplaint(ComplaintRequestDto complaintRequestDto, int UserId, int PostId);
-    Task <User> GetUserComplaints(int UserId);
+    Task <IEnumerable<Complaint>> GetUserComplaints(int UserId);
+    Task <IEnumerable<Complaint>> GetComplaintsByStatus(ComplaintEditDto complaintEditDto);
     Task<IEnumerable<User>?> GetUsers();
     Task<Post> GetPostComplaints(int PostId);
     Task<Complaint> SetStatus(ComplaintEditDto complaintEditDto, int ComplaintId);

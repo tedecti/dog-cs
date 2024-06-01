@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Puppy.Models;
 using Puppy.Models.Dto.AdminDtos;
+using Puppy.Models.Dto.ChatDto;
 using Puppy.Models.Dto.ComplaintDtos;
 using Puppy.Models.Dto.DocumentDto;
 using Puppy.Models.Dto.FollowerDtos;
@@ -16,8 +17,6 @@ public class AutoMapper : Profile
     public AutoMapper()
     {
         CreateMap<User, UserResponseDto>();
-        // .ForMember(dest => dest.Pets, opt => opt.MapFrom(src => src.Pets));
-        // .ForMember(dest=>dest.FriendsCount, opt=>opt.MapFrom(x=>x.Friends.Count));
         CreateMap<User, ShortUserDto>();
         CreateMap<Friend, GetFollowersDto>();
         CreateMap<Friend, FollowerResponseDto>();
@@ -34,5 +33,12 @@ public class AutoMapper : Profile
         CreateMap<Complaint, ShortComplaintDto>();
         CreateMap<Complaint, GetComplaintDto>();
         CreateMap<Admin, AdminDto>();
+        CreateMap<ChatMessage, SendMessageDto>();
+        CreateMap<ChatMessage, ShortMessagesDto>();
+        CreateMap<ChatRoom, ShortRoomDtoU1>();
+        CreateMap<ChatRoom, ShortRoomDtoU2>();
+        CreateMap<ChatRoom, FullRoomDto>();
+        CreateMap<ChatRoom, GetRoomDto>();
+        CreateMap<ChatRoom, AllRoomsResponseDto>();
     }
 }

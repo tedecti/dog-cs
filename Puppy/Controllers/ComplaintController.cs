@@ -37,7 +37,7 @@ public class ComplaintController : ControllerBase
                 return NotFound();
             }
 
-            var response = _mapper.Map<UserComplaintsDto>(complaints);
+            var response = _mapper.Map<IEnumerable<GetComplaintDto>>(complaints);
             return Ok(response);
         }
         return Unauthorized("Your role is not supported");
@@ -96,7 +96,7 @@ public class ComplaintController : ControllerBase
                 return BadRequest("Unable to create complaint");
             }
 
-            return StatusCode(201, role);
+            return StatusCode(201);
         }
         return Unauthorized("Your role is not supported");
     }
@@ -154,6 +154,23 @@ public class ComplaintController : ControllerBase
 
             await _repository.SetStatus(complaintEditDto, id);
             return NoContent();
+        }
+        return Unauthorized("Your role is not supported");
+    }
+    [HttpGet("status")]
+    [Authorize]
+    public async Task<IActionResult> GetComplaintsByStatus(ComplaintEditDto complaintEditDto)
+    {
+        var role = _adminService.VerifyAdminRole(HttpContext.User.FindFirst(ClaimTypes.Role)?.Value);
+        if (role == true)
+        {
+            var complaints = await _repository.GetComplaintsByStatus(complaintEditDto);
+            if (complaints == null)
+            {
+                return BadRequest("Complaints not found");
+            }
+            var response = _mapper.Map<IEnumerable<GetComplaintDto>>(complaints);
+            return Ok(response);
         }
         return Unauthorized("Your role is not supported");
     }

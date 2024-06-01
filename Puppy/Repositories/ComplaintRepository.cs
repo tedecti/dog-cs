@@ -36,23 +36,37 @@ public class ComplaintRepository : IComplaintRepository
         return complaint;
     }
 
-    public async Task<User> GetUserComplaints(int userId)
+    public async Task<IEnumerable<Complaint>> GetUserComplaints(int userId)
     {
-        var user = await _context.Users
-            .Include(x=> x.Complaints.Where(x=> x.Status != "CLosed"))
-            .FirstOrDefaultAsync(x => x.Id == userId);
-        if (user == null)
+        var complaints = await _context.Complaint
+            .Where(x => x.UserId == userId)
+            .Include(x=> x.User)
+            .Include(x=> x.Post)
+            .ToListAsync();
+        if (complaints == null)
         {
             return null;
         }
-        return user;
+        return complaints;
+    }
+    public async Task<IEnumerable<Complaint>> GetComplaintsByStatus(ComplaintEditDto complaintEditDto)
+    {
+        var complaints = await _context.Complaint
+            .Where(x => x.Status == complaintEditDto.Status)
+            .Include(x=> x.User)
+            .Include(x=> x.Post)
+            .ToListAsync();
+        if (complaints == null)
+        {
+            return null;
+        }
+        return complaints;
     }
     
     public async Task<Post> GetPostComplaints(int postId)
     {
         var post = await _context.Post
             .Include(x=> x.User)
-            .Include(x=> x.Complaints.Where(x=>x.Status != "Closed"))
             .FirstOrDefaultAsync(x => x.Id == postId);
         if (post == null)
         {
@@ -64,7 +78,7 @@ public class ComplaintRepository : IComplaintRepository
     public async Task<IEnumerable<User>?> GetUsers()
     {
         var users = await _context.Users
-            .Include(x => x.Complaints.Where(x=> x.Status != "Closed"))
+            .Include(x => x.Complaints)
             .ToListAsync();
         return users;
     }
@@ -85,7 +99,6 @@ public class ComplaintRepository : IComplaintRepository
     public async Task<Complaint> GetComplaint(int id)
     {
         var complaint = await _context.Complaint
-            .Where(x=> x.Status != "Closed")
             .Include(x=> x.User)
             .Include(x=> x.Post)
             .FirstOrDefaultAsync(x => x.Id == id);
@@ -100,7 +113,7 @@ public class ComplaintRepository : IComplaintRepository
         var complaint = await _context.Complaint
             .Include(x=> x.User)
             .Include(x=> x.Post)
-            .Where(x=> x.Status != "Closed")
+            .Where(x=> x.Status == "New")
             .OrderByDescending(p => p.UploadDate)
             .ToListAsync();
         if (complaint == null)

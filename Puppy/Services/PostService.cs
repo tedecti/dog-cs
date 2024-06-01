@@ -20,8 +20,7 @@ public class PostService : IPostService
 
     public async Task<IEnumerable<Post>> GetFilteredPostsAsync(int userId)
     {
-        var friends = await _followerRepository.GetFollowers(userId);
-
+        var friends = await _followerRepository.GetMyFollowers(userId);
         if (!friends.Any()) return await _postRepository.GetAllPosts();
         var friendIds = friends.Select(f => f.FollowerId).ToList();
         var friendPosts = await _postRepository.GetFriendPostsAsync(friendIds);
