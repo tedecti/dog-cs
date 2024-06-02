@@ -39,7 +39,6 @@ namespace Puppy
             {
                 builder.AllowAnyOrigin()
                     .AllowAnyMethod()
-                    .AllowCredentials()
                     .AllowAnyHeader();
             }));
 
