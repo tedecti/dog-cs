@@ -1,9 +1,11 @@
+using System.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.OpenApi.Models;
+using Npgsql;
 using Puppy.Data;
 using Puppy.Hubs;
 using Puppy.Repositories;
@@ -34,6 +36,11 @@ namespace Puppy
             builder.Services.AddScoped<IFollowerRepository, FollowerRepository>();
             builder.Services.AddScoped<ISearchRepository, SearchRepository>();
             builder.Services.AddScoped<IChatRepository, ChatRepository>();
+            var connection = new NpgsqlConnection(builder.Configuration.GetConnectionString("dogString"));
+            if (connection.State == ConnectionState.Closed)
+            {
+                connection.Open();
+            }
 
             builder.Services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
             {
@@ -72,7 +79,6 @@ namespace Puppy
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 
-            
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(setup =>
             {
@@ -85,16 +91,16 @@ namespace Puppy
                     Type = SecuritySchemeType.Http,
                     Scheme = JwtBearerDefaults.AuthenticationScheme,
                     Description = "Put **_ONLY_** your JWT Bearer token on textbox below!",
-            
+
                     Reference = new OpenApiReference
                     {
                         Id = JwtBearerDefaults.AuthenticationScheme,
                         Type = ReferenceType.SecurityScheme
                     }
                 };
-            
+
                 setup.AddSecurityDefinition(jwtSecurityScheme.Reference.Id, jwtSecurityScheme);
-            
+
                 setup.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
                     { jwtSecurityScheme, Array.Empty<string>() }
