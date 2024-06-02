@@ -41,7 +41,7 @@ public class ChatController(IChatRepository _chatRepository, IMapper _mapper) : 
             return Unauthorized();
         }
         
-        if (chat is null && chat.User1Id != userId)
+        if (chat is null && chat.User1.Id != userId)
         {
             return Unauthorized();
         }
@@ -56,7 +56,7 @@ public class ChatController(IChatRepository _chatRepository, IMapper _mapper) : 
     {
         var userId = Convert.ToInt32(HttpContext.User.Identity?.Name);
         var chat = await _chatRepository.GetRoomById(roomId);
-        if (chat is null && chat.User1Id != userId)
+        if (chat is null && chat.User1.Id != userId)
         {
             return Unauthorized();
         }
@@ -86,7 +86,7 @@ public class ChatController(IChatRepository _chatRepository, IMapper _mapper) : 
     public async Task<IActionResult> GetRoomById(string roomId)
     {
         var room = await _chatRepository.GetRoomById(roomId);
-        var response = _mapper.Map<GetRoomDto>(room);
+        var response = _mapper.Map<BiggestRoomDto>(room);
         return Ok(response);
     }
 
@@ -94,7 +94,7 @@ public class ChatController(IChatRepository _chatRepository, IMapper _mapper) : 
     [HttpGet("user/{userId}")]
     public async Task<IActionResult> GetRoomByUser(int userId)
     {
-        var room = await _chatRepository.GetRoomByUser(userId);
+        var room = await _chatRepository.GetRoomsByUser(userId);
         var response = _mapper.Map<List<FullRoomDto>>(room);
         return Ok(response);
     }
@@ -103,10 +103,19 @@ public class ChatController(IChatRepository _chatRepository, IMapper _mapper) : 
     [HttpPost("room/{userId2}")]
     public async Task<IActionResult> CreateRoom(int userId2)
     {
-        
-        var userId = Convert.ToInt32(HttpContext.User.Identity?.Name);
-        var room = await _chatRepository.CreateRoom(userId, userId2);
-        return room == null ? Conflict() : StatusCode(201);
+        var userId1 = Convert.ToInt32(HttpContext.User.Identity?.Name);
+        var existingRoom = await _chatRepository.GetAnyRoomBetweenUsers(userId1, userId2);
+        if (existingRoom != null)
+        {
+            return Ok(new {RoomId = existingRoom});
+        }
+        var room = await _chatRepository.CreateRoom(userId1, userId2);
+        if (room == null)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, "Не удалось создать комнату");
+        }
+        var newRoom = await _chatRepository.GetAnyRoomBetweenUsers(userId1, userId2);
+        return StatusCode(StatusCodes.Status201Created, value: newRoom);
     }
 
     [Authorize]
@@ -120,5 +129,18 @@ public class ChatController(IChatRepository _chatRepository, IMapper _mapper) : 
             return NotFound();
         }
         return NoContent();
+    }
+
+    [Authorize]
+    [HttpGet("check/{userId2}")]
+    public async Task<IActionResult> CheckIfChatExists(int userId2)
+    {
+        var userId1 = Convert.ToInt32(HttpContext.User.Identity?.Name);
+        var existingRoom = await _chatRepository.GetAnyRoomBetweenUsers(userId1, userId2);
+        if (existingRoom != null)
+        {
+            return Ok(new {RoomId = existingRoom});
+        }
+        return NotFound();
     }
 }

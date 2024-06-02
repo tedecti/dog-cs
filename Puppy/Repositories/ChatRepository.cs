@@ -2,7 +2,6 @@ using System.Security.Cryptography;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Puppy.Data;
-using Puppy.Hubs;
 using Puppy.Models;
 using Puppy.Models.Dto.ChatDto;
 using Puppy.Models.Dto.UserDtos;
@@ -65,9 +64,7 @@ public class ChatRepository(AppDbContext context) : IChatRepository
 
         var roomDtos = rooms.Select<ChatRoom, AllRoomsResponseDto>(room =>
         {
-            var latestMessage = room.ChatMessages
-                .OrderByDescending(m => m.Timestamp)
-                .FirstOrDefault();
+            var latestMessage = room.ChatMessages.MaxBy(m => m.Timestamp);
 
             var roomDto = new ShortRoomDtoU2
             {
@@ -101,14 +98,60 @@ public class ChatRepository(AppDbContext context) : IChatRepository
         return roomDtos;
     }
 
-    public async Task<ChatRoom> GetRoomById(string roomId)
+    public async Task<BiggestRoomDto> GetRoomById(string roomId)
     {
-        return await _context.ChatRoom
+        var room = await _context.ChatRoom
             .Include(c => c.ChatMessages)
+            .Include(c => c.User1)
             .Include(c => c.User2)
-            .Where(c => c.RoomId == roomId)
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync(c => c.RoomId == roomId);
+
+        if (room == null)
+        {
+            return null;
+        }
+
+        var messagesDto = room.ChatMessages
+            .OrderByDescending(m => m.Timestamp)
+            .Select(m => new ShortMessagesDto
+            {
+                Id = m.Id,
+                UserId = m.UserId,
+                Message = m.Message,
+                Timestamp = m.Timestamp
+            })
+            .ToList();
+
+        var user1 = new ShortUserDto
+        {
+            Id = room.User1.Id,
+            Avatar = room.User1.Avatar,
+            Username = room.User1.Username,
+            FirstName = room.User1.FirstName,
+            LastName = room.User1.LastName
+        };
+
+        var user2 = new ShortUserDto
+        {
+            Id = room.User2.Id,
+            Avatar = room.User2.Avatar,
+            Username = room.User2.Username,
+            FirstName = room.User2.FirstName,
+            LastName = room.User2.LastName
+        };
+
+        var roomDto = new BiggestRoomDto
+        {
+            RoomId = room.RoomId,
+            User1 = user1,
+            User2 = user2,
+            Messages = messagesDto
+        };
+
+        return roomDto;
     }
+
+
 
     public async Task<ChatRoom?> CreateRoom(int user1Id, int user2Id)
     {
@@ -154,15 +197,53 @@ public class ChatRepository(AppDbContext context) : IChatRepository
         }
     }
 
-    public async Task<List<ChatRoom>> GetRoomByUser(int userId)
+    public async Task<List<FullRoomDto>> GetRoomsByUser(int userId)
     {
-        
-        var response = await context.ChatRoom
+        var rooms = await context.ChatRoom
             .Where(c => c.User1Id == userId || c.User2Id==userId)
             .Include(c => c.ChatMessages)
             .Include(c => c.User1)
             .Include(c=>c.User2).ToListAsync();
-        return response;
+        var roomDtos = rooms.Select<ChatRoom, FullRoomDto>(room =>
+        {
+            var latestMessage = room.ChatMessages.MaxBy(m => m.Timestamp);
+
+            var user1 = new ShortUserDto
+            {
+                Id = room.User1.Id,
+                Avatar = room.User1.Avatar,
+                Username = room.User1.Username,
+                FirstName = room.User1.FirstName,
+                LastName = room.User1.LastName
+            };
+            var user2 = new ShortUserDto
+            {
+                Id = room.User2.Id,
+                Avatar = room.User2.Avatar,
+                Username = room.User2.Username,
+                FirstName = room.User2.FirstName,
+                LastName = room.User2.LastName
+            };
+
+            var messageDto = latestMessage == null
+                ? null
+                : new ShortMessagesDto
+                {
+                    Id = latestMessage.Id,
+                    UserId = latestMessage.UserId,
+                    Message = latestMessage.Message,
+                    Timestamp = latestMessage.Timestamp
+                };
+
+            return new FullRoomDto
+            {
+                RoomId = room.RoomId,
+                User1 = user1,
+                User2 = user2,
+                Message = messageDto
+            };
+        }).ToList();
+        return roomDtos;
     }
     public async Task<bool> SetMessageRead(int messageId, int userId)
     {
@@ -171,5 +252,14 @@ public class ChatRepository(AppDbContext context) : IChatRepository
         message.IsRead = true;
         await context.SaveChangesAsync();
         return true;
+    }
+
+    public async Task<string?> GetAnyRoomBetweenUsers(int user1, int user2)
+    {
+        var room = await _context.ChatRoom
+            .FirstOrDefaultAsync(r => 
+                (r.User1Id == user1 && r.User2Id == user2) || 
+                (r.User1Id == user1 && r.User2Id == user2));
+        return room?.RoomId;
     }
 }

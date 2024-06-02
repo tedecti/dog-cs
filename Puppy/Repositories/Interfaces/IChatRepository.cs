@@ -11,8 +11,9 @@ public interface IChatRepository
     Task<ChatMessage?> DeleteMessage(int messageId);
     Task<ChatMessage?> GetMessageById(int messageId);
     Task<List<AllRoomsResponseDto>> GetAllRooms();
-    Task<ChatRoom> GetRoomById(string roomId);
-    Task<List<ChatRoom>> GetRoomByUser(int userId);
+    Task<BiggestRoomDto> GetRoomById(string roomId);
+    Task<List<FullRoomDto>> GetRoomsByUser(int userId);
     Task<ChatRoom?> CreateRoom(int user1Id, int user2Id);
     Task<bool> SetMessageRead(int messageId, int userId);
+    Task<string?> GetAnyRoomBetweenUsers(int user1, int user2);
 }

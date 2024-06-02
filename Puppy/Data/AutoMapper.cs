@@ -38,6 +38,7 @@ public class AutoMapper : Profile
         CreateMap<ChatRoom, ShortRoomDtoU1>();
         CreateMap<ChatRoom, ShortRoomDtoU2>();
         CreateMap<ChatRoom, FullRoomDto>();
+        CreateMap<ChatRoom, BiggestRoomDto>();
         CreateMap<ChatRoom, GetRoomDto>();
         CreateMap<ChatRoom, AllRoomsResponseDto>();
     }
