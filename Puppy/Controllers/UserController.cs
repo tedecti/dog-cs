@@ -70,11 +70,11 @@ namespace Puppy.Controllers
         }
 
 
-        [HttpPut("edit")]
+        [HttpPut("{id}")]
+
         [Authorize]
-        public async Task<IActionResult> PutUser(UpdateUserDto updateUserDto)
+        public async Task<IActionResult> PutUser(int id, [FromBody]UpdateUserDto updateUserDto)
         {
-            var id = Convert.ToInt32(User.Identity?.Name);
             var existingUser = await _userRepo.Edit(updateUserDto, id);
             if (existingUser == null)
             {

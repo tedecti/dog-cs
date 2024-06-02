@@ -90,13 +90,6 @@ namespace Puppy.Controllers
         [Authorize]
         public async Task<IActionResult> DeletePet(int id)
         {
-            var userId = Convert.ToInt32(HttpContext.User.Identity?.Name);
-            var pet = await _petRepo.GetPetsByUser(userId);
-            if (!pet.Any())
-            {
-                return Unauthorized();
-            }
-
             await _petRepo.DeletePet(id);
             return NoContent();
         }

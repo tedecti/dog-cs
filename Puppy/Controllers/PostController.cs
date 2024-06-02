@@ -50,15 +50,7 @@ namespace Puppy.Controllers
         [Authorize]
         public async Task<IActionResult> PutPost([FromForm] UploadPostRequestDto editPostRequestDto, int id)
         {
-            var post = await postRepository.GetPostById(id);
-            var userId = Convert.ToInt32(HttpContext.User.Identity?.Name);
-            if (post != null && userId != post.UserId)
-            {
-                return Unauthorized();
-            }
-
             await postRepository.EditPost(editPostRequestDto, id);
-
             return NoContent();
         }
 
