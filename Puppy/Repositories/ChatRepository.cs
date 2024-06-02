@@ -15,8 +15,7 @@ public class ChatRepository(AppDbContext context) : IChatRepository
 
     public async Task<List<ChatMessage>> GetMessages(string roomId)
     {
-        return await _context.ChatMessage.Where(m => m.RoomId == roomId).OrderByDescending(m => m.Timestamp)
-            .ToListAsync();
+        return await _context.ChatMessage.Where(m => m.RoomId == roomId).ToListAsync();
     }
 
     public async Task<ChatMessage?> CreateMessage(string roomId, int userId, SendMessageDto sendMessageDto)
@@ -112,7 +111,6 @@ public class ChatRepository(AppDbContext context) : IChatRepository
         }
 
         var messagesDto = room.ChatMessages
-            .OrderByDescending(m => m.Timestamp)
             .Select(m => new ShortMessagesDto
             {
                 Id = m.Id,
