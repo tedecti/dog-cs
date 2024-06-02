@@ -36,11 +36,6 @@ namespace Puppy
             builder.Services.AddScoped<IFollowerRepository, FollowerRepository>();
             builder.Services.AddScoped<ISearchRepository, SearchRepository>();
             builder.Services.AddScoped<IChatRepository, ChatRepository>();
-            var connection = new NpgsqlConnection(builder.Configuration.GetConnectionString("dogString"));
-            if (connection.State == ConnectionState.Closed)
-            {
-                connection.Open();
-            }
 
             builder.Services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
             {
