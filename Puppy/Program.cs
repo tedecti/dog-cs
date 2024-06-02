@@ -37,7 +37,7 @@ namespace Puppy
 
             builder.Services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
             {
-                builder.WithOrigins("https://admin-panel-lime-three.vercel.app", "http://localhost:3000")
+                builder.AllowAnyOrigin()
                     .AllowAnyMethod()
                     .AllowCredentials()
                     .AllowAnyHeader();
