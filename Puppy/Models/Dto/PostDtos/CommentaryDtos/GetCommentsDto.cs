@@ -4,6 +4,7 @@ namespace Puppy.Models.Dto.PostDtos.CommentaryDtos;
 
 public class GetCommentsDto
 {
+    public int Id { get; set; }
     public int PostId { get; set; }
     public ShortUserDto User { get; set; }
     public string Text { get; set; }
