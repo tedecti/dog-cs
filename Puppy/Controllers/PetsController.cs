@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Security.Claims;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Puppy.Models;
@@ -28,7 +29,7 @@ namespace Puppy.Controllers
         public async Task<ActionResult<Pet>> GetPet(int id)
         {
             var userId = Convert.ToInt32(HttpContext.User.Identity?.Name);
-
+            var role = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
             var pet = await _petRepo.GetPetById(id);
 
             if (pet == null)
@@ -43,7 +44,10 @@ namespace Puppy.Controllers
 
             if (userId != pet.UserId)
             {
-                return Forbid();
+                if (role != "Admin")
+                {
+                    return Forbid();
+                }
             }
 
             var responseDto = _mapper.Map<GetPetDto>(pet);
