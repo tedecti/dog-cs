@@ -2,8 +2,10 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Puppy.Data;
+using Puppy.Models;
 using Puppy.Models.Dto.AdminDtos;
 using Puppy.Models.Dto.AuthDtos;
 using Puppy.Repositories.Interfaces;
@@ -73,4 +75,24 @@ public class AdminRepository : IAdminRepository
                 };
                 return adminLoginResponseDto;
             }
+            
+            public async Task<IEnumerable<Post>> GetPosts(int days)
+            {
+                var sevenDaysAgo = DateTime.UtcNow.AddDays(-(days));
+                var posts = await _context.Post
+                    .Where(x => x.UploadDate >= sevenDaysAgo)
+                    .OrderByDescending(x => x.UploadDate)
+                    .ToListAsync();
+                return posts;
+            }
+
+            public async Task<IEnumerable<User>> GetTopUsers()
+            {
+                var users = await _context.Users
+                    .Include(x => x.Followers)
+                    .OrderByDescending(p => p.Followers.Count)
+                    .ToListAsync();
+                return users;
+            }
+
 }
