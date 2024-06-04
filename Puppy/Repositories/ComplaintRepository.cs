@@ -67,6 +67,7 @@ public class ComplaintRepository : IComplaintRepository
     {
         var post = await _context.Post
             .Include(x=> x.User)
+            .Include(x=> x.Complaints)
             .FirstOrDefaultAsync(x => x.Id == postId);
         if (post == null)
         {
