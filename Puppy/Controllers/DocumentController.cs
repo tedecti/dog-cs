@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -55,7 +56,8 @@ namespace Puppy.Controllers
         public async Task<ActionResult<GetDocumentDto>> GetDocumentById(int id)
         {
             var userId = Convert.ToInt32(HttpContext.User.Identity?.Name);
-
+            var role = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
+            
             var document = await _documentRepository.GetDocumentById(id);
 
             if (document == null)
@@ -70,7 +72,10 @@ namespace Puppy.Controllers
 
             if (document.Pet.UserId != userId)
             {
-                return Forbid();
+                if (role != "Admin")
+                {
+                    return Forbid();
+                }
             }
 
             var documentDto = _mapper.Map<GetDocumentDto>(document);
