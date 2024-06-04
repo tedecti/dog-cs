@@ -71,6 +71,15 @@ public class FollowersController : ControllerBase
         await _followerRepository.Unfollow(id, Convert.ToInt32(userId));
         return NoContent();
     }
+    [Authorize]
+    [HttpGet("/api/friends/")]
+    public async Task<IActionResult> GetMyFollowers()
+    {
+        var userId = Convert.ToInt32(HttpContext.User.Identity?.Name);
+        var friends = await _followerRepository.GetMyFollowers(userId);
+        var response = _mapper.Map<IEnumerable<GetFollowersDto>>(friends);
+        return Ok(response);
+    }
     
     [HttpGet("{id}")]
     public async Task<IActionResult> GetFollowers(int id)
@@ -79,7 +88,6 @@ public class FollowersController : ControllerBase
         var response = _mapper.Map<IEnumerable<GetFollowersDto>>(friends);
         return Ok(response);
     }
-
 
     [Authorize]
     [HttpGet("{userId}/check")]
