@@ -14,10 +14,16 @@ public class LikeRepository : ILikeRepository
         _context = context;
     }
 
-    public async Task<Like?> GetLike(int postId, int userId)
+    public async Task<Like?> GetLikeByUserAndPost(int postId, int userId)
     {
         var like = await _context.Like.Where(x => x.PostId == postId && x.UserId == userId)
             .FirstOrDefaultAsync();
+        return like;
+    }
+    public async Task<List<Like>?> GetLikesByPost(int postId)
+    {
+        var like = await _context.Like.Where(x => x.PostId == postId)
+            .ToListAsync();
         return like;
     }
 
@@ -46,5 +52,10 @@ public class LikeRepository : ILikeRepository
         if (like != null) _context.Like.Remove(like);
         await _context.SaveChangesAsync();
         return like;
+    }
+    public int GetTotal(int postId)
+    {
+        var count = _context.Like.Count(comment => comment.PostId == postId);
+        return count;
     }
 }

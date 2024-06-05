@@ -4,7 +4,9 @@ namespace Puppy.Repositories.Interfaces;
 
 public interface ILikeRepository
 {
-    Task<Like?> GetLike(int postId, int userId);
+    Task<Like?> GetLikeByUserAndPost(int postId, int userId);
+    Task<List<Like>?> GetLikesByPost(int postId);
     Task<Like?> LikePost(int postId, int userId);
     Task<Like?> Unlike(int postId, int userId);
+    int GetTotal(int postId);
 }

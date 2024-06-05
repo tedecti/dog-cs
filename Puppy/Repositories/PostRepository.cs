@@ -1,10 +1,8 @@
-using System.Collections;
 using Microsoft.EntityFrameworkCore;
 using Puppy.Data;
 using Puppy.Models;
 using Puppy.Models.Dto.PostDtos;
 using Puppy.Repositories.Interfaces;
-using Puppy.Services.Interfaces;
 
 namespace Puppy.Repositories;
 
