@@ -8,6 +8,7 @@ using Puppy.Models.Dto.FollowerDtos;
 using Puppy.Models.Dto.PetDtos;
 using Puppy.Models.Dto.PostDtos;
 using Puppy.Models.Dto.PostDtos.CommentaryDtos;
+using Puppy.Models.Dto.PostDtos.LikeDtos;
 using Puppy.Models.Dto.UserDtos;
 
 namespace Puppy.Data;
@@ -24,6 +25,7 @@ public class AutoMapper : Profile
         CreateMap<Pet, GetPetDto>();
         CreateMap<Pet, ShortPetDto>();
         CreateMap<Post, GetPostDto>();
+        CreateMap<Like, LikedPostsDto>();
         CreateMap<Commentary, GetCommentsDto>();
         CreateMap<Document, GetDocumentDto>();
         CreateMap<Document, ShortDocumentDto>();

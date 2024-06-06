@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Puppy.Models;
@@ -8,7 +9,7 @@ namespace Puppy.Controllers
 {
     [Route("api/like")]
     [ApiController]
-    public class LikeController(ILikeRepository likeRepository) : ControllerBase
+    public class LikeController(IMapper mapper, ILikeRepository likeRepository) : ControllerBase
     {
         [HttpGet("{postId}")]
         [Authorize]
@@ -30,6 +31,15 @@ namespace Puppy.Controllers
             };
             return Ok(response);
         }
+
+        [HttpGet("{userId}/user")]
+        public async Task<IActionResult> GetLikeByUser(int userId)
+        {
+            var likes = await likeRepository.GetLikesByUser(userId);
+            var response = mapper.Map<List<LikedPostsDto>>(likes);
+            return Ok(response);
+        }
+
         // POST: api/Like/1
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost("{postId}")]

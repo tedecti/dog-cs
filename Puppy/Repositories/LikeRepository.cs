@@ -26,7 +26,15 @@ public class LikeRepository : ILikeRepository
             .ToListAsync();
         return like;
     }
-
+    public async Task<List<Like>?> GetLikesByUser(int userId)
+    {
+        var like = await _context.Like.Where(x => x.UserId == userId)
+            .Include(x=>x.User)
+            .Include(x=>x.Post)
+            .Include(x=>x.Post.User)
+            .ToListAsync();
+        return like;
+    }
     public async Task<Like?> LikePost(int postId, int userId)
     {
         var existingLike = await _context.Like.FirstOrDefaultAsync(l => l.UserId == userId && l.PostId == postId);
