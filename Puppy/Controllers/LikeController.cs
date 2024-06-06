@@ -1,14 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using Puppy.Data;
 using Puppy.Models;
 using Puppy.Models.Dto.PostDtos.LikeDtos;
 using Puppy.Repositories.Interfaces;
-using Puppy.Services.Interfaces;
 
 namespace Puppy.Controllers
 {
-    [Route("api/like/{postId}")]
+    [Route("api/like")]
     [ApiController]
     public class LikeController(ILikeRepository likeRepository) : ControllerBase
     {
@@ -21,7 +19,7 @@ namespace Puppy.Controllers
             return like != null;
         }
 
-        [HttpGet("post")]
+        [HttpGet("{postId}/post")]
         public async Task<IActionResult> GetLikeByPost(int postId)
         {
             var total = likeRepository.GetTotal(postId);
@@ -34,7 +32,7 @@ namespace Puppy.Controllers
         }
         // POST: api/Like/1
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost("")]
+        [HttpPost("{postId}")]
         [Authorize]
         public async Task<ActionResult<Like>> PostLike(int postId)
         {
@@ -59,7 +57,7 @@ namespace Puppy.Controllers
 
         // // DELETE: api/Like/5
         [HttpDelete]
-        [Route("")]
+        [Route("{postId}")]
         [Authorize]
         public async Task<IActionResult> DeleteLike(int postId)
         {
