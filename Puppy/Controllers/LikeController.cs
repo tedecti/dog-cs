@@ -10,7 +10,7 @@ namespace Puppy.Controllers
     [ApiController]
     public class LikeController(ILikeRepository likeRepository) : ControllerBase
     {
-        [HttpGet]
+        [HttpGet("{postId}")]
         [Authorize]
         public async Task<ActionResult<bool>> GetLike(int postId)
         {
