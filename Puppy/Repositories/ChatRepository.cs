@@ -257,7 +257,7 @@ public class ChatRepository(AppDbContext context) : IChatRepository
         var room = await _context.ChatRoom
             .FirstOrDefaultAsync(r => 
                 (r.User1Id == user1 && r.User2Id == user2) || 
-                (r.User1Id == user1 && r.User2Id == user2));
+                (r.User2Id == user1 && r.User1Id == user2));
         return room?.RoomId;
     }
 }
