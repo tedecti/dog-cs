@@ -14,6 +14,6 @@ public interface IChatRepository
     Task<BiggestRoomDto> GetRoomById(string roomId);
     Task<List<FullRoomDto>> GetRoomsByUser(int userId);
     Task<ChatRoom?> CreateRoom(int user1Id, int user2Id);
-    Task<bool> SetMessageRead(int messageId, int userId);
+    Task<bool> SetMessageRead(int messageId);
     Task<string?> GetAnyRoomBetweenUsers(int user1, int user2);
 }
