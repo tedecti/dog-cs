@@ -243,7 +243,7 @@ public class ChatRepository(AppDbContext context) : IChatRepository
         }).ToList();
         return roomDtos;
     }
-    public async Task<bool> SetMessageRead(int messageId, int userId)
+    public async Task<bool> SetMessageRead(int messageId)
     {
         var message = await context.ChatMessage.FirstOrDefaultAsync(m => m.Id == messageId);
         if (message == null) return false;
