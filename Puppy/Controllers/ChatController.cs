@@ -122,8 +122,7 @@ public class ChatController(IChatRepository _chatRepository, IMapper _mapper) : 
     [HttpPut("message/{messageId}/read")]
     public async Task<IActionResult> ReadMessage(int messageId)
     {
-        var userId = Convert.ToInt32(HttpContext.User.Identity?.Name);
-        var msg = await _chatRepository.SetMessageRead(messageId, userId);
+        var msg = await _chatRepository.SetMessageRead(messageId);
         if (!msg)
         {
             return NotFound();
