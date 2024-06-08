@@ -85,7 +85,8 @@ public class ChatRepository(AppDbContext context) : IChatRepository
                     Id = latestMessage.Id,
                     UserId = latestMessage.UserId,
                     Message = latestMessage.Message,
-                    Timestamp = latestMessage.Timestamp
+                    Timestamp = latestMessage.Timestamp,
+                    IsRead = latestMessage.IsRead
                 };
 
             return new AllRoomsResponseDto
@@ -116,7 +117,8 @@ public class ChatRepository(AppDbContext context) : IChatRepository
                 Id = m.Id,
                 UserId = m.UserId,
                 Message = m.Message,
-                Timestamp = m.Timestamp
+                Timestamp = m.Timestamp,
+                IsRead = m.IsRead
             })
             .ToList();
 
@@ -230,7 +232,8 @@ public class ChatRepository(AppDbContext context) : IChatRepository
                     Id = latestMessage.Id,
                     UserId = latestMessage.UserId,
                     Message = latestMessage.Message,
-                    Timestamp = latestMessage.Timestamp
+                    Timestamp = latestMessage.Timestamp,
+                    IsRead = latestMessage.IsRead
                 };
 
             return new FullRoomDto
@@ -249,6 +252,7 @@ public class ChatRepository(AppDbContext context) : IChatRepository
         if (message == null) return false;
         message.IsRead = true;
         await context.SaveChangesAsync();
+        Console.WriteLine(message.IsRead);
         return true;
     }
 
