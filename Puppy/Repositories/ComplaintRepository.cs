@@ -2,6 +2,7 @@ using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Puppy.Data;
 using Puppy.Models;
+using Puppy.Models.Dto.ChatDto;
 using Puppy.Models.Dto.ComplaintDtos;
 using Puppy.Repositories.Interfaces;
 
@@ -10,10 +11,12 @@ namespace Puppy.Repositories;
 public class ComplaintRepository : IComplaintRepository
 {
     private readonly AppDbContext _context;
+    private readonly IChatRepository _chatRepository;
 
-    public ComplaintRepository(AppDbContext context)
+    public ComplaintRepository(AppDbContext context, IChatRepository chatRepository)
     {
         _context = context;
+        _chatRepository = chatRepository;
     }
     public async Task<Complaint> CreateComplaint(ComplaintRequestDto complaintRequestDto, int UserId, int PostId)
     {
@@ -33,6 +36,12 @@ public class ComplaintRepository : IComplaintRepository
         };
         _context.Complaint.Add(complaint);
         await _context.SaveChangesAsync();
+        var message = new SendMessageDto()
+        {
+            Message = "Вы отправили жалобу на публикацию: «" + post.Title + "». В скором времени администратор рассмотрит её." 
+        };
+        var roomId = await _chatRepository.GetAnyRoomBetweenUsers(0, UserId);
+        await _chatRepository.CreateMessage(roomId, 0, message);
         return complaint;
     }
 
@@ -86,7 +95,10 @@ public class ComplaintRepository : IComplaintRepository
 
     public async Task<Complaint> SetStatus(ComplaintEditDto complaintEditDto, int complaintId)
     {
-        var complaint = await _context.Complaint.FirstOrDefaultAsync(x => x.Id == complaintId);
+        var complaint = await _context.Complaint
+            .Include(x => x.User)
+            .Include(x => x.Post)
+            .FirstOrDefaultAsync(x => x.Id == complaintId);
         if (complaint == null)
         {
             return null;
@@ -94,6 +106,26 @@ public class ComplaintRepository : IComplaintRepository
         
         complaint.Status = complaintEditDto.Status;
         await _context.SaveChangesAsync();
+        if (complaintEditDto.Status == "Rejected")
+        {
+            var message = new SendMessageDto()
+            {
+                Message = "Ваша жалоба на публикацию «"  + complaint.Post.Title +  "» отклонена."
+            };
+            var roomId = await _chatRepository.GetAnyRoomBetweenUsers(0, complaint.UserId);
+            await _chatRepository.CreateMessage(roomId, 0, message);
+        }
+        
+        if (complaintEditDto.Status == "Completed")
+        {
+            var message = new SendMessageDto()
+            {
+                Message = "Ваша жалоба на публикацию «"  + complaint.Post.Title +  "» выполнена."
+            };
+            var roomId = await _chatRepository.GetAnyRoomBetweenUsers(0, complaint.UserId);
+            await _chatRepository.CreateMessage(roomId, 0, message);
+        }
+
         return complaint;
     }
 
