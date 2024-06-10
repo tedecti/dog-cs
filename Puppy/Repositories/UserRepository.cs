@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using Puppy.Data;
 using Puppy.Models;
 using Puppy.Models.Dto.AuthDtos;
+using Puppy.Models.Dto.ChatDto;
 using Puppy.Models.Dto.UserDtos;
 using Puppy.Repositories.Interfaces;
 using Puppy.Services.Interfaces;
@@ -19,12 +20,14 @@ namespace Puppy.Repositories
         private readonly AppDbContext _context;
         private readonly IMapper _mapper;
         private readonly string? _secretKey;
+        private readonly IChatRepository _chatRepository;
 
-        public UserRepository(AppDbContext context, IConfiguration configuration, IMapper mapper)
+        public UserRepository(AppDbContext context, IConfiguration configuration, IMapper mapper, IChatRepository chatRepository)
         {
             _context = context;
             _mapper = mapper;
             _secretKey = configuration.GetValue<string>("ApiSettings:Secret");
+            _chatRepository = chatRepository;
         }
 
         public async Task<LoginResponseDto?> Login(LoginRequestDto loginRequestDto)
@@ -94,6 +97,15 @@ namespace Puppy.Repositories
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
             user.Password = "";
+            await _chatRepository.CreateRoom(0, user.Id);
+            var registeredUserChats = await _chatRepository.GetRoomsByUser(user.Id);
+            var message = new SendMessageDto()
+            {
+                Message = "Добро пожаловать в наше приложение PetPaw"
+            };
+            var roomId = registeredUserChats[0].RoomId;
+            if (roomId != null)
+                await _chatRepository.CreateMessage(roomId, 0, message);
             return user;
         }
 
