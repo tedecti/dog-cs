@@ -96,7 +96,6 @@ namespace Puppy.Repositories
             };
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
-            user.Password = "";
             await _chatRepository.CreateRoom(0, user.Id);
             var registeredUserChats = await _chatRepository.GetRoomsByUser(user.Id);
             var message = new SendMessageDto()
