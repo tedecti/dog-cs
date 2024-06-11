@@ -112,6 +112,7 @@ public class ChatRepository(AppDbContext context) : IChatRepository
         }
 
         var messagesDto = room.ChatMessages
+            .OrderBy(x=> x.Timestamp)
             .Select(m => new ShortMessagesDto
             {
                 Id = m.Id,
